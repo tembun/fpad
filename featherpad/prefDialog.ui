@@ -865,64 +865,6 @@ if the cursor is inside the text view?</string>
                </widget>
               </item>
               <item>
-               <widget class="QGroupBox" name="groupBox_2">
-                <property name="title">
-                 <string>Spell Checking</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_5">
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_15">
-                   <item>
-                    <widget class="QLabel" name="dictLabel">
-                     <property name="toolTip">
-                      <string>A Hunspell dictionary has a name that ends with &quot;.dic&quot;
-and should be alongside an affix file with the same
-name but ending with &quot;.aff&quot;.</string>
-                     </property>
-                     <property name="text">
-                      <string>Hunspell dictionary path:</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="dictEdit">
-                     <property name="toolTip">
-                      <string>A Hunspell dictionary has a name that ends with &quot;.dic&quot;
-and should be alongside an affix file with the same
-name but ending with &quot;.aff&quot;.</string>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QToolButton" name="dictButton">
-                     <property name="toolTip">
-                      <string>Add dictionary...</string>
-                     </property>
-                     <property name="text">
-                      <string notr="true">...</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="spellBox">
-                   <property name="toolTip">
-                    <string>If this is unchecked, spell checking
-will be started from the document start.</string>
-                   </property>
-                   <property name="text">
-                    <string>Start spell checking from text cursor</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
                <spacer name="verticalSpacer_1">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>

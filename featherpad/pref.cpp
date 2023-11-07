@@ -272,12 +272,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->textTabSpin->setValue (textTabSize_);
     connect (ui->textTabSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefTextTabSize);
 
-    ui->dictEdit->setText (config.getDictPath());
-    connect (ui->dictButton, &QAbstractButton::clicked, this, &PrefDialog::addDict);
-    connect (ui->dictEdit, &QLineEdit::editingFinished, this, &PrefDialog::addDict);
-    ui->spellBox->setChecked (!config.getSpellCheckFromStart());
-    connect (ui->spellBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSpellCheck);
-
     /*************
      *** Files ***
      *************/
@@ -1609,56 +1603,6 @@ void PrefDialog::prefCloseWithLastTab (int checked)
         config.setCloseWithLastTab (true);
     else if (checked == Qt::Unchecked)
         config.setCloseWithLastTab (false);
-}
-/*************************/
-void PrefDialog::prefSpellCheck (int checked)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    if (checked == Qt::Checked)
-        config.setSpellCheckFromStart (false);
-    else if (checked == Qt::Unchecked)
-        config.setSpellCheckFromStart (true);
-}
-/*************************/
-void PrefDialog::addDict()
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    if (QObject::sender() == ui->dictEdit)
-    {
-        config.setDictPath (ui->dictEdit->text());
-        return;
-    }
-    FileDialog dialog (this, config.getNativeDialog());
-    dialog.setAcceptMode (QFileDialog::AcceptOpen);
-    dialog.setWindowTitle (tr ("Add dictionary..."));
-    dialog.setFileMode (QFileDialog::ExistingFile);
-    dialog.setNameFilter (tr ("Hunspell Dictionary Files (*.dic)"));
-    QString path = ui->dictEdit->text();
-    if (path.isEmpty())
-    {
-        path = "/usr/share/hunspell";
-        if (!QFileInfo (path).isDir())
-            path = "/usr/local/share/hunspell";
-    }
-
-    if (QFileInfo (path).isDir())
-        dialog.setDirectory (path);
-    else if (QFile::exists (path))
-    {
-        dialog.setDirectory (path.section ("/", 0, -2));
-        dialog.selectFile (path);
-        dialog.autoScroll();
-    }
-
-    if (dialog.exec())
-    {
-        const QStringList files = dialog.selectedFiles();
-        if (!files.isEmpty())
-        {
-            ui->dictEdit->setText (files.at (0));
-            config.setDictPath (files.at (0));
-        }
-    }
 }
 /*************************/
 void PrefDialog::restoreDefaultSyntaxColors()

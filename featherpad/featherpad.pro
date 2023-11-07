@@ -42,9 +42,7 @@ SOURCES += main.cpp \
            session.cpp \
            fontDialog.cpp \
            sidepane.cpp \
-           svgicons.cpp \
-           spellChecker.cpp \
-           spellDialog.cpp
+           svgicons.cpp
 
 HEADERS += singleton.h \
            fpwin.h \
@@ -66,16 +64,13 @@ HEADERS += singleton.h \
            fontDialog.h \
            warningbar.h \
            sidepane.h \
-           svgicons.h \
-           spellChecker.h \
-           spellDialog.h
+           svgicons.h
 
 FORMS += fp.ui \
          prefDialog.ui \
          sessionDialog.ui \
          fontDialog.ui \
-         about.ui \
-         spellDialog.ui
+         about.ui
 
 RESOURCES += data/fp.qrc
 
@@ -91,7 +86,6 @@ else:unix:!macx:!haiku {
 }
 
 unix {
-  LIBS += -lhunspell
   #TRANSLATIONS
   exists($$[QT_INSTALL_BINS]/lrelease) {
     TRANSLATIONS = $$system("find data/translations/ -name 'featherpad_*.ts'")

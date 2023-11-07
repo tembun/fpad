@@ -209,8 +209,6 @@
     <addaction name="actionSortLines"/>
     <addaction name="actionRSortLines"/>
     <addaction name="separator"/>
-    <addaction name="actionCheckSpelling"/>
-    <addaction name="actionUserDict"/>
     <addaction name="separator"/>
     <addaction name="actionDate"/>
    </widget>
@@ -1190,28 +1188,12 @@
     <string>Sort Lines Reversely</string>
    </property>
   </action>
-  <action name="actionCheckSpelling">
-   <property name="text">
-    <string>Check Spelling</string>
-   </property>
-   <property name="shortcut">
-    <string>F2</string>
-   </property>
-  </action>
   <action name="actionSaveAllFiles">
    <property name="text">
     <string>Save All Files</string>
    </property>
    <property name="toolTip">
     <string>Save All Files</string>
-   </property>
-  </action>
-  <action name="actionUserDict">
-   <property name="text">
-    <string>User Dictionary</string>
-   </property>
-   <property name="toolTip">
-    <string>User Dictionary</string>
    </property>
   </action>
   <action name="actionSoftTab">

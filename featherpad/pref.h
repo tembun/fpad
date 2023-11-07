@@ -114,8 +114,6 @@ private slots:
     void prefTextTabSize (int value);
     void prefTextTab();
     void prefCloseWithLastTab (int checked);
-    void addDict();
-    void prefSpellCheck (int checked);
     void changeSyntaxColor (int row, int column);
     void changeWhitespaceValue (int value);
     void restoreDefaultSyntaxColors();

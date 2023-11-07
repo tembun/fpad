@@ -24,8 +24,6 @@
 #include "filedialog.h"
 #include "messagebox.h"
 #include "pref.h"
-#include "spellChecker.h"
-#include "spellDialog.h"
 #include "session.h"
 #include "fontDialog.h"
 #include "loading.h"
@@ -145,7 +143,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     defaultShortcuts_.insert (ui->actionSaveAllFiles, QKeySequence());
     defaultShortcuts_.insert (ui->actionSoftTab, QKeySequence());
     defaultShortcuts_.insert (ui->actionStartCase, QKeySequence());
-    defaultShortcuts_.insert (ui->actionUserDict, QKeySequence());
     defaultShortcuts_.insert (ui->actionFont, QKeySequence());
 
     applyConfigOnStarting();
@@ -270,9 +267,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     connect (ui->actionIndent, &QAction::triggered, this, &FPwin::toggleIndent);
 
     connect (ui->actionPreferences, &QAction::triggered, this, &FPwin::prefDialog);
-
-    connect (ui->actionCheckSpelling, &QAction::triggered, this, &FPwin::checkSpelling);
-    connect (ui->actionUserDict, &QAction::triggered, this, &FPwin::userDict);
 
     connect (ui->actionReplace, &QAction::triggered, this, &FPwin::replaceDock);
     connect (ui->toolButtonNext, &QAbstractButton::clicked, this, &FPwin::replace);
@@ -1538,12 +1532,9 @@ void FPwin::editorContextMenu (const QPoint& p)
             }
             menu->addSeparator();
         }
-        menu->addAction (ui->actionCheckSpelling);
         menu->addSeparator();
         menu->addAction (ui->actionDate);
     }
-    else
-        menu->addAction (ui->actionCheckSpelling);
 
     menu->exec (textEdit->viewport()->mapToGlobal (p));
     delete menu;
@@ -4921,224 +4912,6 @@ static inline void selectWord (QTextCursor& cur)
     }
 }
 
-void FPwin::checkSpelling()
-{
-    TabPage *tabPage = qobject_cast<TabPage*>(ui->tabWidget->currentWidget());
-    if (tabPage == nullptr) return;
-    if (isLoading()) return;
-    if (hasAnotherDialog()) return;
-
-    Config config = static_cast<FPsingleton*>(qApp)->getConfig();
-    auto dictPath = config.getDictPath();
-    if (dictPath.isEmpty())
-    {
-        showWarningBar ("<center><b><big>" + tr ("You need to add a Hunspell dictionary.") + "</big></b></center>"
-                        + "<center><i>" + tr ("See Preferences → Text → Spell Checking!") + "</i></center>");
-        return;
-    }
-    if (!QFile::exists (dictPath))
-    {
-        showWarningBar ("<center><b><big>" + tr ("The Hunspell dictionary does not exist.") + "</big></b></center>"
-                        + "<center><i>" + tr ("See Preferences → Text → Spell Checking!") + "</i></center>");
-        return;
-    }
-    if (dictPath.endsWith (".dic"))
-        dictPath = dictPath.left (dictPath.size() - 4);
-    const QString affixFile = dictPath + ".aff";
-    if (!QFile::exists (affixFile))
-    {
-        showWarningBar ("<center><b><big>" + tr ("The Hunspell dictionary is not accompanied by an affix file.") + "</big></b></center>"
-                        + "<center><i>" + tr ("See Preferences → Text → Spell Checking!") + "</i></center>");
-        return;
-    }
-    QString confPath = QStandardPaths::writableLocation (QStandardPaths::ConfigLocation);
-    if (!QFile (confPath + "/featherpad").exists()) // create config dir if needed
-        QDir (confPath).mkpath (confPath + "/featherpad");
-    QString userDict = confPath + "/featherpad/userDict-" + dictPath.section ("/", -1);
-
-    TextEdit *textEdit = tabPage->textEdit();
-    QTextCursor cur = textEdit->textCursor();
-    if (config.getSpellCheckFromStart())
-        cur.movePosition (QTextCursor::Start);
-    cur.setPosition (cur.anchor());
-    moveToWordStart (cur, false);
-    selectWord (cur);
-    QString word = cur.selectedText();
-    while (word.isEmpty())
-    {
-        if (!cur.movePosition (QTextCursor::NextCharacter))
-        {
-            if (config.getSpellCheckFromStart())
-                showWarningBar ("<center><b><big>" + tr ("No misspelling in document.") + "</big></b></center>");
-            else
-                showWarningBar ("<center><b><big>" + tr ("No misspelling from text cursor.") + "</big></b></center>");
-            return;
-        }
-        selectWord (cur);
-        word = cur.selectedText();
-    }
-
-    SpellChecker *spellChecker = new SpellChecker (dictPath, userDict);
-
-    while (spellChecker->spell (word))
-    {
-        cur.setPosition (cur.position());
-        if (cur.atEnd())
-        {
-            delete spellChecker;
-            if (config.getSpellCheckFromStart())
-                showWarningBar ("<center><b><big>" + tr ("No misspelling in document.") + "</big></b></center>");
-            else
-                showWarningBar ("<center><b><big>" + tr ("No misspelling from text cursor.") + "</big></b></center>");
-            return;
-        }
-        if (cur.movePosition (QTextCursor::NextCharacter))
-            selectWord (cur);
-        word = cur.selectedText();
-        while (word.isEmpty())
-        {
-            cur.setPosition (cur.anchor());
-            if (!cur.movePosition (QTextCursor::NextCharacter))
-            {
-                delete spellChecker;
-                if (config.getSpellCheckFromStart())
-                    showWarningBar ("<center><b><big>" + tr ("No misspelling in document.") + "</big></b></center>");
-                else
-                    showWarningBar ("<center><b><big>" + tr ("No misspelling from text cursor.") + "</big></b></center>");
-                return;
-            }
-            selectWord (cur);
-            word = cur.selectedText();
-        }
-    }
-    textEdit->skipSelectionHighlighting();
-    textEdit->setTextCursor (cur);
-    textEdit->ensureCursorVisible();
-
-    updateShortcuts (true);
-    SpellDialog dlg (spellChecker, word, this);
-    dlg.setWindowTitle (tr ("Spell Checking"));
-
-    connect (&dlg, &SpellDialog::spellChecked, [&dlg, textEdit] (int res) {
-        bool uneditable = textEdit->isReadOnly() || textEdit->isUneditable();
-        QTextCursor cur = textEdit->textCursor();
-        if (!cur.hasSelection()) return; // impossible
-        QString word = cur.selectedText();
-        QString corrected;
-        switch (res) {
-        case SpellDialog::CorrectOnce:
-            if (!uneditable)
-                cur.insertText (dlg.replacement());
-            break;
-        case SpellDialog::IgnoreOnce:
-            break;
-        case SpellDialog::CorrectAll:
-            /* remember this corretion */
-            dlg.spellChecker()->addToCorrections (word, dlg.replacement());
-            if (!uneditable)
-                cur.insertText (dlg.replacement());
-            break;
-        case SpellDialog::IgnoreAll:
-            /* always ignore the selected word */
-            dlg.spellChecker()->ignoreWord (word);
-            break;
-        case SpellDialog::AddToDict:
-            /* not only ignore it but also add it to user dictionary */
-            dlg.spellChecker()->addToUserWordlist (word);
-            break;
-        }
-
-        /* check the next word */
-        cur.setPosition (cur.position());
-        if (cur.atEnd())
-        {
-            textEdit->skipSelectionHighlighting();
-            textEdit->setTextCursor (cur);
-            textEdit->ensureCursorVisible();
-            dlg.close();
-            return;
-        }
-        if (cur.movePosition (QTextCursor::NextCharacter))
-            selectWord (cur);
-        word = cur.selectedText();
-
-        while (word.isEmpty())
-        {
-            cur.setPosition (cur.anchor());
-            if (!cur.movePosition (QTextCursor::NextCharacter))
-            {
-                textEdit->skipSelectionHighlighting();
-                textEdit->setTextCursor (cur);
-                textEdit->ensureCursorVisible();
-                dlg.close();
-                return;
-            }
-            selectWord (cur);
-            word = cur.selectedText();
-        }
-        while (dlg.spellChecker()->spell (word)
-               || !(corrected = dlg.spellChecker()->correct (word)).isEmpty())
-        {
-            if (!corrected.isEmpty())
-            {
-                cur.insertText (corrected);
-                corrected = QString();
-            }
-            else
-                cur.setPosition (cur.position());
-            if (cur.atEnd())
-            {
-                textEdit->skipSelectionHighlighting();
-                textEdit->setTextCursor (cur);
-                textEdit->ensureCursorVisible();
-                dlg.close();
-                return;
-            }
-            if (cur.movePosition (QTextCursor::NextCharacter))
-                selectWord (cur);
-            word = cur.selectedText();
-            while (word.isEmpty())
-            {
-                cur.setPosition (cur.anchor());
-                if (!cur.movePosition (QTextCursor::NextCharacter))
-                {
-                    textEdit->skipSelectionHighlighting();
-                    textEdit->setTextCursor (cur);
-                    textEdit->ensureCursorVisible();
-                    dlg.close();
-                    return;
-                }
-                selectWord (cur);
-                word = cur.selectedText();
-            }
-        }
-        textEdit->skipSelectionHighlighting();
-        textEdit->setTextCursor (cur);
-        textEdit->ensureCursorVisible();
-        dlg.checkWord (word);
-    });
-
-    dlg.exec();
-    updateShortcuts (false);
-
-    delete spellChecker;
-}
-/*************************/
-void FPwin::userDict()
-{
-    Config config = static_cast<FPsingleton*>(qApp)->getConfig();
-    QString dictPath = config.getDictPath();
-    if (dictPath.isEmpty())
-        showWarningBar ("<center><b><big>" + tr ("The file does not exist.") + "</big></b></center>");
-    else
-    {
-        if (dictPath.endsWith (".dic"))
-            dictPath = dictPath.left (dictPath.size() - 4);
-        QString confPath = QStandardPaths::writableLocation (QStandardPaths::ConfigLocation);
-        QString userDict = confPath + "/featherpad/userDict-" + dictPath.section ("/", -1);
-        newTabFromName (userDict, 0, 0);
-    }
-}
 /*************************/
 void FPwin::manageSessions()
 {

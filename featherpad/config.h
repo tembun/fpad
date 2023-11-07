@@ -507,20 +507,6 @@ public:
         sharedSearchHistory_ = share;
     }
 /*************************/
-    QString getDictPath() const {
-        return dictPath_;
-    }
-    void setDictPath (const QString& dictPath) {
-        dictPath_ = dictPath;
-    }
-
-    bool getSpellCheckFromStart() const {
-        return spellCheckFromStart_;
-    }
-    void setSpellCheckFromStart (bool fromStart) {
-        spellCheckFromStart_ = fromStart;
-    }
-/*************************/
     QHash<QString, QColor> lightSyntaxColors() const {
         return defaultLightSyntaxColors_;
     }
@@ -618,9 +604,6 @@ private:
     bool cursorPosRetrieved_; // used only internally for reading once
 
     QHash<QString, QVariant> lasFilesCursorPos_;
-
-    QString dictPath_;
-    bool spellCheckFromStart_;
 
     QHash<QString, QColor> defaultLightSyntaxColors_, defaultDarkSyntaxColors_, customSyntaxColors_;
     int whiteSpaceValue_, curLineHighlight_;

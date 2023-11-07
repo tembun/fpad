@@ -79,7 +79,6 @@ Config::Config():
     recentOpened_ (false),
     saveLastFilesList_ (false),
     cursorPosRetrieved_ (false),
-    spellCheckFromStart_ (false),
     whiteSpaceValue_ (180),
     curLineHighlight_ (-1) {}
 /*************************/
@@ -287,10 +286,7 @@ void Config::readConfig()
     autoSaveInterval_ = qBound (1, settings.value ("autoSaveInterval", 1).toInt(), 60);
 
     textTabSize_ = qBound (2, settings.value ("textTabSize", 4).toInt(), 10);
-
-    dictPath_ = settings.value ("dictionaryPath").toString();
-    spellCheckFromStart_ = settings.value ("spellCheckFromStart").toBool();
-
+    
     settings.endGroup();
 
     readSyntaxColors();
@@ -496,9 +492,6 @@ void Config::writeConfig()
     settings.setValue ("autoSaveInterval", autoSaveInterval_);
 
     settings.setValue ("textTabSize", textTabSize_);
-
-    settings.setValue ("dictionaryPath", dictPath_);
-    settings.setValue ("spellCheckFromStart", spellCheckFromStart_);
 
     settings.endGroup();
 
