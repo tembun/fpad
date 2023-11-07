@@ -17,6 +17,7 @@
  * @license GPL-3.0+ <https://spdx.org/licenses/GPL-3.0+.html>
  */
 
+#include <QApplication>
 #include <QDir>
 #include "singleton.h"
 
@@ -42,6 +43,9 @@ void handleQuitSignals (const std::vector<int>& quitSignals)
 
 int main (int argc, char **argv)
 {
+    
+    QApplication::setCursorFlashTime( 0 );
+    
     const QString name = "FeatherPad";
     const QString version = "0.16.0";
     const QString option = QString::fromUtf8 (argv[1]);
