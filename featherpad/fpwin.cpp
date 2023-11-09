@@ -2471,14 +2471,6 @@ void FPwin::showWarningBar (const QString& message, bool startupBar)
     WarningBar *bar = new WarningBar (message, vOffset, ui->tabWidget);
     if (startupBar)
         bar->setObjectName ("startupBar");
-    /* close the bar when the text is scrolled */
-    if (tabPage)
-    {
-        connect (tabPage->textEdit(), &QPlainTextEdit::updateRequest, bar, [=](const QRect&, int dy) {
-            if (dy != 0)
-                closeWarningBar();
-        });
-    }
 }
 /*************************/
 void FPwin::showCrashWarning()
