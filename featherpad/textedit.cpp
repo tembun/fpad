@@ -1072,6 +1072,31 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
             return;
         }
     }
+    else if ( event->key() == Qt::Key_PageDown || event->key() == Qt::Key_PageUp )
+    {
+    	
+      if ( QScrollBar* vbar = verticalScrollBar() )
+      {
+      	
+      	if ( event->modifiers() == Qt::ControlModifier )
+      	{
+      		vbar->setValue( vbar->value() + ( event->key() == Qt::Key_PageDown ? 6 : -6 ) * vbar->pageStep() );
+      	}
+      	else if( event->modifiers() == Qt::AltModifier )
+      	{
+      		vbar->setValue( ( event->key() == Qt::Key_PageUp ? 0 : vbar->maximum() ) );
+      	}
+      	else
+      	{
+      		vbar->setValue( vbar->value() + ( event->key() == Qt::Key_PageDown ? 9 : -9 ) );
+      	}
+      	
+            event->accept();
+            return;
+      	
+      }
+    	
+    }
     else if (event->key() == Qt::Key_Tab)
     {
         QTextCursor cursor = textCursor();
