@@ -962,11 +962,24 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
     }
     else if (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up)
     {
-        if (event->modifiers() == Qt::ControlModifier)
+        
+        if (
+        	( event->modifiers() == Qt::ControlModifier )
+        	||
+        	( event->modifiers() ==  Qt::AltModifier )
+        )
         {
             if (QScrollBar* vbar = verticalScrollBar())
             {
-                vbar->setValue(vbar->value() + (event->key() == Qt::Key_Down ? 1 : -1));
+                int step = (
+                    event->modifiers() == Qt::AltModifier
+                    ?
+                    	4
+                    :
+                    	1
+                );      
+            
+                vbar->setValue(vbar->value() + (event->key() == Qt::Key_Down ? step : -step ));
                 
                 sync_cursor();
                 
