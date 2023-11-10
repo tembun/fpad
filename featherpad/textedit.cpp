@@ -908,10 +908,36 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
     }
     else if (event->key() == Qt::Key_Left || event->key() == Qt::Key_Right)
     {
+        QTextCursor cursor = textCursor();
+    
+        if( event->modifiers() == (Qt::ControlModifier | Qt::AltModifier) )
+        {
+        	
+        	if( cursor.hasSelection() )
+        	{
+        		return ;
+        	}
+        	
+        	cursor.setPosition( cursor.position() );
+        	
+        	if( event->key() == Qt::Key_Left )
+        	{
+        	
+        		cursor.movePosition( QTextCursor::StartOfLine , QTextCursor::KeepAnchor );
+        	
+        	}
+        	else {
+        		
+        		cursor.movePosition( QTextCursor::EndOfLine , QTextCursor::KeepAnchor );
+        		
+        	}
+        	
+        	setTextCursor( cursor );
+        	
+        }
         /* when text is selected, use arrow keys
            to go to the start or end of the selection */
-        QTextCursor cursor = textCursor();
-        if (event->modifiers() == Qt::NoModifier && cursor.hasSelection())
+        else if (event->modifiers() == Qt::NoModifier && cursor.hasSelection())
         {
             QString selTxt = cursor.selectedText();
             if (event->key() == Qt::Key_Left)
