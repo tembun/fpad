@@ -1658,7 +1658,25 @@ void FPwin::focusView()
     if (TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget()))
     {
         if (!tabPage->hasPopup())
-            tabPage->textEdit()->setFocus();
+        {
+        	
+		TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget());
+		if (tabPage == nullptr) return;
+        	
+        	if( tabPage->isSearchBarVisible() )
+        	{
+        		showHideSearch();
+        	}
+        	
+        	ui -> dockReplace -> setVisible(false);
+        	
+		ui -> spinBox -> setVisible(false);
+		ui -> label -> setVisible(false);
+		ui -> checkBox -> setVisible(false);
+        	
+		tabPage->textEdit()->setFocus();
+        	
+        }
     }
 }
 /*************************/
@@ -3542,7 +3560,7 @@ void FPwin::showHideSearch()
     TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget());
     if (tabPage == nullptr) return;
 
-    bool isFocused = tabPage->isSearchBarVisible() && tabPage->searchBarHasFocus();
+    bool isFocused = tabPage->isSearchBarVisible();
 
     if (!isFocused)
         tabPage->focusSearchBar();
@@ -3645,6 +3663,11 @@ void FPwin::goTo()
         else
             start.setPosition (pos);
         textEdit->setTextCursor (start);
+        
+        ui->spinBox->setVisible(false);
+        ui->label->setVisible(false);
+        ui->checkBox->setVisible(false);
+        
     }
 }
 /*************************/
