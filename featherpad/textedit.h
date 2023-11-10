@@ -46,6 +46,8 @@ public:
         emit QPlainTextEdit::updateRequest (rect(), 1);
     }
 
+    void sync_cursor();
+
     void setEditorFont (const QFont &f, bool setDefault = true);
     void adjustScrollbars();
 

@@ -493,6 +493,29 @@ static inline bool isOnlySpaces (const QString &str)
     return true;
 }
 
+void TextEdit::sync_cursor()
+{
+	QTextCursor cursor = textCursor();
+	int cursor_pos = cursor.position();
+	
+	int first_visible_line_start_pos = cursorForPosition( QPoint( 0 , 0 ) ).position();
+      	
+	QPoint bottom_left_point( 0 , viewport()->height() - 1 );
+	int last_visible_line_start_pos = cursorForPosition( bottom_left_point).position();
+      	
+	if( cursor_pos < first_visible_line_start_pos )
+	{
+      	cursor.setPosition(first_visible_line_start_pos);
+	}
+	else if( cursor_pos >= last_visible_line_start_pos )
+	{
+      	cursor.setPosition( last_visible_line_start_pos - 1 );
+      	cursor.movePosition( QTextCursor::StartOfLine );
+	}
+	
+	setTextCursor( cursor );
+}
+
 void TextEdit::keyPressEvent (QKeyEvent *event)
 {
     keepTxtCurHPos_ = false;
@@ -916,8 +939,11 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
         if (event->modifiers() == Qt::ControlModifier)
         {
             if (QScrollBar* vbar = verticalScrollBar())
-            { // scroll without changing the cursor position
+            {
                 vbar->setValue(vbar->value() + (event->key() == Qt::Key_Down ? 1 : -1));
+                
+                sync_cursor();
+                
                 event->accept();
                 return;
             }
@@ -1090,6 +1116,8 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
       	{
       		vbar->setValue( vbar->value() + ( event->key() == Qt::Key_PageDown ? 9 : -9 ) );
       	}
+      	
+      	sync_cursor();
       	
             event->accept();
             return;
