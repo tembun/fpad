@@ -54,22 +54,18 @@ void FPwin::replaceDock()
 {
     if (!isReady()) return;
 
-    if (!ui->dockReplace->isVisible())
+    int count = ui->tabWidget->count();
+    for (int i = 0; i < count; ++i)
     {
-        int count = ui->tabWidget->count();
-        for (int i = 0; i < count; ++i) // replace dock needs searchbar
-            qobject_cast< TabPage *>(ui->tabWidget->widget (i))->setSearchBarVisible (true);
+        qobject_cast< TabPage *>(ui->tabWidget->widget (i))->setSearchBarVisible (true);
         ui->dockReplace->setWindowTitle (tr ("Replacement"));
         ui->dockReplace->setVisible (true);
         ui->dockReplace->raise();
         ui->dockReplace->activateWindow();
         if (!ui->lineEditFind->hasFocus())
             ui->lineEditFind->setFocus();
-        return;
-    }
-
-    ui->dockReplace->setVisible (false);
-    // closeReplaceDock(false) is automatically called here
+    };
+    return;
 }
 /*************************/
 // When the dock becomes invisible, clear the replacing text and remove only green highlights.

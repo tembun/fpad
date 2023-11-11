@@ -32,7 +32,6 @@
 
 #include <QPrintDialog>
 #include <QToolTip>
-//#include <QScreen>
 #include <QWindow>
 #include <QScrollBar>
 #include <QWidgetAction>
@@ -1663,16 +1662,32 @@ void FPwin::focusView()
 		TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget());
 		if (tabPage == nullptr) return;
         	
-        	if( tabPage->isSearchBarVisible() )
-        	{
-        		showHideSearch();
-        	}
+        	/*********************/
+        	
+        	int count = ui->tabWidget->count();
+    		for (int indx = 0; indx < count; ++indx)
+    		{
+        		TabPage *page = qobject_cast< TabPage *>(ui->tabWidget->widget (indx));
+			TextEdit *textEdit = page->textEdit();
+			textEdit->setSearchedText (QString());
+			QList<QTextEdit::ExtraSelection> es;
+			textEdit->setGreenSel (es); // not needed
+			if (ui->actionLineNumbers->isChecked() || ui->spinBox->isVisible())
+			es.prepend (textEdit->currentLineSelection());
+			es.append (textEdit->getBlueSel());
+			es.append (textEdit->getRedSel());
+			textEdit->setExtraSelections (es);
+			page->clearSearchEntry();
+        		page->setSearchBarVisible (false);
+    		}
         	
         	ui -> dockReplace -> setVisible(false);
         	
 		ui -> spinBox -> setVisible(false);
 		ui -> label -> setVisible(false);
 		ui -> checkBox -> setVisible(false);
+        	
+        	/*********************/
         	
 		tabPage->textEdit()->setFocus();
         	
@@ -3559,39 +3574,16 @@ void FPwin::showHideSearch()
 
     TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget());
     if (tabPage == nullptr) return;
-
-    bool isFocused = tabPage->isSearchBarVisible();
-
-    if (!isFocused)
-        tabPage->focusSearchBar();
-    else
-    {
-        ui->dockReplace->setVisible (false); // searchbar is needed by replace dock
-        /* return focus to the document,... */
-        tabPage->textEdit()->setFocus();
-    }
-
+    
     int count = ui->tabWidget->count();
     for (int indx = 0; indx < count; ++indx)
     {
-        TabPage *page = qobject_cast< TabPage *>(ui->tabWidget->widget (indx));
-        if (isFocused)
-        {
-            /* ... remove all yellow and green highlights... */
-            TextEdit *textEdit = page->textEdit();
-            textEdit->setSearchedText (QString());
-            QList<QTextEdit::ExtraSelection> es;
-            textEdit->setGreenSel (es); // not needed
-            if (ui->actionLineNumbers->isChecked() || ui->spinBox->isVisible())
-                es.prepend (textEdit->currentLineSelection());
-            es.append (textEdit->getBlueSel());
-            es.append (textEdit->getRedSel());
-            textEdit->setExtraSelections (es);
-            /* ... and empty all search entries */
-            page->clearSearchEntry();
-        }
-        page->setSearchBarVisible (!isFocused);
+	  TabPage *page = qobject_cast< TabPage *>(ui->tabWidget->widget (indx));
+        page->setSearchBarVisible (true);
     }
+    
+    tabPage->focusSearchBar();
+    
 }
 /*************************/
 void FPwin::jumpTo()
@@ -3629,16 +3621,13 @@ void FPwin::jumpTo()
                                      ->document()
                                      ->blockCount());
     }
-    ui->spinBox->setVisible (!visibility);
-    ui->label->setVisible (!visibility);
-    ui->checkBox->setVisible (!visibility);
-    if (!visibility)
-    {
-        ui->spinBox->setFocus();
-        ui->spinBox->selectAll();
-    }
-    else if (tabPage)/* return focus to doc */
-        tabPage->textEdit()->setFocus();
+    
+    ui->spinBox->setVisible (true);
+    ui->label->setVisible (true);
+    ui->checkBox->setVisible (true);
+
+    ui->spinBox->setFocus();
+    ui->spinBox->selectAll();
 }
 /*************************/
 void FPwin::setMax (const int max)
