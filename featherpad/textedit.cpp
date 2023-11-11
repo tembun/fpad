@@ -916,12 +916,7 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
         if( event->modifiers() == (Qt::ControlModifier | Qt::AltModifier) )
         {
         	
-        	if( cursor.hasSelection() )
-        	{
-        		return ;
-        	}
-        	
-        	cursor.setPosition( cursor.position() );
+        	cursor.setPosition( cursor.position() , QTextCursor::KeepAnchor );
         	
         	if( event->key() == Qt::Key_Left )
         	{
