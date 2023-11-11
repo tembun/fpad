@@ -110,10 +110,7 @@ void FPwin::hlight() const
 
     /* prepend green highlights */
     QList<QTextEdit::ExtraSelection> es = textEdit->getGreenSel();
-    QColor color = QColor (textEdit->hasDarkScheme() ? QColor (255, 255, 0,
-                                                               /* a quadratic equation for darkValue -> opacity: 0 -> 90,  27 -> 75, 50 -> 65 */
-                                                               static_cast<int>(static_cast<qreal>(textEdit->getDarkValue() * (textEdit->getDarkValue() - 257)) / static_cast<qreal>(414)) + 90)
-                                                     : Qt::yellow);
+    
     QTextCursor found;
     /* first put a start cursor at the top left edge... */
     QPoint Point (0, 0);
@@ -136,12 +133,23 @@ void FPwin::hlight() const
     visCur.setPosition (end.position(), QTextCursor::KeepAnchor);
     const QString str = visCur.selection().toPlainText(); // '\n' is included in this way
     Qt::CaseSensitivity cs = tabPage->matchCase() ? Qt::CaseSensitive : Qt::CaseInsensitive;
+    
+    QColor bg = QColor( 0 , 0 , 0 );
+    QColor fg = QColor( 255 , 255 , 255 );
+    
+    if( textEdit->hasDarkScheme() )
+    {
+	  bg = QColor( 255 , 255 , 255 );
+	  fg = QColor( 0 , 0 , 0 );
+    }
+    
     if (tabPage->matchRegex() || str.contains (txt, cs)) // don't waste time if the searched text isn't visible
     {
         while (!(found = textEdit->finding (txt, start, searchFlags,  tabPage->matchRegex(), endLimit)).isNull())
         {
             QTextEdit::ExtraSelection extra;
-            extra.format.setBackground (color);
+            extra.format.setBackground ( bg );
+            extra.format.setForeground ( fg );
             extra.cursor = found;
             es.append (extra);
             start.setPosition (found.position());
