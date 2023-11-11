@@ -82,8 +82,11 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
     textTab_ = "    "; // the default text tab is four spaces
 
     setMouseTracking (true);
-    //document()->setUseDesignMetrics (true);
-
+    
+    setStyleSheet ("QPlainTextEdit {"
+                           "selection-background-color: rgb(160, 160, 160);"
+                           "selection-color: black;}");
+    
     /* set the backgound color and ensure enough contrast
        between the selection and line highlight colors */
     QPalette p = palette();
