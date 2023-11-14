@@ -37,6 +37,7 @@ public:
 
 signals:
     void receivedFocus();
+    void shift_enter_pressed();
     void showComboPopup(); // in case it belongs to a combo box
 
 protected:

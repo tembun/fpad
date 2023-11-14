@@ -146,6 +146,7 @@ SearchBar::SearchBar(QWidget *parent,
     setLayout (mainGrid);
 
     connect (lineEdit_, &QLineEdit::returnPressed, this, &SearchBar::findForward);
+    connect (lineEdit_, &FeatherPad::LineEdit::shift_enter_pressed, this, &SearchBar::findBackward);
     connect (toolButton_nxt_, &QAbstractButton::clicked, this, &SearchBar::findForward);
     connect (toolButton_prv_, &QAbstractButton::clicked, this, &SearchBar::findBackward);
     connect (button_case_, &QAbstractButton::clicked, this, &SearchBar::searchFlagChanged);

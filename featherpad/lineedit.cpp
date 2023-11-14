@@ -62,6 +62,21 @@ void LineEdit::keyPressEvent (QKeyEvent *event)
             returnPressed(); // for clearing found matches highlighting
         }
     }
+    
+    if(
+  	( event->key() == Qt::Key_Return )
+  	&&
+  	( event -> modifiers() == Qt :: ShiftModifier )
+    )
+    {
+    	
+	emit shift_enter_pressed();
+	
+	event->accept();
+	return;
+	
+    }
+    
     QLineEdit::keyPressEvent (event);
 }
 /*************************/
