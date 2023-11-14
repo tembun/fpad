@@ -78,7 +78,6 @@ SearchBar::SearchBar(QWidget *parent,
                 which can contain long texts and make the whole window very wide
                 when the search history is shared. */
     combo_->setMinimumWidth (150);
-    //combo_->setSizePolicy (QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
     lineEdit_ = new LineEdit();
     lineEdit_->setPlaceholderText (tr ("Search..."));
     combo_->setLineEdit (lineEdit_);
@@ -258,7 +257,7 @@ QString SearchBar::searchEntry() const
 /*************************/
 void SearchBar::clearSearchEntry()
 {
-    lineEdit_->clear(); // doesn't remove the undo/redo history
+    return;
 }
 /*************************/
 void SearchBar::findForward()
