@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (C) Pedram Pourang (aka Tsu Jan) 2014-2019 <tsujan2000@gmail.com>
  *
  * FeatherPad is free software: you can redistribute it and/or modify it
@@ -1144,17 +1144,30 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
       	if ( event->modifiers() == Qt::ControlModifier )
       	{
       		vbar->setValue( vbar->value() + ( event->key() == Qt::Key_PageDown ? 6 : -6 ) * vbar->pageStep() );
+      		sync_cursor();
       	}
       	else if( event->modifiers() == Qt::AltModifier )
       	{
       		vbar->setValue( ( event->key() == Qt::Key_PageUp ? 0 : vbar->maximum() ) );
+      		
+      		QTextCursor cursor = textCursor();
+      		
+      		cursor.movePosition(
+      			event->key() == Qt::Key_PageUp
+      			?
+      				QTextCursor::Start
+      			:
+      				QTextCursor::End
+      		);
+      		
+      		setTextCursor( cursor );
+      		
       	}
       	else
       	{
       		vbar->setValue( vbar->value() + ( event->key() == Qt::Key_PageDown ? 9 : -9 ) );
+      		sync_cursor();
       	}
-      	
-      	sync_cursor();
       	
             event->accept();
             return;
