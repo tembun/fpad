@@ -686,109 +686,32 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
         bool isBracketed (false);
         QString prefix, indent;
         bool withShift (event->modifiers() & Qt::ShiftModifier);
-
-        /* with Shift+Enter, find the non-letter prefix */
-        if (withShift)
+        
+        if( withShift )
         {
-            cur.clearSelection();
-            setTextCursor (cur);
-            const QString blockText = cur.block().text();
-            int i = 0;
-            int curBlockPos = cur.position() - cur.block().position();
-            while (i < curBlockPos)
-            {
-                QChar ch = blockText.at (i);
-                if (!ch.isLetterOrNumber())
-                {
-                    prefix += ch;
-                    ++i;
-                }
-                else break;
-            }
-            /* still check if a letter or number follows */
-            if (i < curBlockPos)
-            {
-                QChar c = blockText.at (i);
-                if (c.isLetter())
-                {
-                    if (i + 1 < curBlockPos
-                        && !prefix.isEmpty() && !prefix.at (prefix.size() - 1).isSpace()
-                        && blockText.at (i + 1).isSpace())
-                    { // non-letter and non-space character -> singlle letter -> space
-                        prefix = blockText.left (i + 2);
-                        QChar cc = QChar (c.unicode() + 1);
-                        if (cc.isLetter()) prefix.replace (c, cc);
-                    }
-                    else if (i + 2 < curBlockPos
-                             && !blockText.at (i + 1).isLetterOrNumber() && !blockText.at (i + 1).isSpace()
-                             && blockText.at (i + 2).isSpace())
-                    { // singlle letter -> non-letter and non-space character -> space
-                        prefix = blockText.left (i + 3);
-                        QChar cc = QChar (c.unicode() + 1);
-                        if (cc.isLetter()) prefix.replace (c, cc);
-                    }
-                }
-                else if (c.isNumber())
-                { // making lists with numbers
-                    QString num;
-                    while (i < curBlockPos)
-                    {
-                        QChar ch = blockText.at (i);
-                        if (ch.isNumber())
-                        {
-                            num += ch;
-                            ++i;
-                        }
-                        else
-                        {
-                            if (!num.isEmpty())
-                            {
-                                QChar ch = blockText.at (i);
-                                if (ch.isSpace())
-                                { // non-letter and non-space character -> number -> space
-                                    if (!prefix.isEmpty() && !prefix.at (prefix.size() - 1).isSpace())
-                                        num = locale().toString (locale().toInt (num) + 1) + ch;
-                                    else num = QString();
-                                }
-                                else if (i + 1 < curBlockPos
-                                         && !ch.isLetterOrNumber() && !ch.isSpace()
-                                         && blockText.at (i + 1).isSpace())
-                                { // number -> non-letter and non-space character -> space
-                                    num = locale().toString (locale().toInt (num) + 1) + ch + blockText.at (i + 1);
-                                }
-                                else num = QString();
-                            }
-                            break;
-                        }
-                    }
-                    if (i < curBlockPos) // otherwise, it'll be just a number
-                        prefix += num;
-                }
-            }
+        	cur.clearSelection();
+        	setTextCursor( cur );
         }
-        else
+        
+        if (autoIndentation_)
+            indent = computeIndentation (cur);
+        /* check whether a bracketed text is selected
+           so that the cursor position is at its start */
+        QTextCursor anchorCur = cur;
+        anchorCur.setPosition (cur.anchor());
+        if (autoBracket_
+            && cur.position() == cur.selectionStart()
+            && !cur.atBlockStart() && !anchorCur.atBlockEnd())
         {
-            /* find the indentation */
-            if (autoIndentation_)
-                indent = computeIndentation (cur);
-            /* check whether a bracketed text is selected
-               so that the cursor position is at its start */
-            QTextCursor anchorCur = cur;
-            anchorCur.setPosition (cur.anchor());
-            if (autoBracket_
-                && cur.position() == cur.selectionStart()
-                && !cur.atBlockStart() && !anchorCur.atBlockEnd())
-            {
-                cur.setPosition (cur.position());
-                cur.movePosition (QTextCursor::PreviousCharacter);
-                cur.movePosition (QTextCursor::NextCharacter,
-                                  QTextCursor::KeepAnchor,
-                                  selTxt.size() + 2);
-                QString selTxt1 = cur.selectedText();
-                if (selTxt1 == "{" + selTxt + "}" || selTxt1 == "(" + selTxt + ")")
-                    isBracketed = true;
-                cur = textCursor(); // reset the current cursor
-            }
+            cur.setPosition (cur.position());
+            cur.movePosition (QTextCursor::PreviousCharacter);
+            cur.movePosition (QTextCursor::NextCharacter,
+                              QTextCursor::KeepAnchor,
+                              selTxt.size() + 2);
+            QString selTxt1 = cur.selectedText();
+            if (selTxt1 == "{" + selTxt + "}" || selTxt1 == "(" + selTxt + ")")
+                isBracketed = true;
+            cur = textCursor(); // reset the current cursor
         }
 
         if (withShift || autoIndentation_ || isBracketed)
@@ -798,10 +721,7 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
             cur.insertText (QChar (QChar::ParagraphSeparator));
             /* ... then, insert indentation... */
             cur.insertText (indent);
-            /* ... and handle Shift+Enter or brackets */
-            if (withShift)
-                cur.insertText (prefix);
-            else if (isBracketed)
+            if ( ! withShift && isBracketed )
             {
                 cur.movePosition (QTextCursor::PreviousBlock);
                 cur.movePosition (QTextCursor::EndOfBlock);
