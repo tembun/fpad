@@ -3590,8 +3590,22 @@ void FPwin::jumpTo()
 {
     if (!isReady()) return;
 
-    bool visibility = ui->spinBox->isVisible();
-
+    bool visibility = ui->spinBox->isVisible();    
+    
+    
+    QFont font_bold = ui->spinBox->font();
+    QFont font_demi = ui->spinBox->font();
+    
+    font_bold.setPointSize( 20 );
+    font_bold.setWeight( QFont::Black );
+    font_demi.setPointSize( 20 );
+    font_demi.setWeight( QFont::DemiBold );
+    
+    ui->spinBox->setFont( font_bold );
+    ui->label->setFont( font_demi );
+    ui->checkBox->setFont( font_demi );
+    
+    
     for (int i = 0; i < ui->tabWidget->count(); ++i)
     {
         TextEdit *thisTextEdit = qobject_cast< TabPage *>(ui->tabWidget->widget (i))->textEdit();

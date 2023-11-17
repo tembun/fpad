@@ -59,6 +59,19 @@ void FPwin::replaceDock()
     {
         qobject_cast< TabPage *>(ui->tabWidget->widget (i))->setSearchBarVisible (true);
         ui->dockReplace->setWindowTitle (tr ("Replacement"));
+
+        QFont font_bold = ui->dockReplace->font();
+        QFont font_demi = ui->dockReplace->font();
+        
+        font_bold.setPointSize( 20 );
+        font_bold.setWeight( QFont::Black );
+        font_demi.setPointSize( 20 );
+        font_demi.setWeight( QFont::DemiBold );
+        
+        ui->dockReplace->setFont( font_bold );
+        ui -> label_2 -> setFont( font_demi );
+        ui -> label_3 -> setFont( font_demi );
+        
         ui->dockReplace->setVisible (true);
         ui->dockReplace->raise();
         ui->dockReplace->activateWindow();
