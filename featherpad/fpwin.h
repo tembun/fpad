@@ -173,8 +173,8 @@ private slots:
     void zoomOut();
     void zoomZero();
     void defaultSize();
-    void focusView();
-    //void align();
+    void focus_view_soft();
+    void focus_view_hard();
     void manageSessions();
     void executeProcess();
     void exitProcess();

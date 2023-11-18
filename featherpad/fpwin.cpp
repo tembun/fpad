@@ -314,13 +314,13 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     connect (fullscreen, &QShortcut::activated, [this] {setWindowState (windowState() ^ Qt::WindowFullScreen);});
     connect (defaultsize, &QShortcut::activated, this, &FPwin::defaultSize);
 
-    QShortcut *focusView = new QShortcut (QKeySequence (Qt::Key_Escape), this);
-    connect (focusView, &QShortcut::activated, this, &FPwin::focusView);
-
-    /* this workaround, for the RTL bug in QPlainTextEdit, isn't needed
-       because a better workaround is included in textedit.cpp */
-    /*QShortcut *align = new QShortcut (QKeySequence (tr ("Ctrl+Shift+A", "Alignment")), this);
-    connect (align, &QShortcut::activated, this, &FPwin::align);*/
+    QShortcut *focus_view_hard = new QShortcut (QKeySequence (Qt::Key_Escape), this);
+    connect (focus_view_hard, &QShortcut::activated, this, &FPwin::focus_view_hard);
+    
+    QShortcut *focus_view_soft = (
+    	new QShortcut( QKeySequence( Qt::ALT | Qt::Key_2 ) , this )
+    );
+    connect( focus_view_soft , &QShortcut::activated , this, &FPwin::focus_view_soft );
 
     /* exiting a process */
     QShortcut *kill = new QShortcut (QKeySequence (Qt::CTRL + Qt::ALT + Qt::Key_E), this);
@@ -1651,8 +1651,25 @@ void FPwin::defaultSize()
         textEdit->document()->setDefaultTextOption (opt);
     }
 }*/
-/*************************/
-void FPwin::focusView()
+
+void FPwin::focus_view_soft()
+{
+	
+    if (TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget()))
+    {
+        if (!tabPage->hasPopup())
+        {
+        	
+		TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget());
+		if (tabPage == nullptr) return;
+        	
+		tabPage->textEdit()->setFocus();
+        	
+        }
+    }
+};
+
+void FPwin::focus_view_hard()
 {
     if (TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget()))
     {
@@ -1693,8 +1710,9 @@ void FPwin::focusView()
         	
         }
     }
-}
-/*************************/
+};
+
+
 void FPwin::executeProcess()
 {
     QList<QDialog*> dialogs = findChildren<QDialog*>();
