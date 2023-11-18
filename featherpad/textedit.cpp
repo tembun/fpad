@@ -1295,13 +1295,6 @@ void TextEdit::keyReleaseEvent (QKeyEvent *event)
 /*************************/
 void TextEdit::wheelEvent (QWheelEvent *event)
 {
-    if (event->modifiers() & Qt::ControlModifier)
-    {
-        float delta = event->angleDelta().y() / 120.f;
-        zooming (delta);
-        return;
-    }
-
 #if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
         bool horizontal (event->angleDelta().x() != 0);
 #else
@@ -1918,36 +1911,6 @@ void TextEdit::onSelectionChanged()
         selectionTimerId_ = 0;
     }
     selectionTimerId_ = startTimer (UPDATE_INTERVAL);
-}
-/*************************/
-void TextEdit::zooming (float range)
-{
-    /* forget the horizontal position of the text cursor */
-    keepTxtCurHPos_ = false;
-    txtCurHPos_ = -1;
-
-    QFont f = document()->defaultFont();
-    if (range == 0.f) // means unzooming
-    {
-        setEditorFont (font_, false);
-        if (font_.pointSizeF() < f.pointSizeF())
-            emit zoomedOut (this); // see the explanation below
-    }
-    else
-    {
-        const float newSize = static_cast<float>(f.pointSizeF()) + range;
-        if (newSize <= 0) return;
-        f.setPointSizeF (static_cast<qreal>(newSize));
-        setEditorFont (f, false);
-
-        /* if this is a zoom-out, the text will need
-           to be formatted and/or highlighted again */
-        if (range < 0) emit zoomedOut (this);
-    }
-
-    /* due to a Qt bug, this is needed for the
-       scrollbar range to be updated correctly */
-    adjustScrollbars();
 }
 /*************************/
 // If the text page is first shown for a very short time (when, for example,

@@ -115,8 +115,6 @@ public:
 
     void setCurLineHighlight (int value);
 
-    void zooming (float range);
-
     qint64 getSize() const {
         return size_;
     }

@@ -169,9 +169,6 @@ private slots:
     void goTo();
     void asterisk (bool modified);
     void reformat (TextEdit *textEdit);
-    void zoomIn();
-    void zoomOut();
-    void zoomZero();
     void defaultSize();
     void focus_view_soft();
     void focus_view_hard();

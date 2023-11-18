@@ -300,15 +300,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     ui->toolButtonPrv->setShortcut (QKeySequence (Qt::Key_F9));
     ui->toolButtonAll->setShortcut (QKeySequence (Qt::Key_F10));
 
-    QShortcut *zoomin = new QShortcut (QKeySequence (Qt::CTRL + Qt::Key_Equal), this);
-    QShortcut *zoominPlus = new QShortcut (QKeySequence (Qt::CTRL + Qt::Key_Plus), this);
-    QShortcut *zoomout = new QShortcut (QKeySequence (Qt::CTRL + Qt::Key_Minus), this);
-    QShortcut *zoomzero = new QShortcut (QKeySequence (Qt::CTRL + Qt::Key_0), this);
-    connect (zoomin, &QShortcut::activated, this, &FPwin::zoomIn);
-    connect (zoominPlus, &QShortcut::activated, this, &FPwin::zoomIn);
-    connect (zoomout, &QShortcut::activated, this, &FPwin::zoomOut);
-    connect (zoomzero, &QShortcut::activated, this, &FPwin::zoomZero);
-
     QShortcut *fullscreen = new QShortcut (QKeySequence (Qt::Key_F11), this);
     QShortcut *defaultsize = new QShortcut (QKeySequence (Qt::CTRL + Qt::SHIFT + Qt::Key_W), this);
     connect (fullscreen, &QShortcut::activated, [this] {setWindowState (windowState() ^ Qt::WindowFullScreen);});
@@ -651,7 +642,6 @@ void FPwin::applyConfigOnStarting()
                  << QKeySequence (Qt::Key_F8).toString() << QKeySequence (Qt::Key_F9).toString() << QKeySequence (Qt::Key_F10).toString()
                  << QKeySequence (Qt::Key_F11).toString() << QKeySequence (Qt::CTRL + Qt::SHIFT + Qt::Key_W).toString()
 
-                 << QKeySequence (Qt::CTRL + Qt::Key_Equal).toString() << QKeySequence (Qt::CTRL + Qt::Key_Plus).toString() << QKeySequence (Qt::CTRL + Qt::Key_Minus).toString() << QKeySequence (Qt::CTRL + Qt::Key_0).toString() // zooming
                  << QKeySequence (Qt::CTRL + Qt::ALT  +Qt::Key_E).toString() // exiting a process
                  << QKeySequence (Qt::SHIFT + Qt::Key_Enter).toString() << QKeySequence (Qt::SHIFT + Qt::Key_Return).toString() << QKeySequence (Qt::CTRL + Qt::Key_Tab).toString() << QKeySequence (Qt::CTRL + Qt::META + Qt::Key_Tab).toString() // text tabulation
                  << QKeySequence (Qt::CTRL + Qt::SHIFT + Qt::Key_J).toString() // select text on jumping (not an action)
@@ -1386,7 +1376,6 @@ TabPage* FPwin::createEmptyTab (bool setCurrent, bool allowNormalHighlighter)
     connect (textEdit, &QPlainTextEdit::copyAvailable, ui->actionStartCase, &QAction::setEnabled);
 
     connect (textEdit, &TextEdit::fileDropped, this, &FPwin::newTabFromName);
-    connect (textEdit, &TextEdit::zoomedOut, this, &FPwin::reformat);
 
     connect (tabPage, &TabPage::find, this, &FPwin::find);
     connect (tabPage, &TabPage::searchFlagChanged, this, &FPwin::searchFlagChanged);
@@ -1584,30 +1573,6 @@ void FPwin::reformat (TextEdit *textEdit)
     if (!textEdit->getSearchedText().isEmpty())
         hlight(); // in "find.cpp"
     textEdit->selectionHlight();
-}
-/*************************/
-void FPwin::zoomIn()
-{
-    if (TabPage *tabPage = qobject_cast<TabPage*>(ui->tabWidget->currentWidget()))
-        tabPage->textEdit()->zooming (1.f);
-}
-/*************************/
-void FPwin::zoomOut()
-{
-    if (TabPage *tabPage = qobject_cast<TabPage*>(ui->tabWidget->currentWidget()))
-    {
-        TextEdit *textEdit = tabPage->textEdit();
-        textEdit->zooming (-1.f);
-    }
-}
-/*************************/
-void FPwin::zoomZero()
-{
-    if (TabPage *tabPage = qobject_cast<TabPage*>(ui->tabWidget->currentWidget()))
-    {
-        TextEdit *textEdit = tabPage->textEdit();
-        textEdit->zooming (0.f);
-    }
 }
 /*************************/
 void FPwin::defaultSize()
@@ -4268,7 +4233,6 @@ void FPwin::detachTab()
     disconnect (textEdit, &QPlainTextEdit::copyAvailable, ui->actionStartCase, &QAction::setEnabled);
     disconnect (textEdit, &QPlainTextEdit::copyAvailable, ui->actionCopy, &QAction::setEnabled);
     disconnect (textEdit, &QWidget::customContextMenuRequested, this, &FPwin::editorContextMenu);
-    disconnect (textEdit, &TextEdit::zoomedOut, this, &FPwin::reformat);
     disconnect (textEdit, &TextEdit::fileDropped, this, &FPwin::newTabFromName);
     disconnect (textEdit, &TextEdit::updateBracketMatching, this, &FPwin::matchBrackets);
     disconnect (textEdit, &QPlainTextEdit::blockCountChanged, this, &FPwin::formatOnBlockChange);
@@ -4437,7 +4401,6 @@ void FPwin::detachTab()
         connect (textEdit, &QPlainTextEdit::copyAvailable, dropTarget->ui->actionStartCase, &QAction::setEnabled);
     }
     connect (textEdit, &TextEdit::fileDropped, dropTarget, &FPwin::newTabFromName);
-    connect (textEdit, &TextEdit::zoomedOut, dropTarget, &FPwin::reformat);
     connect (textEdit, &QWidget::customContextMenuRequested, dropTarget, &FPwin::editorContextMenu);
 
     textEdit->setFocus();
@@ -4520,7 +4483,6 @@ void FPwin::dropTab (const QString& str)
     disconnect (textEdit, &QPlainTextEdit::copyAvailable, dragSource->ui->actionStartCase, &QAction::setEnabled);
     disconnect (textEdit, &QPlainTextEdit::copyAvailable, dragSource->ui->actionCopy, &QAction::setEnabled);
     disconnect (textEdit, &QWidget::customContextMenuRequested, dragSource, &FPwin::editorContextMenu);
-    disconnect (textEdit, &TextEdit::zoomedOut, dragSource, &FPwin::reformat);
     disconnect (textEdit, &TextEdit::fileDropped, dragSource, &FPwin::newTabFromName);
     disconnect (textEdit, &TextEdit::updateBracketMatching, dragSource, &FPwin::matchBrackets);
     disconnect (textEdit, &QPlainTextEdit::blockCountChanged, dragSource, &FPwin::formatOnBlockChange);
@@ -4691,7 +4653,6 @@ void FPwin::dropTab (const QString& str)
         connect (textEdit, &QPlainTextEdit::copyAvailable, ui->actionStartCase, &QAction::setEnabled);
     }
     connect (textEdit, &TextEdit::fileDropped, this, &FPwin::newTabFromName);
-    connect (textEdit, &TextEdit::zoomedOut, this, &FPwin::reformat);
     connect (textEdit, &QWidget::customContextMenuRequested, this, &FPwin::editorContextMenu);
 
     textEdit->setFocus();
