@@ -184,7 +184,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     }
     connect (ui->actionNew, &QAction::triggered, this, &FPwin::newTab);
     connect (ui->tabWidget->tabBar(), &TabBar::addEmptyTab, this, &FPwin::newTab);
-    connect (ui->actionDetachTab, &QAction::triggered, this, &FPwin::detachTab);
     connect (ui->actionRightTab, &QAction::triggered, this, &FPwin::nextTab);
     connect (ui->actionLeftTab, &QAction::triggered, this, &FPwin::previousTab);
     connect (ui->actionLastActiveTab, &QAction::triggered, this, &FPwin::lastActiveTab);
@@ -211,7 +210,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     connect (ui->tabWidget, &TabWidget::hasLastActiveTab, [this] (bool hasLastActive) {
         ui->actionLastActiveTab->setEnabled (hasLastActive);
     });
-    connect (ui->tabWidget->tabBar(), &TabBar::tabDetached, this, &FPwin::detachTab);
     ui->tabWidget->tabBar()->setContextMenuPolicy (Qt::CustomContextMenu);
     connect (ui->tabWidget->tabBar(), &QWidget::customContextMenuRequested, this, &FPwin::tabContextMenu);
     connect (ui->actionCopyName, &QAction::triggered, this, &FPwin::copyTabFileName);
@@ -630,7 +628,6 @@ bool FPwin::hasAnotherDialog()
 }
 void FPwin::updateGUIForSingleTab (bool single)
 {
-    ui->actionDetachTab->setEnabled (!single && !standalone_);
     ui->actionRightTab->setEnabled (!single);
     ui->actionLeftTab->setEnabled (!single);
     ui->actionLastTab->setEnabled (!single);
@@ -3512,190 +3509,6 @@ void FPwin::lastActiveTab()
 {
     ui->tabWidget->selectLastActiveTab();
 }
-void FPwin::detachTab()
-{
-    if (!isReady()) return;
-
-    int index = -1;
-    index = ui->tabWidget->currentIndex();
-    TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->widget (index));
-    if (tabPage == nullptr || ui->tabWidget->count() == 1)
-    {
-        ui->tabWidget->tabBar()->finishMouseMoveEvent();
-        return;
-    }
-
-    Config config = static_cast<FPsingleton*>(qApp)->getConfig();
-
-    /*****************************************************
-     *****          Get all necessary info.          *****
-     ***** Then, remove the tab but keep its widget. *****
-     *****************************************************/
-
-    QString tooltip = ui->tabWidget->tabToolTip (index);
-    QString tabText = ui->tabWidget->tabText (index);
-    QString title = windowTitle();
-    bool hl = true;
-    bool spin = false;
-    bool ln = false;
-    bool status = false;
-    bool statusCurPos = false;
-    if (!ui->actionSyntax->isChecked())
-        hl = false;
-    if (ui->spinBox->isVisible())
-        spin = true;
-    if (ui->actionLineNumbers->isChecked())
-        ln = true;
-    if (ui->statusBar->isVisible())
-    {
-        status = true;
-        if (ui->statusBar->findChild<QLabel *>("posLabel"))
-            statusCurPos = true;
-    }
-
-    TextEdit *textEdit = tabPage->textEdit();
-
-    disconnect (textEdit, &TextEdit::resized, this, &FPwin::hlight);
-    disconnect (textEdit, &TextEdit::updateRect, this, &FPwin::hlight);
-    disconnect (textEdit, &QPlainTextEdit::textChanged, this, &FPwin::hlight);
-    if (status)
-    {
-        disconnect (textEdit, &QPlainTextEdit::blockCountChanged, this, &FPwin::statusMsgWithLineCount);
-        disconnect (textEdit, &QPlainTextEdit::selectionChanged, this, &FPwin::statusMsg);
-        if (statusCurPos)
-            disconnect (textEdit, &QPlainTextEdit::cursorPositionChanged, this, &FPwin::showCursorPos);
-    }
-    disconnect (textEdit, &QPlainTextEdit::copyAvailable, ui->actionCut, &QAction::setEnabled);
-    disconnect (textEdit, &QPlainTextEdit::copyAvailable, ui->actionDelete, &QAction::setEnabled);
-    disconnect (textEdit, &QPlainTextEdit::copyAvailable, ui->actionCopy, &QAction::setEnabled);
-    disconnect (textEdit, &QWidget::customContextMenuRequested, this, &FPwin::editorContextMenu);
-    disconnect (textEdit, &TextEdit::fileDropped, this, &FPwin::newTabFromName);
-    disconnect (textEdit, &TextEdit::updateBracketMatching, this, &FPwin::matchBrackets);
-    disconnect (textEdit, &QPlainTextEdit::blockCountChanged, this, &FPwin::formatOnBlockChange);
-    disconnect (textEdit, &TextEdit::updateRect, this, &FPwin::formatTextRect);
-    disconnect (textEdit, &TextEdit::resized, this, &FPwin::formatTextRect);
-    disconnect (textEdit->document(), &QTextDocument::contentsChange, this, &FPwin::updateWordInfo);
-    disconnect (textEdit->document(), &QTextDocument::contentsChange, this, &FPwin::formatOnTextChange);
-    disconnect (textEdit->document(), &QTextDocument::blockCountChanged, this, &FPwin::setMax);
-    disconnect (textEdit->document(), &QTextDocument::modificationChanged, this, &FPwin::asterisk);
-    disconnect (textEdit->document(), &QTextDocument::undoAvailable, ui->actionUndo, &QAction::setEnabled);
-    disconnect (textEdit->document(), &QTextDocument::redoAvailable, ui->actionRedo, &QAction::setEnabled);
-    if (!config.getSaveUnmodified())
-        disconnect (textEdit->document(), &QTextDocument::modificationChanged, this, &FPwin::enableSaving);
-    disconnect (tabPage, &TabPage::find, this, &FPwin::find);
-    disconnect (tabPage, &TabPage::searchFlagChanged, this, &FPwin::searchFlagChanged);
-    ui->tabWidget->tabBar()->releaseMouse();
-
-    ui->tabWidget->removeTab (index);
-    if (ui->tabWidget->count() == 1)
-        updateGUIForSingleTab (true);
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    FPwin * dropTarget = singleton->newWin();
-    dropTarget->closeTabAtIndex (0);
-
-    dropTarget->lastFile_ = textEdit->getFileName();
-    textEdit->setGreenSel (QList<QTextEdit::ExtraSelection>());
-    textEdit->setRedSel (QList<QTextEdit::ExtraSelection>());
-    dropTarget->enableWidgets (true);
-    bool isLink = dropTarget->lastFile_.isEmpty() ? false
-                                                  : QFileInfo (dropTarget->lastFile_).isSymLink();
-    dropTarget->ui->tabWidget->insertTab (0, tabPage,
-                                          isLink ? QIcon (":icons/link.svg") : QIcon(),
-                                          tabText);
-    QList<QTextEdit::ExtraSelection> es;
-    if (ln || spin)
-        es.prepend (textEdit->currentLineSelection());
-    textEdit->setExtraSelections (es);
-
-    /* at last, set all properties correctly */
-    dropTarget->setWindowTitle (title);
-    dropTarget->ui->tabWidget->setTabToolTip (0, tooltip);
-    /* reload buttons, syntax highlighting, jump bar, line numbers */
-    dropTarget->encodingToCheck (textEdit->getEncoding());
-    if (!textEdit->getFileName().isEmpty())
-        dropTarget->ui->actionReload->setEnabled (true);
-    if (!hl)
-        dropTarget->ui->actionSyntax->setChecked (false);
-    else
-        dropTarget->syntaxHighlighting (textEdit, true, textEdit->getLang());
-    if (spin)
-    {
-        dropTarget->ui->spinBox->setVisible (true);
-        dropTarget->ui->label->setVisible (true);
-        dropTarget->ui->spinBox->setMaximum (textEdit->document()->blockCount());
-        connect (textEdit->document(), &QTextDocument::blockCountChanged, dropTarget, &FPwin::setMax);
-    }
-    if (ln)
-        dropTarget->ui->actionLineNumbers->setChecked (true);
-    /* searching */
-    if (!textEdit->getSearchedText().isEmpty())
-    {
-        connect (textEdit, &QPlainTextEdit::textChanged, dropTarget, &FPwin::hlight);
-        connect (textEdit, &TextEdit::updateRect, dropTarget, &FPwin::hlight);
-        connect (textEdit, &TextEdit::resized, dropTarget, &FPwin::hlight);
-        /* restore yellow highlights, which will automatically
-           set the current line highlight if needed because the
-           spin button and line number menuitem are set above */
-        dropTarget->hlight();
-    }
-    /* status bar */
-    if (status)
-    {
-        dropTarget->ui->statusBar->setVisible (true);
-        dropTarget->statusMsgWithLineCount (textEdit->document()->blockCount());
-        if (textEdit->getWordNumber() == -1)
-        {
-            if (QToolButton *wordButton = dropTarget->ui->statusBar->findChild<QToolButton *>("wordButton"))
-                wordButton->setVisible (true);
-        }
-        else
-        {
-            if (QToolButton *wordButton = dropTarget->ui->statusBar->findChild<QToolButton *>("wordButton"))
-                wordButton->setVisible (false);
-            QLabel *statusLabel = dropTarget->ui->statusBar->findChild<QLabel *>("statusLabel");
-            statusLabel->setText (QString ("%1 <i>%2</i>")
-                                  .arg (statusLabel->text())
-                                  .arg (textEdit->getWordNumber()));
-            connect (textEdit->document(), &QTextDocument::contentsChange, dropTarget, &FPwin::updateWordInfo);
-        }
-        connect (textEdit, &QPlainTextEdit::blockCountChanged, dropTarget, &FPwin::statusMsgWithLineCount);
-        connect (textEdit, &QPlainTextEdit::selectionChanged, dropTarget, &FPwin::statusMsg);
-        if (statusCurPos)
-        {
-            dropTarget->addCursorPosLabel();
-            dropTarget->showCursorPos();
-            connect (textEdit, &QPlainTextEdit::cursorPositionChanged, dropTarget, &FPwin::showCursorPos);
-        }
-    }
-    if (textEdit->lineWrapMode() == QPlainTextEdit::NoWrap)
-        dropTarget->ui->actionWrap->setChecked (false);
-    /* auto indentation */
-    if (textEdit->getAutoIndentation() == false)
-        dropTarget->ui->actionIndent->setChecked (false);
-    /* the remaining signals */
-    connect (textEdit->document(), &QTextDocument::undoAvailable, dropTarget->ui->actionUndo, &QAction::setEnabled);
-    connect (textEdit->document(), &QTextDocument::redoAvailable, dropTarget->ui->actionRedo, &QAction::setEnabled);
-    if (!config.getSaveUnmodified())
-        connect (textEdit->document(), &QTextDocument::modificationChanged, dropTarget, &FPwin::enableSaving);
-    connect (textEdit->document(), &QTextDocument::modificationChanged, dropTarget, &FPwin::asterisk);
-    connect (textEdit, &QPlainTextEdit::copyAvailable, dropTarget->ui->actionCopy, &QAction::setEnabled);
-
-    connect (tabPage, &TabPage::find, dropTarget, &FPwin::find);
-    connect (tabPage, &TabPage::searchFlagChanged, dropTarget, &FPwin::searchFlagChanged);
-
-    if (!textEdit->isReadOnly())
-    {
-        connect (textEdit, &QPlainTextEdit::copyAvailable, dropTarget->ui->actionCut, &QAction::setEnabled);
-        connect (textEdit, &QPlainTextEdit::copyAvailable, dropTarget->ui->actionDelete, &QAction::setEnabled);
-    }
-    connect (textEdit, &TextEdit::fileDropped, dropTarget, &FPwin::newTabFromName);
-    connect (textEdit, &QWidget::customContextMenuRequested, dropTarget, &FPwin::editorContextMenu);
-
-    textEdit->setFocus();
-
-    dropTarget->stealFocus();
-}
-/*************************/
 void FPwin::dropTab (const QString& str)
 {
 #if (QT_VERSION >= QT_VERSION_CHECK(5,15,0))

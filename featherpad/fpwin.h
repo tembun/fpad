@@ -168,7 +168,6 @@ private slots:
     void displayOutput();
     void docProp();
     void filePrint();
-    void detachTab();
     void nextTab();
     void previousTab();
     void lastTab();

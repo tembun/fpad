@@ -153,7 +153,6 @@
     <addaction name="separator"/>
     <addaction name="actionRun"/>
     <addaction name="separator"/>
-    <addaction name="actionDetachTab"/>
     <addaction name="actionLastActiveTab"/>
     <addaction name="actionRightTab"/>
     <addaction name="actionLeftTab"/>
@@ -914,17 +913,6 @@
   <action name="actionEdit">
    <property name="shortcut">
     <string>Ctrl+Shift+E</string>
-   </property>
-  </action>
-  <action name="actionDetachTab">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Detach Tab</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+T</string>
    </property>
   </action>
   <action name="actionISO_8859_15">
