@@ -194,7 +194,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     connect (ui->actionSave, &QAction::triggered, [=]{saveFile (false);});
     connect (ui->actionSaveAs, &QAction::triggered, this, [=]{saveFile (false);});
     connect (ui->actionSaveAllFiles, &QAction::triggered, this, [=]{saveAllFiles (true);});
-    connect (ui->actionSaveCodec, &QAction::triggered, this, [=]{saveFile (false);});
     connect (ui->actionCut, &QAction::triggered, this, &FPwin::cutText);
     connect (ui->actionCopy, &QAction::triggered, this, &FPwin::copyText);
     connect (ui->actionPaste, &QAction::triggered, this, &FPwin::pasteText);
@@ -363,7 +362,6 @@ void FPwin::applyConfigOnStarting()
     ui->actionSave->setIcon (symbolicIcon::icon (":icons/document-save.svg"));
     ui->actionSaveAs->setIcon (symbolicIcon::icon (":icons/document-save-as.svg"));
     ui->actionSaveAllFiles->setIcon (symbolicIcon::icon (":icons/document-save-all.svg"));
-    ui->actionSaveCodec->setIcon (symbolicIcon::icon (":icons/document-save-as.svg"));
     ui->actionPrint->setIcon (symbolicIcon::icon (":icons/document-print.svg"));
     ui->actionDoc->setIcon (symbolicIcon::icon (":icons/document-properties.svg"));
     ui->actionUndo->setIcon (symbolicIcon::icon (":icons/edit-undo.svg"));
@@ -910,7 +908,6 @@ void FPwin::enableWidgets (bool enable) const
     ui->actionSaveAs->setEnabled (enable);
     ui->actionSaveAllFiles->setEnabled (enable);
     ui->menuEncoding->setEnabled (enable);
-    ui->actionSaveCodec->setEnabled (enable);
     ui->actionFont->setEnabled (enable);
     ui->actionDoc->setEnabled (enable);
     ui->actionPrint->setEnabled (enable);
@@ -2319,7 +2316,7 @@ bool FPwin::saveFile (bool keepSyntax)
             fname = QFileInfo (fname).absoluteDir().filePath (tr ("Untitled"));
         if (!restorable
             && QObject::sender() != ui->actionSaveAs
-            && QObject::sender() != ui->actionSaveCodec)
+        )
         {
             if (hasAnotherDialog()) return false;
             updateShortcuts (true);
@@ -2379,37 +2376,6 @@ bool FPwin::saveFile (bool keepSyntax)
         }
         updateShortcuts (false);
     }
-    else if (QObject::sender() == ui->actionSaveCodec)
-    {
-        if (hasAnotherDialog()) return false;
-        updateShortcuts (true);
-        FileDialog dialog (this, config.getNativeDialog());
-        dialog.setAcceptMode (QFileDialog::AcceptSave);
-        dialog.setWindowTitle (tr ("Keep encoding and save as..."));
-        dialog.setFileMode (QFileDialog::AnyFile);
-        dialog.setNameFilter (filter);
-        dialog.setDirectory (fname.section ("/", 0, -2)); // workaround for KDE
-        dialog.selectFile (fname);
-        dialog.autoScroll();
-        /*dialog.setLabelText (QFileDialog::Accept, tr ("Save"));
-        dialog.setLabelText (QFileDialog::Reject, tr ("Cancel"));*/
-        if (dialog.exec())
-        {
-            fname = dialog.selectedFiles().at (0);
-            if (fname.isEmpty() || QFileInfo (fname).isDir())
-            {
-                updateShortcuts (false);
-                return false;
-            }
-        }
-        else
-        {
-            updateShortcuts (false);
-            return false;
-        }
-        updateShortcuts (false);
-    }
-
     if (config.getRemoveTrailingSpaces() && textEdit->getProg() != "diff")
     {
         waitToMakeBusy();
@@ -2443,69 +2409,6 @@ bool FPwin::saveFile (bool keepSyntax)
     }
     QTextDocumentWriter writer (fname, "plaintext");
     bool success = false;
-    if (QObject::sender() == ui->actionSaveCodec)
-    {
-        QString encoding  = checkToEncoding();
-
-        if (hasAnotherDialog()) return false;
-        updateShortcuts (true);
-        MessageBox msgBox (this);
-        msgBox.setIcon (QMessageBox::Question);
-        msgBox.addButton (QMessageBox::Yes);
-        msgBox.addButton (QMessageBox::No);
-        msgBox.addButton (QMessageBox::Cancel);
-        msgBox.changeButtonText (QMessageBox::Yes, tr ("Yes"));
-        msgBox.changeButtonText (QMessageBox::No, tr ("No"));
-        msgBox.changeButtonText (QMessageBox::Cancel, tr ("Cancel"));
-        msgBox.setText ("<center>" + tr ("Do you want to use <b>MS Windows</b> end-of-lines?") + "</center>");
-        msgBox.setInformativeText ("<center><i>" + tr ("This may be good for readability under MS Windows.") + "</i></center>");
-        msgBox.setWindowModality (Qt::WindowModal);
-        QString contents;
-        size_t ln;
-        QTextCodec *codec;
-        QByteArray encodedString;
-        const char *txt;
-        switch (msgBox.exec()) {
-        case QMessageBox::Yes:
-            contents = textEdit->document()->toPlainText();
-            contents.replace ("\n", "\r\n");
-            ln = static_cast<size_t>(contents.length()); // for fwrite();
-            codec = QTextCodec::codecForName (encoding.toUtf8());
-            encodedString = codec->fromUnicode (contents);
-            txt = encodedString.constData();
-            if (encoding != "UTF-16")
-            {
-                std::ofstream file;
-                file.open (fname.toUtf8().constData());
-                if (file.is_open())
-                {
-                    file << txt;
-                    file.close();
-                    success = true;
-                }
-            }
-            else
-            {
-                FILE * file;
-                file = fopen (fname.toUtf8().constData(), "wb");
-                if (file != nullptr)
-                {
-                    /* this worked correctly as far as I tested */
-                    fwrite (txt , 2 , ln + 1 , file);
-                    fclose (file);
-                    success = true;
-                }
-            }
-            break;
-        case QMessageBox::No:
-            writer.setCodec (QTextCodec::codecForName (encoding.toUtf8()));
-            break;
-        default:
-            updateShortcuts (false);
-            return false;
-        }
-        updateShortcuts (false);
-    }
     if (!success)
         success = writer.write (textEdit->document());
 

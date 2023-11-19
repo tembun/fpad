@@ -162,7 +162,6 @@
     <addaction name="actionSaveAs"/>
     <addaction name="actionSaveAllFiles"/>
     <addaction name="separator"/>
-    <addaction name="actionSaveCodec"/>
     <addaction name="separator"/>
     <addaction name="actionPrint"/>
     <addaction name="separator"/>
@@ -892,11 +891,6 @@
    </property>
    <property name="text">
     <string>Korean (&amp;EUC-KR)</string>
-   </property>
-  </action>
-  <action name="actionSaveCodec">
-   <property name="text">
-    <string>Save with &amp;Encoding</string>
    </property>
   </action>
   <action name="actionJump">
