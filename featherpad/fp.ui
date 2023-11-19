@@ -163,8 +163,6 @@
     <addaction name="actionSaveAllFiles"/>
     <addaction name="separator"/>
     <addaction name="separator"/>
-    <addaction name="actionPrint"/>
-    <addaction name="separator"/>
     <addaction name="actionDoc"/>
     <addaction name="separator"/>
     <addaction name="actionClose"/>
@@ -542,14 +540,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+S</string>
-   </property>
-  </action>
-  <action name="actionPrint">
-   <property name="text">
-    <string>&amp;Print</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+P</string>
    </property>
   </action>
   <action name="actionDoc">

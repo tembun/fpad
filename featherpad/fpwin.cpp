@@ -229,7 +229,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     connect (ui->dockReplace, &QDockWidget::visibilityChanged, this, &FPwin::closeReplaceDock);
     connect (ui->dockReplace, &QDockWidget::topLevelChanged, this, &FPwin::resizeDock);
     connect (ui->actionDoc, &QAction::triggered, this, &FPwin::docProp);
-    connect (ui->actionPrint, &QAction::triggered, this, &FPwin::filePrint);
     connect (this, &FPwin::finishedLoading, [this]{});
     /***************************************************************************
      *****     KDE (KAcceleratorManager) has a nasty "feature" that        *****
@@ -243,15 +242,12 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     ui->toolButtonNext->setShortcut (QKeySequence (Qt::Key_F8));
     ui->toolButtonPrv->setShortcut (QKeySequence (Qt::Key_F9));
     ui->toolButtonAll->setShortcut (QKeySequence (Qt::Key_F10));
-
     QShortcut *fullscreen = new QShortcut (QKeySequence (Qt::Key_F11), this);
     QShortcut *defaultsize = new QShortcut (QKeySequence (Qt::CTRL + Qt::SHIFT + Qt::Key_W), this);
     connect (fullscreen, &QShortcut::activated, [this] {setWindowState (windowState() ^ Qt::WindowFullScreen);});
     connect (defaultsize, &QShortcut::activated, this, &FPwin::defaultSize);
-
     QShortcut *focus_view_hard = new QShortcut (QKeySequence (Qt::Key_Escape), this);
-    connect (focus_view_hard, &QShortcut::activated, this, &FPwin::focus_view_hard);
-    
+    connect (focus_view_hard, &QShortcut::activated, this, &FPwin::focus_view_hard);    
     QShortcut *focus_view_soft = (
     	new QShortcut( QKeySequence( Qt::ALT | Qt::Key_2 ) , this )
     );
@@ -362,7 +358,6 @@ void FPwin::applyConfigOnStarting()
     ui->actionSave->setIcon (symbolicIcon::icon (":icons/document-save.svg"));
     ui->actionSaveAs->setIcon (symbolicIcon::icon (":icons/document-save-as.svg"));
     ui->actionSaveAllFiles->setIcon (symbolicIcon::icon (":icons/document-save-all.svg"));
-    ui->actionPrint->setIcon (symbolicIcon::icon (":icons/document-print.svg"));
     ui->actionDoc->setIcon (symbolicIcon::icon (":icons/document-properties.svg"));
     ui->actionUndo->setIcon (symbolicIcon::icon (":icons/edit-undo.svg"));
     ui->actionRedo->setIcon (symbolicIcon::icon (":icons/edit-redo.svg"));
@@ -910,7 +905,6 @@ void FPwin::enableWidgets (bool enable) const
     ui->menuEncoding->setEnabled (enable);
     ui->actionFont->setEnabled (enable);
     ui->actionDoc->setEnabled (enable);
-    ui->actionPrint->setEnabled (enable);
     if (!enable)
     {
         ui->actionUndo->setEnabled (false);
@@ -3283,70 +3277,6 @@ void FPwin::updateWordInfo (int /*position*/, int charsRemoved, int charsAdded)
         wordButton->setVisible (true);
         statusMsgWithLineCount (textEdit->document()->blockCount());
     }
-}
-/*************************/
-void FPwin::filePrint()
-{
-    if (isLoading()) return;
-
-    TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget());
-    if (tabPage == nullptr) return;
-
-    if (hasAnotherDialog()) return;
-    updateShortcuts (true);
-
-    TextEdit *textEdit = tabPage->textEdit();
-
-    /* complete the syntax highlighting when printing
-       because the whole document may not be highlighted */
-    waitToMakeBusy();
-    if (Highlighter *highlighter = qobject_cast< Highlighter *>(textEdit->getHighlighter()))
-    {
-        QTextCursor start = textEdit->textCursor();
-        start.movePosition (QTextCursor::Start);
-        QTextCursor end = textEdit->textCursor();
-        end.movePosition (QTextCursor::End);
-        highlighter->setLimit (start, end);
-        QTextBlock block = start.block();
-        while (block.isValid() && block.blockNumber() <= end.blockNumber())
-        {
-            if (TextBlockData *data = static_cast<TextBlockData *>(block.userData()))
-            {
-                if (!data->isHighlighted())
-                    highlighter->rehighlightBlock (block);
-            }
-            block = block.next();
-        }
-    }
-    QTimer::singleShot (0, this, [this]() {unbusy();}); // wait for the dialog too
-
-    QPrinter printer (QPrinter::HighResolution);
-
-    /* choose an appropriate name and directory */
-    QString fileName = textEdit->getFileName();
-    if (fileName.isEmpty())
-    {
-        QDir dir = QDir::home();
-        fileName= dir.filePath (tr ("Untitled"));
-    }
-    if (printer.outputFormat() == QPrinter::PdfFormat)
-        printer.setOutputFileName (fileName.append (".pdf"));
-    /*else if (printer.outputFormat() == QPrinter::PostScriptFormat)
-        printer.setOutputFileName (fileName.append (".ps"));*/
-
-    QPrintDialog dlg (&printer, this);
-    dlg.setWindowModality (Qt::WindowModal);
-    if (textEdit->textCursor().hasSelection())
-        dlg.setOption (QAbstractPrintDialog::PrintSelection);
-    dlg.setWindowTitle (tr ("Print Document"));
-    if (dlg.exec() == QDialog::Accepted)
-    {
-        waitToMakeBusy();
-        textEdit->print (&printer);
-        QTimer::singleShot (0, this, [this]() {unbusy();});
-    }
-
-    updateShortcuts (false);
 }
 void FPwin::nextTab()
 {

@@ -167,7 +167,6 @@ private slots:
     void displayError();
     void displayOutput();
     void docProp();
-    void filePrint();
     void nextTab();
     void previousTab();
     void tabContextMenu (const QPoint& p);
