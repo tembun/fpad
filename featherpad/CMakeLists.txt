@@ -82,7 +82,6 @@ set(featherpad_SRCS
     searchbar.cpp
     session.cpp
     fontDialog.cpp
-    sidepane.cpp
     svgicons.cpp)
 
 if(NOT WITHOUT_X11 AND UNIX AND NOT APPLE AND NOT HAIKU)

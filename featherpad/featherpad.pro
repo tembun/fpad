@@ -41,7 +41,6 @@ SOURCES += main.cpp \
            searchbar.cpp \
            session.cpp \
            fontDialog.cpp \
-           sidepane.cpp \
            svgicons.cpp
 
 HEADERS += singleton.h \
@@ -63,7 +62,6 @@ HEADERS += singleton.h \
            session.h \
            fontDialog.h \
            warningbar.h \
-           sidepane.h \
            svgicons.h
 
 FORMS += fp.ui \

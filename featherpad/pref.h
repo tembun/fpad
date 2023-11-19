@@ -102,7 +102,6 @@ private slots:
     void prefSaveLastFilesList (int checked);
     void prefOpenInWindows (int checked);
     void prefNativeDialog (int checked);
-    void prefSidePaneMode (int checked);
     void prefSplitterPos (int checked);
     void prefInertialScrolling (int checked);
     void showWhatsThis();

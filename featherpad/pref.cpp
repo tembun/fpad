@@ -164,55 +164,32 @@ PrefDialog::PrefDialog (QWidget *parent)
 
     // no ccombo onnection because of mouse wheel; config is set at closeEvent() instead
     ui->tabCombo->setCurrentIndex (config.getTabPosition());
-
     ui->tabBox->setChecked (config.getTabWrapAround());
     connect (ui->tabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefTabWrapAround);
-
     ui->singleTabBox->setChecked (config.getHideSingleTab());
     connect (ui->singleTabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefHideSingleTab);
-
     ui->windowBox->setChecked (config.getOpenInWindows());
     connect (ui->windowBox, &QCheckBox::stateChanged, this, &PrefDialog::prefOpenInWindows);
-
     ui->nativeDialogBox->setChecked (config.getNativeDialog());
     connect (ui->nativeDialogBox, &QCheckBox::stateChanged, this, &PrefDialog::prefNativeDialog);
-
-    ui->sidePaneBox->setChecked (config.getSidePaneMode());
-    ui->sidePaneSizeBox->setChecked (config.getRemSplitterPos());
-    connect (ui->sidePaneBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSidePaneMode);
-    connect (ui->sidePaneSizeBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSplitterPos);
-
     ui->lastTabBox->setChecked (config.getCloseWithLastTab());
     connect (ui->lastTabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefCloseWithLastTab);
-
-    /************
-     *** Text ***
-     ************/
-
     ui->fontBox->setChecked (config.getRemFont());
     connect (ui->fontBox, &QCheckBox::stateChanged, this, &PrefDialog::prefFont);
-
     ui->wrapBox->setChecked (config.getWrapByDefault());
     connect (ui->wrapBox, &QCheckBox::stateChanged, this, &PrefDialog::prefWrap);
-
     ui->indentBox->setChecked (config.getIndentByDefault());
     connect (ui->indentBox, &QCheckBox::stateChanged, this, &PrefDialog::prefIndent);
-
     ui->autoBracketBox->setChecked (config.getAutoBracket());
     connect (ui->autoBracketBox, &QCheckBox::stateChanged, this, &PrefDialog::prefAutoBracket);
-
     ui->autoReplaceBox->setChecked (config.getAutoReplace());
     connect (ui->autoReplaceBox, &QCheckBox::stateChanged, this, &PrefDialog::prefAutoReplace);
-
     ui->lineBox->setChecked (config.getLineByDefault());
     connect (ui->lineBox, &QCheckBox::stateChanged, this, &PrefDialog::prefLine);
-
     ui->syntaxBox->setChecked (config.getSyntaxByDefault());
     connect (ui->syntaxBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSyntax);
-
     ui->enforceSyntaxBox->setChecked (config.getShowLangSelector());
     ui->enforceSyntaxBox->setEnabled (config.getSyntaxByDefault());
-
     ui->whiteSpaceBox->setChecked (config.getShowWhiteSpace());
     connect (ui->whiteSpaceBox, &QCheckBox::stateChanged, this, &PrefDialog::prefWhiteSpace);
 
@@ -1202,7 +1179,6 @@ void PrefDialog::prefSkipNontext (int checked)
     else if (checked == Qt::Unchecked)
         config.setSkipNonText (false);
 }
-/*************************/
 void PrefDialog::prefTabWrapAround (int checked)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -1211,7 +1187,6 @@ void PrefDialog::prefTabWrapAround (int checked)
     else if (checked == Qt::Unchecked)
         config.setTabWrapAround (false);
 }
-/*************************/
 void PrefDialog::prefHideSingleTab (int checked)
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -1223,8 +1198,6 @@ void PrefDialog::prefHideSingleTab (int checked)
         {
             FPwin *win = singleton->Wins.at (i);
             TabBar *tabBar = win->ui->tabWidget->tabBar();
-            if (!win->hasSidePane())
-                tabBar->hideSingle (true);
             if (win->ui->tabWidget->count() == 1)
                 tabBar->hide();
         }
@@ -1237,12 +1210,9 @@ void PrefDialog::prefHideSingleTab (int checked)
             FPwin *win = singleton->Wins.at (i);
             TabBar *tabBar = win->ui->tabWidget->tabBar();
             tabBar->hideSingle (false);
-            if (!win->hasSidePane() && win->ui->tabWidget->count() == 1)
-                tabBar->show();
         }
     }
 }
-/*************************/
 void PrefDialog::prefMaxSHSize (int value)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -1366,17 +1336,6 @@ void PrefDialog::prefNativeDialog (int checked)
     else if (checked == Qt::Unchecked)
         config.setNativeDialog (false);
 }
-/*************************/
-void PrefDialog::prefSidePaneMode (int checked)
-{
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    if (checked == Qt::Checked)
-        config.setSidePaneMode (true);
-    else if (checked == Qt::Unchecked)
-        config.setSidePaneMode (false);
-}
-/*************************/
 void PrefDialog::prefSplitterPos (int checked)
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -1386,7 +1345,6 @@ void PrefDialog::prefSplitterPos (int checked)
     else if (checked == Qt::Unchecked)
         config.setRemSplitterPos (false);
 }
-/*************************/
 // NOTE: Custom shortcuts will be saved in the PortableText format.
 void PrefDialog::onShortcutChange (QTableWidgetItem *item)
 {

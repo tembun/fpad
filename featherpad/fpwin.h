@@ -20,13 +20,17 @@
 #ifndef FPWIN_H
 #define FPWIN_H
 
+#include <QListWidget>
+#include <QTimer>
+#include <QEvent>
+#include <QCollator>
+#include "lineedit.h"
 #include <QMainWindow>
 #include <QActionGroup>
 #include <QElapsedTimer>
 #include "highlighter.h"
 #include "textedit.h"
 #include "tabpage.h"
-#include "sidepane.h"
 #include "config.h"
 
 namespace FeatherPad {
@@ -78,14 +82,8 @@ public:
         }
         return false;
     }
-
-    bool hasSidePane() const {
-        return (sidePane_ != nullptr);
-    }
-
     void addCursorPosLabel();
     void addRemoveLangBtn (bool add);
-
     void showCrashWarning();
     void showRootWarning();
     void updateCustomizableShortcuts (bool disable = false);
@@ -177,12 +175,10 @@ private slots:
     void firstTab();
     void lastActiveTab();
     void tabContextMenu (const QPoint& p);
-    void listContextMenu (const QPoint& p);
     void editorContextMenu (const QPoint& p);
     void changeTab (QListWidgetItem *current, QListWidgetItem*);
     void prefDialog();
     void aboutDialog();
-    void helpDoc();
     void matchBrackets();
     void addText (const QString& text, const QString& fileName, const QString& charset,
                   bool enforceEncod, bool reload,
@@ -261,7 +257,6 @@ private:
     int loadingProcesses_; // The number of loading processes (used to prevent early closing).
     QPointer<QThread> busyThread_; // Used to wait one second for making the cursor busy.
     QMetaObject::Connection lambdaConnection_; // Captures a lambda connection to disconnect it later.
-    SidePane *sidePane_;
     QHash<QListWidgetItem*, TabPage*> sideItems_; // For fast tab switching.
     QHash<QString, QAction*> langs_; // All programming languages (to be enforced by the user).
     QHash<QAction*, QKeySequence> defaultShortcuts_;

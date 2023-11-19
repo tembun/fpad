@@ -18,7 +18,6 @@
  */
 
 #include "config.h"
-//#include <QFileInfo>
 #include <QKeySequence>
 
 namespace FeatherPad {
@@ -33,7 +32,6 @@ Config::Config():
     showStatusbar_ (true),
     showCursorPos_ (false),
     showLangSelector_ (false),
-    sidePaneMode_ (false),
     remFont_ (true),
     wrapByDefault_ (true),
     indentByDefault_ (true),
@@ -147,9 +145,6 @@ void Config::readConfig()
 
     if (settings.value ("showLangSelector").toBool())
         showLangSelector_ = true; // false by default
-
-    if (settings.value ("sidePaneMode").toBool())
-        sidePaneMode_ = true; // false by default
 
     int pos = settings.value ("tabPosition").toInt();
     if (pos > 0 && pos <= 3)
@@ -428,7 +423,6 @@ void Config::writeConfig()
     settings.setValue ("showStatusbar", showStatusbar_);
     settings.setValue ("showCursorPos", showCursorPos_);
     settings.setValue ("showLangSelector", showLangSelector_);
-    settings.setValue ("sidePaneMode", sidePaneMode_);
     settings.setValue ("tabPosition", tabPosition_);
     settings.setValue ("tabWrapAround", tabWrapAround_);
     settings.setValue ("hideSingleTab", hideSingleTab_);

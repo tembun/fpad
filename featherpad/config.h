@@ -232,13 +232,6 @@ public:
         showLangSelector_ = show;
     }
 
-    bool getSidePaneMode() const {
-        return sidePaneMode_;
-    }
-    void setSidePaneMode (bool sidePane) {
-        sidePaneMode_ = sidePane;
-    }
-
     int getTabPosition() const {
         return tabPosition_;
     }
@@ -559,7 +552,6 @@ private:
          noToolbar_, noMenubar_,
          hideSearchbar_,
          showStatusbar_, showCursorPos_, showLangSelector_,
-         sidePaneMode_,
          remFont_, wrapByDefault_, indentByDefault_, autoReplace_, autoBracket_, lineByDefault_,
          syntaxByDefault_, showWhiteSpace_, showEndings_,
          isMaxed_, isFull_,
