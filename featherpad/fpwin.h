@@ -180,7 +180,6 @@ private slots:
     void listContextMenu (const QPoint& p);
     void editorContextMenu (const QPoint& p);
     void changeTab (QListWidgetItem *current, QListWidgetItem*);
-    void toggleSidePane();
     void prefDialog();
     void aboutDialog();
     void helpDoc();

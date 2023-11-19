@@ -214,7 +214,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
         ui->actionLastActiveTab->setEnabled (hasLastActive);
     });
     connect (ui->tabWidget->tabBar(), &TabBar::tabDetached, this, &FPwin::detachTab);
-    connect (ui->tabWidget->tabBar(), &TabBar::hideTabBar, this, &FPwin::toggleSidePane);
     ui->tabWidget->tabBar()->setContextMenuPolicy (Qt::CustomContextMenu);
     connect (ui->tabWidget->tabBar(), &QWidget::customContextMenuRequested, this, &FPwin::tabContextMenu);
     connect (ui->actionCopyName, &QAction::triggered, this, &FPwin::copyTabFileName);
@@ -244,9 +243,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
         if (sidePane_)
             sidePane_->listWidget()->scrollToItem (sidePane_->listWidget()->currentItem());
     });
-    ui->actionSidePane->setAutoRepeat (false); // don't let UI change too rapidly
-    connect (ui->actionSidePane, &QAction::triggered, [this] {toggleSidePane();});
-
     /***************************************************************************
      *****     KDE (KAcceleratorManager) has a nasty "feature" that        *****
      *****   "smartly" gives mnemonics to tab and tool button texts so     *****
@@ -272,17 +268,13 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     	new QShortcut( QKeySequence( Qt::ALT | Qt::Key_2 ) , this )
     );
     connect( focus_view_soft , &QShortcut::activated , this, &FPwin::focus_view_soft );
-
-    /* exiting a process */
     QShortcut *kill = new QShortcut (QKeySequence (Qt::CTRL + Qt::ALT + Qt::Key_E), this);
     connect (kill, &QShortcut::activated, this, &FPwin::exitProcess);
-
     dummyWidget = new QWidget();
     setAcceptDrops (true);
     setAttribute (Qt::WA_AlwaysShowToolTips);
     setAttribute (Qt::WA_DeleteOnClose, false); // we delete windows in singleton
 }
-/*************************/
 FPwin::~FPwin()
 {
     startAutoSaving (false);
@@ -290,7 +282,6 @@ FPwin::~FPwin()
     delete aGroup_; aGroup_ = nullptr;
     delete ui; ui = nullptr;
 }
-/*************************/
 void FPwin::closeEvent (QCloseEvent *event)
 {
     bool keep = closeTabs (-1, -1, true);
@@ -317,118 +308,6 @@ void FPwin::closeEvent (QCloseEvent *event)
         event->accept();
     }
 }
-/*************************/
-void FPwin::toggleSidePane()
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    if (!sidePane_)
-    {
-        ui->tabWidget->tabBar()->hide();
-        ui->tabWidget->tabBar()->hideSingle (false); // prevent tabs from reappearing
-        sidePane_ = new SidePane();
-        ui->splitter->insertWidget (0, sidePane_);
-        sidePane_->listWidget()->setFocus();
-        int mult = size().width() / 100; // for more precision
-        int sp = config.getSplitterPos();
-        QList<int> sizes;
-        sizes << sp * mult << (100 - sp) * mult;
-        ui->splitter->setSizes (sizes);
-        connect (sidePane_->listWidget(), &QWidget::customContextMenuRequested, this, &FPwin::listContextMenu);
-        connect (sidePane_->listWidget(), &QListWidget::currentItemChanged, this, &FPwin::changeTab);
-        connect (sidePane_->listWidget(), &ListWidget::closeSidePane, this, &FPwin::toggleSidePane);
-        connect (sidePane_->listWidget(), &ListWidget::closeItem, [this](QListWidgetItem* item) {
-            if (!sideItems_.isEmpty())
-                closeTabAtIndex (ui->tabWidget->indexOf (sideItems_.value (item)));
-        });
-
-        if (ui->tabWidget->count() > 0)
-        {
-            updateShortcuts (true);
-            int curIndex = ui->tabWidget->currentIndex();
-            ListWidget *lw = sidePane_->listWidget();
-            for (int i = 0; i < ui->tabWidget->count(); ++i)
-            {
-                TabPage *tabPage = qobject_cast<TabPage*>(ui->tabWidget->widget (i));
-                /* tab text can't be used because, on the one hand, it may be elided
-                   and, on the other hand, KDE's auto-mnemonics may interfere */
-                QString fname = tabPage->textEdit()->getFileName();
-                bool isLink (false);
-                if (fname.isEmpty())
-                {
-                    if (tabPage->textEdit()->getProg() == "help")
-                        fname = "** " + tr ("Help") + " **";
-                    else
-                        fname = tr ("Untitled");
-                }
-                else
-                {
-                    isLink = QFileInfo (fname).isSymLink();
-                    fname = fname.section ('/', -1);
-                }
-                if (tabPage->textEdit()->document()->isModified())
-                    fname.append ("*");
-                fname.replace ("\n", " ");
-                ListWidgetItem *lwi = new ListWidgetItem (isLink ? QIcon (":icons/link.svg") : QIcon(),
-                                                          fname, lw);
-                lwi->setToolTip (ui->tabWidget->tabToolTip (i));
-                sideItems_.insert (lwi, tabPage);
-                lw->addItem (lwi);
-                if (i == curIndex)
-                    lw->setCurrentItem (lwi);
-            }
-            sidePane_->listWidget()->scrollTo (sidePane_->listWidget()->currentIndex());
-            updateShortcuts (false);
-        }
-
-        disconnect(ui->actionLastTab, nullptr, this, nullptr);
-        disconnect(ui->actionFirstTab, nullptr, this, nullptr);
-        QString txt = ui->actionFirstTab->text();
-        ui->actionFirstTab->setText (ui->actionLastTab->text());
-        ui->actionLastTab->setText (txt);
-        connect (ui->actionFirstTab, &QAction::triggered, this, &FPwin::lastTab);
-        connect (ui->actionLastTab, &QAction::triggered, this, &FPwin::firstTab);
-    }
-    else
-    {
-        QList<int> sizes = ui->splitter->sizes();
-        if (!sidePane_->listWidget()->hasFocus())
-        {
-            if (sizes.size() == 2 && sizes.at (0) == 0) // with RTL too
-            { // first, ensure its visibility
-                sizes.clear();
-                int mult = size().width() / 100;
-                int sp = config.getSplitterPos();
-                sizes << sp * mult << (100 - sp) * mult;
-                ui->splitter->setSizes (sizes);
-            }
-            sidePane_->listWidget()->setFocus();
-        }
-        else
-        {
-            if (config.getRemSplitterPos()) // remember the position also when the side-pane is removed
-                config.setSplitterPos (qRound (100.0 * static_cast<qreal>(sizes.at (0)) / static_cast<qreal>(sizes.at (0) + sizes.at (1))));
-            sideItems_.clear();
-            delete sidePane_;
-            sidePane_ = nullptr;
-            bool hideSingleTab = config.getHideSingleTab();
-            ui->tabWidget->tabBar()->hideSingle (hideSingleTab);
-            if (!hideSingleTab || ui->tabWidget->count() > 1)
-                ui->tabWidget->tabBar()->show();
-            /* return focus to the document */
-            if (TabPage *tabPage = qobject_cast<TabPage*>(ui->tabWidget->currentWidget()))
-                tabPage->textEdit()->setFocus();
-
-            disconnect(ui->actionLastTab, nullptr, this, nullptr);
-            disconnect(ui->actionFirstTab, nullptr, this, nullptr);
-            QString txt = ui->actionFirstTab->text();
-            ui->actionFirstTab->setText (ui->actionLastTab->text());
-            ui->actionLastTab->setText (txt);
-            connect (ui->actionLastTab, &QAction::triggered, this, &FPwin::lastTab);
-            connect (ui->actionFirstTab, &QAction::triggered, this, &FPwin::firstTab);
-        }
-    }
-}
-/*************************/
 void FPwin::applyConfigOnStarting()
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -486,8 +365,6 @@ void FPwin::applyConfigOnStarting()
         connect (ui->actionLastTab, &QAction::triggered, this, &FPwin::lastTab);
         connect (ui->actionFirstTab, &QAction::triggered, this, &FPwin::firstTab);
     }
-    else
-        toggleSidePane();
     int recentNumber = config.getCurRecentFilesNumber();
     {
         QAction* recentAction = nullptr;
@@ -763,7 +640,6 @@ bool FPwin::hasAnotherDialog()
     }
     return res;
 }
-/*************************/
 void FPwin::updateGUIForSingleTab (bool single)
 {
     ui->actionDetachTab->setEnabled (!single && !standalone_);
@@ -772,7 +648,6 @@ void FPwin::updateGUIForSingleTab (bool single)
     ui->actionLastTab->setEnabled (!single);
     ui->actionFirstTab->setEnabled (!single);
 }
-/*************************/
 void FPwin::deleteTabPage (int tabIndex, bool saveToList, bool closeWithLastTab)
 {
     TabPage *tabPage = qobject_cast<TabPage *>(ui->tabWidget->widget (tabIndex));
@@ -807,13 +682,6 @@ void FPwin::deleteTabPage (int tabIndex, bool saveToList, bool closeWithLastTab)
     if (closeWithLastTab && config.getCloseWithLastTab() && ui->tabWidget->count() == 0)
         close();
 }
-/*************************/
-// Here, "first" is the index/row, to whose right/bottom all tabs/rows are to be closed.
-// Similarly, "last" is the index/row, to whose left/top all tabs/rows are to be closed.
-// A negative value means including the start for "first" and the end for "last".
-// If both "first" and "last" are negative, all tabs will be closed.
-// The case, when they're both greater than -1, is covered but not used anywhere.
-// Tabs/rows are always closed from right/bottom to left/top.
 bool FPwin::closeTabs (int first, int last, bool saveFilesList)
 {
     if (!isReady()) return true;
@@ -930,7 +798,6 @@ bool FPwin::closeTabs (int first, int last, bool saveFilesList)
 
     return keep;
 }
-/*************************/
 void FPwin::copyTabFileName()
 {
     if (rightClicked_ < 0) return;
