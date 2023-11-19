@@ -155,7 +155,6 @@
     <addaction name="separator"/>
     <addaction name="actionRightTab"/>
     <addaction name="actionLeftTab"/>
-    <addaction name="actionFirstTab"/>
     <addaction name="separator"/>
     <addaction name="actionReload"/>
     <addaction name="separator"/>
@@ -971,17 +970,6 @@
    </property>
    <property name="shortcut">
     <string>Alt+Left</string>
-   </property>
-  </action>
-  <action name="actionFirstTab">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>&amp;First Tab</string>
-   </property>
-   <property name="shortcut">
-    <string>Alt+Down</string>
    </property>
   </action>
   <action name="actionMenu">

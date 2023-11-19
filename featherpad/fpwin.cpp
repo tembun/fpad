@@ -345,7 +345,6 @@ void FPwin::applyConfigOnStarting()
         ui->tabWidget->setTabPosition (static_cast<QTabWidget::TabPosition>(config.getTabPosition()));
     }
         ui->tabWidget->tabBar()->hideSingle (config.getHideSingleTab());
-        connect (ui->actionFirstTab, &QAction::triggered, this, &FPwin::firstTab);
     int recentNumber = config.getCurRecentFilesNumber();
     {
         QAction* recentAction = nullptr;
@@ -574,24 +573,13 @@ void FPwin::addRemoveLangBtn (bool add)
         action->setCheckable (true);
         action->setActionGroup (aGroup);
         langs_.insert (normal, action);
-
         langButton->setMenu (menu);
-
         ui->statusBar->insertPermanentWidget (2, langButton);
         connect (aGroup, &QActionGroup::triggered, this, &FPwin::enforceLang);
-
-        /* update the language button if this is called from outside c-tor
-           (otherwise, tabswitch() will do it) */
         if (TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget()))
             updateLangBtn (tabPage->textEdit());
     }
 }
-/*************************/
-// We want all dialogs to be window-modal as far as possible. However there is a problem:
-// If a dialog is opened in a FeatherPad window and is closed after another dialog is
-// opened in another window, the second dialog will be seen as a child of the first window.
-// This could cause a crash if the dialog is closed after closing the first window.
-// As a workaround, we keep window-modality but don't let the user open two window-modal dialogs.
 bool FPwin::hasAnotherDialog()
 {
     closeWarningBar();
@@ -625,7 +613,6 @@ void FPwin::updateGUIForSingleTab (bool single)
 {
     ui->actionRightTab->setEnabled (!single);
     ui->actionLeftTab->setEnabled (!single);
-    ui->actionFirstTab->setEnabled (!single);
 }
 void FPwin::deleteTabPage (int tabIndex, bool saveToList, bool closeWithLastTab)
 {
@@ -3483,12 +3470,6 @@ void FPwin::previousTab()
             if (count > 0)
                 ui->tabWidget->setCurrentIndex (count - 1);
         }
-}
-void FPwin::firstTab()
-{
-    if (isLoading()) return;
-    if (ui->tabWidget->count() > 0)
-        ui->tabWidget->setCurrentIndex (0);
 }
 void FPwin::dropTab (const QString& str)
 {

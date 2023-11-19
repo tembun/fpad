@@ -170,7 +170,6 @@ private slots:
     void filePrint();
     void nextTab();
     void previousTab();
-    void firstTab();
     void tabContextMenu (const QPoint& p);
     void editorContextMenu (const QPoint& p);
     void changeTab (QListWidgetItem *current, QListWidgetItem*);
