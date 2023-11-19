@@ -150,7 +150,6 @@
     </property>
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
-    <addaction name="actionSession"/>
     <addaction name="actionSidePane"/>
     <addaction name="separator"/>
     <addaction name="actionRun"/>
@@ -1025,17 +1024,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
-   </property>
-  </action>
-  <action name="actionSession">
-   <property name="text">
-    <string>Save/Restore Session</string>
-   </property>
-   <property name="toolTip">
-    <string>Sa&amp;ve/Restore Session</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+M</string>
    </property>
   </action>
   <action name="actionSidePane">

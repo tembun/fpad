@@ -205,7 +205,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     connect (ui->actionDelete, &QAction::triggered, this, &FPwin::deleteText);
     connect (ui->actionSelectAll, &QAction::triggered, this, &FPwin::selectAllText);
     connect (ui->actionEdit, &QAction::triggered, this, &FPwin::makeEditable);
-    connect (ui->actionSession, &QAction::triggered, this, &FPwin::manageSessions);
     connect (ui->actionRun, &QAction::triggered, this, &FPwin::executeProcess);
     connect (ui->actionUndo, &QAction::triggered, this, &FPwin::undoing);
     connect (ui->actionRedo, &QAction::triggered, this, &FPwin::redoing);
@@ -4568,13 +4567,9 @@ static inline void selectWord (QTextCursor& cur)
         cur.setPosition (cur.position() - 1, QTextCursor::KeepAnchor);
     }
 }
-
-/*************************/
 void FPwin::manageSessions()
 {
     if (!isReady()) return;
-
-    /* first see whether the Sessions dialog is already open... */
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
     for (int i = 0; i < singleton->Wins.count(); ++i)
     {
@@ -4589,17 +4584,12 @@ void FPwin::manageSessions()
             }
         }
     }
-    /* ... and if not, create a non-modal Sessions dialog */
     SessionDialog *dlg = new SessionDialog (this);
     dlg->setAttribute (Qt::WA_DeleteOnClose);
     dlg->show();
-    /*move (x() + width()/2 - dlg.width()/2,
-          y() + height()/2 - dlg.height()/ 2);*/
     dlg->raise();
     dlg->activateWindow();
 }
-/*************************/
-// Pauses or resumes auto-saving.
 void FPwin::pauseAutoSaving (bool pause)
 {
     if (!autoSaver_) return;
