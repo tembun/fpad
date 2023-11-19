@@ -115,11 +115,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     pastePaths_ = config.getPastePaths();
     whiteSpaceValue_ = config.getWhiteSpaceValue();
     curLineHighlight_ = config.getCurLineHighlight();
-
-    /**************
-     *** Window ***
-     **************/
-
     ui->winSizeBox->setChecked (config.getRemSize());
     connect (ui->winSizeBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSize);
     if (ui->winSizeBox->isChecked())
@@ -1324,7 +1319,6 @@ void PrefDialog::prefRecentFilesNumber (int value)
 
     showPrompt();
 }
-/*************************/
 void PrefDialog::prefSaveLastFilesList (int checked)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -1333,7 +1327,6 @@ void PrefDialog::prefSaveLastFilesList (int checked)
     else if (checked == Qt::Unchecked)
         config.setSaveLastFilesList (false);
 }
-/*************************/
 void PrefDialog::prefRecentFilesKind()
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -1343,15 +1336,8 @@ void PrefDialog::prefRecentFilesKind()
     {
         config.setRecentOpened (openedKind);
         config.clearRecentFiles();
-        for (int i = 0; i < singleton->Wins.count(); ++i)
-        {
-            singleton->Wins.at (i)->ui->menuOpenRecently->setTitle (openedKind
-                                                                    ? tr ("&Recently Opened")
-                                                                    : tr ("Recently &Modified"));
-        }
     }
 }
-/*************************/
 void PrefDialog::prefStartSize (int value)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -1362,7 +1348,6 @@ void PrefDialog::prefStartSize (int value)
         startSize.setHeight (value);
     config.setStartSize (startSize);
 }
-/*************************/
 void PrefDialog::prefOpenInWindows (int checked)
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -1372,7 +1357,6 @@ void PrefDialog::prefOpenInWindows (int checked)
     else if (checked == Qt::Unchecked)
         config.setOpenInWindows (false);
 }
-/*************************/
 void PrefDialog::prefNativeDialog (int checked)
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);

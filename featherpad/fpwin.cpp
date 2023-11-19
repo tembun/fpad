@@ -447,16 +447,7 @@ void FPwin::applyConfigOnStarting()
     else
     {
         QSize startSize = config.getStartSize();
-        /*QSize ag;
-        if (QScreen *pScreen = QApplication::primaryScreen()) // the window isn't shown yet
-            ag = pScreen->availableGeometry().size();
-        if (!ag.isEmpty()
-            && (startSize.width() > ag.width() || startSize.height() > ag.height()))
-        {
-            startSize = startSize.boundedTo (ag);
-            config.setStartSize (startSize);
-        }
-        else */if (startSize.isEmpty())
+        if (startSize.isEmpty())
         {
             startSize = QSize (700, 500);
             config.setStartSize (startSize);
@@ -490,22 +481,15 @@ void FPwin::applyConfigOnStarting()
     if (config.getTabPosition() != 0)
         ui->tabWidget->setTabPosition (static_cast<QTabWidget::TabPosition>(config.getTabPosition()));
 
-    if (!config.getSidePaneMode()) // hideSingle() shouldn't be set with the side-pane
+    if (!config.getSidePaneMode())
     {
         ui->tabWidget->tabBar()->hideSingle (config.getHideSingleTab());
-        /* for the side pane, these connections are made in toggleSidePane() */
         connect (ui->actionLastTab, &QAction::triggered, this, &FPwin::lastTab);
         connect (ui->actionFirstTab, &QAction::triggered, this, &FPwin::firstTab);
     }
     else
         toggleSidePane();
-
-    if (config.getRecentOpened())
-        ui->menuOpenRecently->setTitle (tr ("&Recently Opened"));
     int recentNumber = config.getCurRecentFilesNumber();
-    if (recentNumber <= 0)
-        ui->menuOpenRecently->setEnabled (false);
-    else
     {
         QAction* recentAction = nullptr;
         for (int i = 0; i < recentNumber; ++i)
@@ -513,19 +497,13 @@ void FPwin::applyConfigOnStarting()
             recentAction = new QAction (this);
             recentAction->setVisible (false);
             connect (recentAction, &QAction::triggered, this, &FPwin::newTabFromRecent);
-            ui->menuOpenRecently->addAction (recentAction);
         }
-        ui->menuOpenRecently->addAction (ui->actionClearRecent);
-        connect (ui->menuOpenRecently, &QMenu::aboutToShow, this, &FPwin::updateRecenMenu);
-        connect (ui->actionClearRecent, &QAction::triggered, this, &FPwin::clearRecentMenu);
     }
 
-    ui->actionSave->setEnabled (config.getSaveUnmodified()); // newTab() will be called after this
+    ui->actionSave->setEnabled (config.getSaveUnmodified());
 
     ui->actionNew->setIcon (symbolicIcon::icon (":icons/document-new.svg"));
     ui->actionOpen->setIcon (symbolicIcon::icon (":icons/document-open.svg"));
-    ui->menuOpenRecently->setIcon (symbolicIcon::icon (":icons/document-open-recent.svg"));
-    ui->actionClearRecent->setIcon (symbolicIcon::icon (":icons/edit-clear.svg"));
     ui->actionSave->setIcon (symbolicIcon::icon (":icons/document-save.svg"));
     ui->actionSaveAs->setIcon (symbolicIcon::icon (":icons/document-save-as.svg"));
     ui->actionSaveAllFiles->setIcon (symbolicIcon::icon (":icons/document-save-all.svg"));
@@ -1441,53 +1419,13 @@ void FPwin::editorContextMenu (const QPoint& p)
     menu->exec (textEdit->viewport()->mapToGlobal (p));
     delete menu;
 }
-void FPwin::updateRecenMenu()
-{
-    Config config = static_cast<FPsingleton*>(qApp)->getConfig();
-    QStringList recentFiles = config.getRecentFiles();
-    int recentNumber = config.getCurRecentFilesNumber();
-
-    QList<QAction *> actions = ui->menuOpenRecently->actions();
-    int recentSize = recentFiles.count();
-    QFontMetrics metrics (ui->menuOpenRecently->font());
-#if (QT_VERSION >= QT_VERSION_CHECK(5,11,0))
-    int w = 150 * metrics.horizontalAdvance (' ');
-#else
-    int w = 150 * metrics.width (' ');
-#endif
-    for (int i = 0; i < recentNumber; ++i)
-    {
-        if (i < recentSize)
-        {
-            actions.at (i)->setText (metrics.elidedText (recentFiles.at (i), Qt::ElideMiddle, w));
-            actions.at (i)->setData (recentFiles.at (i));
-            actions.at (i)->setVisible (true);
-        }
-        else
-        {
-            actions.at (i)->setText (QString());
-            actions.at (i)->setData (QVariant());
-            actions.at (i)->setVisible (false);
-        }
-    }
-    ui->actionClearRecent->setEnabled (recentSize != 0);
-}
-/*************************/
-void FPwin::clearRecentMenu()
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    config.clearRecentFiles();
-    updateRecenMenu();
-}
-/*************************/
 void FPwin::reformat (TextEdit *textEdit)
 {
-    formatTextRect(); // in "syntax.cpp"
+    formatTextRect();
     if (!textEdit->getSearchedText().isEmpty())
-        hlight(); // in "find.cpp"
+        hlight();
     textEdit->selectionHlight();
 }
-/*************************/
 void FPwin::defaultSize()
 {
     QSize s = static_cast<FPsingleton*>(qApp)->getConfig().getStartSize();
@@ -2141,7 +2079,7 @@ void FPwin::addText (const QString& text, const QString& fileName, const QString
                 textEdit->setTextCursor (cur);
             });
         }
-        else// if (restoreCursor >= 2) // cursor position in commandline (2 means the first line)
+        else
         {
             restoreCursor -= 2; // in Qt, blocks are started from 0
             if (restoreCursor < textEdit->document()->blockCount())
@@ -2394,14 +2332,12 @@ void FPwin::showCrashWarning()
                         + "<center><i>" + tr ("Preferably, close all FeatherPad windows and start again!") + "</i></center>", true);
     });
 }
-/*************************/
 void FPwin::showRootWarning()
 {
     QTimer::singleShot (0, this, [=]() {
         showWarningBar ("<center><b><big>" + tr ("Root Instance") + "</big></b></center>", true);
     });
 }
-/*************************/
 void FPwin::closeWarningBar (bool keepOnStartup)
 {
     const QList<WarningBar*> warningBars = ui->tabWidget->findChildren<WarningBar*>();
@@ -2411,7 +2347,6 @@ void FPwin::closeWarningBar (bool keepOnStartup)
             wb->closeBar();
     }
 }
-/*************************/
 void FPwin::newTabFromName (const QString& fileName, int restoreCursor, int posInLine, bool multiple)
 {
     if (!fileName.isEmpty())
@@ -2419,14 +2354,12 @@ void FPwin::newTabFromName (const QString& fileName, int restoreCursor, int posI
                   restoreCursor, posInLine,
                   false, multiple);
 }
-/*************************/
 void FPwin::newTabFromRecent()
 {
     QAction *action = qobject_cast<QAction*>(QObject::sender());
     if (!action) return;
     loadText (action->data().toString(), false, false);
 }
-/*************************/
 void FPwin::fileOpen()
 {
     if (isLoading()) return;

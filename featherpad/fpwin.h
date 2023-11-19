@@ -117,8 +117,6 @@ public slots:
 
 private slots:
     void newTabFromRecent();
-    void clearRecentMenu();
-    void updateRecenMenu();
     void closeTab();
     void closeTabAtIndex (int index);
     void copyTabFileName();
