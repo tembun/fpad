@@ -133,15 +133,8 @@ private slots:
     void cutText();
     void copyText();
     void pasteText();
-    void toSoftTabs();
-    void insertDate();
     void deleteText();
     void selectAllText();
-    void upperCase();
-    void lowerCase();
-    void startCase();
-    void enableSortLines();
-    void sortLines();
     void makeEditable();
     void undoing();
     void redoing();

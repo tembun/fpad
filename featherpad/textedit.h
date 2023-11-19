@@ -28,9 +28,6 @@
 #include <QSyntaxHighlighter>
 
 namespace FeatherPad {
-
-/* This is for auto-indentation, line numbers, DnD, zooming, customized
-   vertical scrollbar, appropriate signals, and saving/getting useful info. */
 class TextEdit : public QPlainTextEdit
 {
     Q_OBJECT
@@ -42,25 +39,15 @@ public:
     void setTextCursor (const QTextCursor &cursor)
     {
         QPlainTextEdit::setTextCursor (cursor);
-        /* this is needed for formatTextRect() to be called (for syntax highlighting) */
         emit QPlainTextEdit::updateRequest (rect(), 1);
     }
-
     void sync_cursor();
-
     void setEditorFont (const QFont &f, bool setDefault = true);
     void adjustScrollbars();
-
     void lineNumberAreaPaintEvent (QPaintEvent *event);
     int lineNumberAreaWidth();
     void showLineNumbers (bool show);
-
-    void sortLines (bool reverse = false);
-
-    bool toSoftTabs();
-
     QString getUrl (const int pos) const;
-
     QFont getDefaultFont() const {
         return font_;
     }

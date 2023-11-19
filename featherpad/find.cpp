@@ -78,7 +78,6 @@ void FPwin::find (bool forward)
     if (!found.isNull())
     {
         start.setPosition (found.anchor());
-        /* this is needed for selectionChanged() to be emitted */
         if (newSrch) textEdit->setTextCursor (start);
         start.setPosition (found.position(), QTextCursor::KeepAnchor);
         textEdit->skipSelectionHighlighting();
@@ -91,8 +90,6 @@ void FPwin::find (bool forward)
     connect (textEdit, &TextEdit::updateRect, this, &FPwin::hlight);
     connect (textEdit, &TextEdit::resized, this, &FPwin::hlight);
 }
-/*************************/
-// Highlight found matches in the visible part of the text.
 void FPwin::hlight() const
 {
     /* When FeatherPad's window is being closed, it's possible that, in a moment,
@@ -155,17 +152,12 @@ void FPwin::hlight() const
             start.setPosition (found.position());
         }
     }
-
-    /* also prepend the current line highlight,
-       so that it always comes first when it exists */
     if (ui->actionLineNumbers->isChecked() || ui->spinBox->isVisible())
         es.prepend (textEdit->currentLineSelection());
-    /* append blue and red highlights */
     es.append (textEdit->getBlueSel());
     es.append (textEdit->getRedSel());
     textEdit->setExtraSelections (es);
 }
-/*************************/
 void FPwin::searchFlagChanged()
 {
     if (!isReady()) return;
@@ -184,7 +176,6 @@ void FPwin::searchFlagChanged()
 
     hlight();
 }
-/*************************/
 QTextDocument::FindFlags FPwin::getSearchFlags() const
 {
     TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget());

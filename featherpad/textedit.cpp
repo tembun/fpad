@@ -1912,12 +1912,6 @@ void TextEdit::onSelectionChanged()
     }
     selectionTimerId_ = startTimer (UPDATE_INTERVAL);
 }
-/*************************/
-// If the text page is first shown for a very short time (when, for example,
-// the active tab is changed quickly several times), "updateRect()" might
-// be emitted when the text page isn't visible, while "updateRequest()"
-// might not be emitted when it becomes visible again. That will result
-// in an incomplete syntax highlighting and, probably, bracket matching.
 void TextEdit::showEvent (QShowEvent *event)
 {
     QPlainTextEdit::showEvent (event);
@@ -1925,53 +1919,6 @@ void TextEdit::showEvent (QShowEvent *event)
     if (!matchedBrackets_)
         emit updateBracketMatching();
 }
-/*************************/
-void TextEdit::sortLines (bool reverse)
-{
-    if (isReadOnly()) return;
-    QTextCursor cursor = textCursor();
-    if (!cursor.selectedText().contains (QChar (QChar::ParagraphSeparator)))
-        return;
-
-    int anch = cursor.anchor();
-    int pos = cursor.position();
-    cursor.beginEditBlock();
-    cursor.setPosition (qMin (anch, pos));
-    cursor.movePosition (QTextCursor::StartOfBlock);
-    cursor.setPosition (qMax (anch, pos), QTextCursor::KeepAnchor);
-    cursor.movePosition (QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-
-    QStringList lines = cursor.selectedText().split (QChar (QChar::ParagraphSeparator));
-    /* QStringList::sort() is not aware of the locale */
-    std::sort (lines.begin(), lines.end(), [](const QString &a, const QString &b) {
-        return QString::localeAwareCompare (a, b) < 0;
-    });
-    int n = lines.size();
-    if (reverse)
-    {
-        for (int i = 0; i < n; ++i)
-        {
-            cursor.insertText (lines.at (n - 1 - i));
-            if (i < n - 1)
-                cursor.insertBlock();
-        }
-    }
-    else
-    {
-        for (int i = 0; i < n; ++i)
-        {
-            cursor.insertText (lines.at (i));
-            if (i < n - 1)
-                cursor.insertBlock();
-        }
-    }
-    cursor.endEditBlock();
-}
-
-/************************************************************
-***** The following functions are mainly for hyperlinks *****
-*************************************************************/
-
 QString TextEdit::getUrl (const int pos) const
 {
     static const QRegularExpression urlPattern ("[A-Za-z0-9_\\-]+://((?!&quot;|&gt;|&lt;)[A-Za-z0-9_.+/\\?\\=~&%#,;!@\\*\'\\-:\\(\\)\\[\\]])+(?<!\\.|\\?|!|:|;|,|\\(|\\)|\\[|\\]|\')|([A-Za-z0-9_.\\-]+@[A-Za-z0-9_\\-]+\\.[A-Za-z0-9.]+)(?<!\\.)");
@@ -2633,40 +2580,13 @@ void TextEdit::selectionHlight()
     }
     setExtraSelections (es);
 }
-/*************************/
 void TextEdit::onContentsChange (int /*position*/, int charsRemoved, int charsAdded)
 {
     if (!selectionHighlighting_) return;
     if (charsRemoved > 0 || charsAdded > 0)
     {
-        /* wait until the document's layout manager is notified about the change;
-           otherwise, the end cursor might be out of range */
         QTimer::singleShot (0, this, &TextEdit::selectionHlight);
     }
-}
-/*************************/
-bool TextEdit::toSoftTabs()
-{
-    bool res = false;
-    QString tab = QString (QChar (QChar::Tabulation));
-    QTextCursor orig = textCursor();
-    orig.setPosition (orig.anchor());
-    setTextCursor (orig);
-    QTextCursor found;
-    QTextCursor start = orig;
-    start.beginEditBlock();
-    start.setPosition (0);
-    while (!(found = finding (tab, start)).isNull())
-    {
-        res = true;
-        start.setPosition (found.anchor());
-        QString softTab = remainingSpaces (textTab_, start);
-        start.setPosition (found.position(), QTextCursor::KeepAnchor);
-        start.insertText (softTab);
-        start.setPosition (start.position());
-    }
-    start.endEditBlock();
-    return res;
 }
 
 }
