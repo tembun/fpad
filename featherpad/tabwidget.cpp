@@ -48,7 +48,6 @@ void TabWidget::tabSwitch (int index)
     }
     timerId_ = startTimer (50);
 }
-/*************************/
 void TabWidget::timerEvent (QTimerEvent *e)
 {
     QTabWidget::timerEvent (e);
@@ -64,43 +63,17 @@ void TabWidget::timerEvent (QTimerEvent *e)
             const int n = activatedTabs_.size();
             activatedTabs_.removeOne (w);
             activatedTabs_ << w;
-            if (n <= 1 && activatedTabs_.size () > 1)
-                emit hasLastActiveTab (true);
         }
     }
 }
-/*************************/
-QWidget* TabWidget::getLastActiveTab()
-{
-    const int n = activatedTabs_.size();
-    if (n > 1)
-    {
-        if (QWidget *w = activatedTabs_.at (n - 2))
-            return w;
-    }
-    return nullptr;
-}
-/*************************/
 void TabWidget::removeTab (int index)
 {
     if (QWidget *w = widget (index))
     {
         const int n = activatedTabs_.size();
         activatedTabs_.removeOne (w);
-        if (n > 1 && activatedTabs_.size () <= 1)
-            emit hasLastActiveTab (false);
     }
     QTabWidget::removeTab (index);
-}
-/*************************/
-void TabWidget::selectLastActiveTab()
-{
-    const int n = activatedTabs_.size();
-    if (n > 1)
-    {
-        if (QWidget *w = activatedTabs_.at (n - 2))
-            setCurrentWidget(w);
-    }
 }
 
 }

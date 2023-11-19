@@ -186,7 +186,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     connect (ui->tabWidget->tabBar(), &TabBar::addEmptyTab, this, &FPwin::newTab);
     connect (ui->actionRightTab, &QAction::triggered, this, &FPwin::nextTab);
     connect (ui->actionLeftTab, &QAction::triggered, this, &FPwin::previousTab);
-    connect (ui->actionLastActiveTab, &QAction::triggered, this, &FPwin::lastActiveTab);
     connect (ui->actionClose, &QAction::triggered, this, &FPwin::closeTab);
     connect (ui->tabWidget, &QTabWidget::tabCloseRequested, this, &FPwin::closeTabAtIndex);
     connect (ui->actionOpen, &QAction::triggered, this, &FPwin::fileOpen);
@@ -207,9 +206,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     connect (ui->actionRedo, &QAction::triggered, this, &FPwin::redoing);
     connect (ui->tabWidget, &QTabWidget::currentChanged, this, &FPwin::onTabChanged);
     connect (ui->tabWidget, &TabWidget::currentTabChanged, this, &FPwin::tabSwitch);
-    connect (ui->tabWidget, &TabWidget::hasLastActiveTab, [this] (bool hasLastActive) {
-        ui->actionLastActiveTab->setEnabled (hasLastActive);
-    });
     ui->tabWidget->tabBar()->setContextMenuPolicy (Qt::CustomContextMenu);
     connect (ui->tabWidget->tabBar(), &QWidget::customContextMenuRequested, this, &FPwin::tabContextMenu);
     connect (ui->actionCopyName, &QAction::triggered, this, &FPwin::copyTabFileName);
@@ -3504,10 +3500,6 @@ void FPwin::firstTab()
     if (isLoading()) return;
     if (ui->tabWidget->count() > 0)
         ui->tabWidget->setCurrentIndex (0);
-}
-void FPwin::lastActiveTab()
-{
-    ui->tabWidget->selectLastActiveTab();
 }
 void FPwin::dropTab (const QString& str)
 {

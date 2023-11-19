@@ -172,7 +172,6 @@ private slots:
     void previousTab();
     void lastTab();
     void firstTab();
-    void lastActiveTab();
     void tabContextMenu (const QPoint& p);
     void editorContextMenu (const QPoint& p);
     void changeTab (QListWidgetItem *current, QListWidgetItem*);
