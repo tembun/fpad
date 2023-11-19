@@ -345,7 +345,6 @@ void FPwin::applyConfigOnStarting()
         ui->tabWidget->setTabPosition (static_cast<QTabWidget::TabPosition>(config.getTabPosition()));
     }
         ui->tabWidget->tabBar()->hideSingle (config.getHideSingleTab());
-        connect (ui->actionLastTab, &QAction::triggered, this, &FPwin::lastTab);
         connect (ui->actionFirstTab, &QAction::triggered, this, &FPwin::firstTab);
     int recentNumber = config.getCurRecentFilesNumber();
     {
@@ -626,7 +625,6 @@ void FPwin::updateGUIForSingleTab (bool single)
 {
     ui->actionRightTab->setEnabled (!single);
     ui->actionLeftTab->setEnabled (!single);
-    ui->actionLastTab->setEnabled (!single);
     ui->actionFirstTab->setEnabled (!single);
 }
 void FPwin::deleteTabPage (int tabIndex, bool saveToList, bool closeWithLastTab)
@@ -643,8 +641,6 @@ void FPwin::deleteTabPage (int tabIndex, bool saveToList, bool closeWithLastTab)
         if (saveToList && config.getSaveLastFilesList() && QFile::exists (fileName))
             lastWinFilesCur_.insert (fileName, textEdit->textCursor().position());
     }
-    /* because deleting the syntax highlighter changes the text,
-       it is better to disconnect contentsChange() here to prevent a crash */
     disconnect (textEdit, &QPlainTextEdit::textChanged, this, &FPwin::hlight);
     disconnect (textEdit->document(), &QTextDocument::contentsChange, this, &FPwin::updateWordInfo);
     if (config.getSelectionHighlighting())
@@ -3487,13 +3483,6 @@ void FPwin::previousTab()
             if (count > 0)
                 ui->tabWidget->setCurrentIndex (count - 1);
         }
-}
-void FPwin::lastTab()
-{
-    if (isLoading()) return;
-        int count = ui->tabWidget->count();
-        if (count > 0)
-            ui->tabWidget->setCurrentIndex (count - 1);
 }
 void FPwin::firstTab()
 {
