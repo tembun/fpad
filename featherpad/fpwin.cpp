@@ -154,7 +154,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     menu->addMenu (ui->menuEdit);
     menu->addMenu (ui->menuOptions);
     menu->addMenu (ui->menuSearch);
-    menu->addMenu (ui->menuHelp);
     ui->actionMenu->setMenu(menu);
     QList<QToolButton*> tbList = ui->mainToolBar->findChildren<QToolButton*>();
     if (!tbList.isEmpty())
@@ -237,7 +236,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
 
     connect (ui->actionUndo, &QAction::triggered, this, &FPwin::undoing);
     connect (ui->actionRedo, &QAction::triggered, this, &FPwin::redoing);
-
     connect (ui->tabWidget, &QTabWidget::currentChanged, this, &FPwin::onTabChanged);
     connect (ui->tabWidget, &TabWidget::currentTabChanged, this, &FPwin::tabSwitch);
     connect (ui->tabWidget, &TabWidget::hasLastActiveTab, [this] (bool hasLastActive) {
@@ -253,33 +251,23 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     connect (ui->actionCloseRight, &QAction::triggered, this, &FPwin::closeNextTabs);
     connect (ui->actionCloseLeft, &QAction::triggered, this, &FPwin::closePreviousTabs);
     connect (ui->actionCloseOther, &QAction::triggered, this, &FPwin::closeOtherTabs);
-
     connect (ui->actionFont, &QAction::triggered, this, &FPwin::fontDialog);
-
     connect (ui->actionFind, &QAction::triggered, this, &FPwin::showHideSearch);
     connect (ui->actionJump, &QAction::triggered, this, &FPwin::jumpTo);
     connect (ui->spinBox, &QAbstractSpinBox::editingFinished, this, &FPwin::goTo);
-
     connect (ui->actionLineNumbers, &QAction::toggled, this, &FPwin::showLN);
     connect (ui->actionWrap, &QAction::triggered, this, &FPwin::toggleWrapping);
     connect (ui->actionSyntax, &QAction::triggered, this, &FPwin::toggleSyntaxHighlighting);
     connect (ui->actionIndent, &QAction::triggered, this, &FPwin::toggleIndent);
-
     connect (ui->actionPreferences, &QAction::triggered, this, &FPwin::prefDialog);
-
     connect (ui->actionReplace, &QAction::triggered, this, &FPwin::replaceDock);
     connect (ui->toolButtonNext, &QAbstractButton::clicked, this, &FPwin::replace);
     connect (ui->toolButtonPrv, &QAbstractButton::clicked, this, &FPwin::replace);
     connect (ui->toolButtonAll, &QAbstractButton::clicked, this, &FPwin::replaceAll);
     connect (ui->dockReplace, &QDockWidget::visibilityChanged, this, &FPwin::closeReplaceDock);
     connect (ui->dockReplace, &QDockWidget::topLevelChanged, this, &FPwin::resizeDock);
-
     connect (ui->actionDoc, &QAction::triggered, this, &FPwin::docProp);
     connect (ui->actionPrint, &QAction::triggered, this, &FPwin::filePrint);
-
-    connect (ui->actionAbout, &QAction::triggered, this, &FPwin::aboutDialog);
-    connect (ui->actionHelp, &QAction::triggered, this, &FPwin::helpDoc);
-
     connect (this, &FPwin::finishedLoading, [this] {
         if (sidePane_)
             sidePane_->listWidget()->scrollToItem (sidePane_->listWidget()->currentItem());
@@ -591,8 +579,6 @@ void FPwin::applyConfigOnStarting()
     ui->actionQuit->setIcon (symbolicIcon::icon (":icons/application-exit.svg"));
     ui->actionFont->setIcon (symbolicIcon::icon (":icons/preferences-desktop-font.svg"));
     ui->actionPreferences->setIcon (symbolicIcon::icon (":icons/preferences-system.svg"));
-    ui->actionHelp->setIcon (symbolicIcon::icon (":icons/help-contents.svg"));
-    ui->actionAbout->setIcon (symbolicIcon::icon (":icons/help-about.svg"));
     ui->actionJump->setIcon (symbolicIcon::icon (":icons/go-jump.svg"));
     ui->actionEdit->setIcon (symbolicIcon::icon (":icons/document-edit.svg"));
     ui->actionRun->setIcon (symbolicIcon::icon (":icons/system-run.svg"));

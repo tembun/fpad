@@ -283,18 +283,10 @@
     <addaction name="actionReplace"/>
     <addaction name="actionJump"/>
    </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="title">
-     <string>&amp;Help</string>
-    </property>
-    <addaction name="actionHelp"/>
-    <addaction name="actionAbout"/>
-   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuOptions"/>
    <addaction name="menuSearch"/>
-   <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="contextMenuPolicy">
@@ -737,19 +729,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+P</string>
-   </property>
-  </action>
-  <action name="actionHelp">
-   <property name="text">
-    <string>&amp;Help</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+H</string>
-   </property>
-  </action>
-  <action name="actionAbout">
-   <property name="text">
-    <string>&amp;About</string>
    </property>
   </action>
   <action name="actionWindows_Arabic">

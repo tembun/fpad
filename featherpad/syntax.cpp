@@ -247,21 +247,15 @@ void FPwin::setProgLang (TextEdit *textEdit)
 void FPwin::syntaxHighlighting (TextEdit *textEdit, bool highlight, const QString& lang)
 {
     if (textEdit == nullptr
-        || textEdit->isUneditable()) // has huge lines or isn't a text
+        || textEdit->isUneditable())
     {
         return;
     }
-
     if (highlight)
     {
-        QString progLan = lang; // first try the enforced language
+        QString progLan = lang;
         if (progLan.isEmpty())
             progLan = textEdit->getProg();
-        if (progLan == "help" // used for marking the help doc
-            || progLan.isEmpty()) // impossible; just a precaution
-        {
-            return;
-        }
 
         Config config = static_cast<FPsingleton*>(qApp)->getConfig();
         if (textEdit->getSize() > config.getMaxSHSize()*1024*1024)
@@ -275,7 +269,6 @@ void FPwin::syntaxHighlighting (TextEdit *textEdit, bool highlight, const QStrin
             });
             return;
         }
-
         if (!qobject_cast< Highlighter *>(textEdit->getHighlighter()))
         {
             QPoint Point (0, 0);
