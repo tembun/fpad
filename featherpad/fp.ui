@@ -276,9 +276,6 @@
     <addaction name="actionPreferences"/>
    </widget>
    <widget class="QMenu" name="menuSearch">
-    <property name="title">
-     <string>&amp;Search</string>
-    </property>
     <addaction name="actionFind"/>
     <addaction name="actionReplace"/>
     <addaction name="actionJump"/>
@@ -558,23 +555,17 @@
    </property>
   </action>
   <action name="actionFind">
-   <property name="text">
-    <string>&amp;Find</string>
-   </property>
-   <property name="toolTip">
-    <string>Focus/hide search bar</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+F</string>
-   </property>
+    <property name="text">
+      <string>&amp;Find</string>
+    </property>
+    <property name="shortcut">
+    	<string>Ctrl+F</string>
+    </property>
   </action>
   <action name="actionReplace">
-   <property name="text">
-    <string>&amp;Replace</string>
-   </property>
-   <property name="toolTip">
-    <string>Show/hide replacement dock</string>
-   </property>
+    <property name="text">
+      <string>&amp;Replace</string>
+    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
    </property>
@@ -942,15 +933,12 @@
    </property>
   </action>
   <action name="actionJump">
-   <property name="text">
-    <string>&amp;Jump to</string>
-   </property>
-   <property name="toolTip">
-    <string>Show/hide jump bar</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+J</string>
-   </property>
+    <property name="text">
+      <string>&amp;Jump To</string>
+    </property>
+    <property name="shortcut">
+    	<string>Alt+1</string>
+    </property>
   </action>
   <action name="actionEdit">
    <property name="text">

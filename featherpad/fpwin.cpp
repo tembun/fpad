@@ -496,6 +496,7 @@ void FPwin::applyConfigOnStarting()
 
     ui->mainToolBar->setVisible (!config.getNoToolbar());
     ui->menuBar->setVisible (!config.getNoMenubar());
+    ui->menuBar->actions().at( 3 )->setVisible( false );
     ui->actionMenu->setVisible (config.getNoMenubar());
 
     ui->actionDoc->setVisible (!config.getShowStatusbar());
@@ -573,13 +574,10 @@ void FPwin::applyConfigOnStarting()
     ui->actionDelete->setIcon (symbolicIcon::icon (":icons/edit-delete.svg"));
     ui->actionSelectAll->setIcon (symbolicIcon::icon (":icons/edit-select-all.svg"));
     ui->actionReload->setIcon (symbolicIcon::icon (":icons/view-refresh.svg"));
-    ui->actionFind->setIcon (symbolicIcon::icon (":icons/edit-find.svg"));
-    ui->actionReplace->setIcon (symbolicIcon::icon (":icons/edit-find-replace.svg"));
     ui->actionClose->setIcon (symbolicIcon::icon (":icons/window-close.svg"));
     ui->actionQuit->setIcon (symbolicIcon::icon (":icons/application-exit.svg"));
     ui->actionFont->setIcon (symbolicIcon::icon (":icons/preferences-desktop-font.svg"));
     ui->actionPreferences->setIcon (symbolicIcon::icon (":icons/preferences-system.svg"));
-    ui->actionJump->setIcon (symbolicIcon::icon (":icons/go-jump.svg"));
     ui->actionEdit->setIcon (symbolicIcon::icon (":icons/document-edit.svg"));
     ui->actionRun->setIcon (symbolicIcon::icon (":icons/system-run.svg"));
     ui->actionCopyName->setIcon (symbolicIcon::icon (":icons/edit-copy.svg"));
