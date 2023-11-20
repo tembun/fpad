@@ -241,27 +241,25 @@ private:
     void closeWarningBar (bool keepOnStartup = false);
     void disconnectLambda();
     void updateLangBtn (TextEdit *textEdit);
-    void updateGUIForSingleTab (bool single);
     void stealFocus();
 
     QActionGroup *aGroup_;
-    QString lastFile_; // The last opened or saved file (for file dialogs).
-    QHash<QString, QVariant> lastWinFilesCur_; // The last window files and their cusrors (if restored).
-    QString txtReplace_; // The replacing text.
-    int rightClicked_; // The index/row of the right-clicked tab/item.
-    int loadingProcesses_; // The number of loading processes (used to prevent early closing).
-    QPointer<QThread> busyThread_; // Used to wait one second for making the cursor busy.
-    QMetaObject::Connection lambdaConnection_; // Captures a lambda connection to disconnect it later.
-    QHash<QListWidgetItem*, TabPage*> sideItems_; // For fast tab switching.
-    QHash<QString, QAction*> langs_; // All programming languages (to be enforced by the user).
+    QString lastFile_;
+    QHash<QString, QVariant> lastWinFilesCur_;
+    QString txtReplace_;
+    int rightClicked_;
+    int loadingProcesses_;
+    QPointer<QThread> busyThread_;
+    QMetaObject::Connection lambdaConnection_;
+    QHash<QListWidgetItem*, TabPage*> sideItems_;
+    QHash<QString, QAction*> langs_;
     QHash<QAction*, QKeySequence> defaultShortcuts_;
-    bool inactiveTabModified_; // The inactive tab is modified (e.g., when saving all files).
-    // Auto-saving:
+    bool inactiveTabModified_;
     QTimer *autoSaver_;
     QElapsedTimer autoSaverPause_;
     int autoSaverRemainingTime_;
 
-    bool standalone_; // only used internally
+    bool standalone_;
 };
 
 }

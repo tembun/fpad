@@ -110,16 +110,10 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     /* replace dock */
     QWidget::setTabOrder (ui->lineEditFind, ui->lineEditReplace);
     QWidget::setTabOrder (ui->lineEditReplace, ui->toolButtonNext);
-    /* tooltips are set here for easier translation */
     ui->toolButtonNext->setToolTip (tr ("Next") + " (" + QKeySequence (Qt::Key_F8).toString (QKeySequence::NativeText) + ")");
     ui->toolButtonPrv->setToolTip (tr ("Previous") + " (" + QKeySequence (Qt::Key_F9).toString (QKeySequence::NativeText) + ")");
     ui->toolButtonAll->setToolTip (tr ("Replace all") + " (" + QKeySequence (Qt::Key_F10).toString (QKeySequence::NativeText) + ")");
     ui->dockReplace->setVisible (false);
-    if (QApplication::layoutDirection() == Qt::RightToLeft)
-    {
-        ui->actionRightTab->setShortcut (QKeySequence (Qt::ALT + Qt::Key_Left));
-        ui->actionLeftTab->setShortcut (QKeySequence (Qt::ALT + Qt::Key_Right));
-    }
     static const QStringList excluded = {"actionCut", "actionCopy", "actionPaste", "actionSelectAll"};
     const auto allMenus = ui->menuBar->findChildren<QMenu*>();
     for (const auto &thisMenu : allMenus)
@@ -184,9 +178,12 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     }
     connect (ui->actionNew, &QAction::triggered, this, &FPwin::newTab);
     connect (ui->tabWidget->tabBar(), &TabBar::addEmptyTab, this, &FPwin::newTab);
-    connect (ui->actionRightTab, &QAction::triggered, this, &FPwin::nextTab);
-    connect (ui->actionLeftTab, &QAction::triggered, this, &FPwin::previousTab);
-    connect (ui->actionClose, &QAction::triggered, this, &FPwin::closeTab);
+    QShortcut* next_tab_shortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Right), this);
+    connect (next_tab_shortcut, &QShortcut::activated, this, &FPwin::nextTab);
+    QShortcut* prev_tab_shortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Left), this);
+    connect (prev_tab_shortcut , &QShortcut::activated, this, &FPwin::previousTab);
+    QShortcut* close_tab_shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), this);
+    connect (close_tab_shortcut , &QShortcut::activated, this, &FPwin::closeTab);
     connect (ui->tabWidget, &QTabWidget::tabCloseRequested, this, &FPwin::closeTabAtIndex);
     connect (ui->actionOpen, &QAction::triggered, this, &FPwin::fileOpen);
     connect (ui->actionReload, &QAction::triggered, this, &FPwin::reload);
@@ -230,15 +227,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     connect (ui->dockReplace, &QDockWidget::topLevelChanged, this, &FPwin::resizeDock);
     connect (ui->actionDoc, &QAction::triggered, this, &FPwin::docProp);
     connect (this, &FPwin::finishedLoading, [this]{});
-    /***************************************************************************
-     *****     KDE (KAcceleratorManager) has a nasty "feature" that        *****
-     *****   "smartly" gives mnemonics to tab and tool button texts so     *****
-     *****   that, sometimes, the same mnemonics are disabled in the GUI   *****
-     *****     and, as a result, their corresponding action shortcuts      *****
-     *****     become disabled too. As a workaround, we don't set text     *****
-     *****     for tool buttons on the search bar and replacement dock.    *****
-     ***** The toolbar buttons and menu items aren't affected by this bug. *****
-     ***************************************************************************/
     ui->toolButtonNext->setShortcut (QKeySequence (Qt::Key_F8));
     ui->toolButtonPrv->setShortcut (QKeySequence (Qt::Key_F9));
     ui->toolButtonAll->setShortcut (QKeySequence (Qt::Key_F10));
@@ -367,8 +355,6 @@ void FPwin::applyConfigOnStarting()
     ui->actionDelete->setIcon (symbolicIcon::icon (":icons/edit-delete.svg"));
     ui->actionSelectAll->setIcon (symbolicIcon::icon (":icons/edit-select-all.svg"));
     ui->actionReload->setIcon (symbolicIcon::icon (":icons/view-refresh.svg"));
-    ui->actionClose->setIcon (symbolicIcon::icon (":icons/window-close.svg"));
-    ui->actionQuit->setIcon (symbolicIcon::icon (":icons/application-exit.svg"));
     ui->actionFont->setIcon (symbolicIcon::icon (":icons/preferences-desktop-font.svg"));
     ui->actionPreferences->setIcon (symbolicIcon::icon (":icons/preferences-system.svg"));
     ui->actionEdit->setIcon (symbolicIcon::icon (":icons/document-edit.svg"));
@@ -387,15 +373,11 @@ void FPwin::applyConfigOnStarting()
     {
         ui->actionCloseRight->setIcon (symbolicIcon::icon (":icons/go-previous.svg"));
         ui->actionCloseLeft->setIcon (symbolicIcon::icon (":icons/go-next.svg"));
-        ui->actionRightTab->setIcon (symbolicIcon::icon (":icons/go-previous.svg"));
-        ui->actionLeftTab->setIcon (symbolicIcon::icon (":icons/go-next.svg"));
     }
     else
     {
         ui->actionCloseRight->setIcon (symbolicIcon::icon (":icons/go-next.svg"));
         ui->actionCloseLeft->setIcon (symbolicIcon::icon (":icons/go-previous.svg"));
-        ui->actionRightTab->setIcon (symbolicIcon::icon (":icons/go-next.svg"));
-        ui->actionLeftTab->setIcon (symbolicIcon::icon (":icons/go-previous.svg"));
     }
 
     QIcon icn = QIcon::fromTheme ("featherpad");
@@ -602,11 +584,6 @@ bool FPwin::hasAnotherDialog()
     }
     return res;
 }
-void FPwin::updateGUIForSingleTab (bool single)
-{
-    ui->actionRightTab->setEnabled (!single);
-    ui->actionLeftTab->setEnabled (!single);
-}
 void FPwin::deleteTabPage (int tabIndex, bool saveToList, bool closeWithLastTab)
 {
     TabPage *tabPage = qobject_cast<TabPage *>(ui->tabWidget->widget (tabIndex));
@@ -656,21 +633,20 @@ bool FPwin::closeTabs (int first, int last, bool saveFilesList)
         if (first >= index)
             break;
         int tabIndex = index;
-        if (first == index - 1) // only one tab to be closed
+        if (first == index - 1)
             state = savePrompt (tabIndex, false);
         else
-            state = savePrompt (tabIndex, true); // with a "No to all" button
+            state = savePrompt (tabIndex, true);
         switch (state) {
-        case SAVED: // close this tab and go to the next one on the left
+        case SAVED:
             keep = false;
-            if (lastWinFilesCur_.size() >= 50) // never remember more than 50 files
+            if (lastWinFilesCur_.size() >= 50)
                 saveFilesList = false;
             deleteTabPage (tabIndex, saveFilesList, !closing);
 
-            if (last > -1) // also last > 0
-                --last; // a left tab is removed
+            if (last > -1)
+                --last;
 
-            /* final changes */
             count = ui->tabWidget->count();
             if (count == 0)
             {
@@ -678,10 +654,8 @@ bool FPwin::closeTabs (int first, int last, bool saveFilesList)
                 ui->actionSave->setDisabled (true);
                 enableWidgets (false);
             }
-            else if (count == 1)
-                updateGUIForSingleTab (true);
             break;
-        case UNDECIDED: // stop quitting (cancel or can't save)
+        case UNDECIDED:
             keep = true;
             lastWinFilesCur_.clear();
             break;
@@ -698,7 +672,7 @@ bool FPwin::closeTabs (int first, int last, bool saveFilesList)
                     index = ui->tabWidget->count() - 1;
                 else // if (last > 0)
                 {
-                    --last; // a left tab is removed
+                    --last;
                     index = last - 1;
                 }
                 tabIndex = index;
@@ -710,8 +684,6 @@ bool FPwin::closeTabs (int first, int last, bool saveFilesList)
                     ui->actionSave->setDisabled (true);
                     enableWidgets (false);
                 }
-                else if (count == 1)
-                    updateGUIForSingleTab (true);
             }
             break;
         default:
@@ -875,8 +847,6 @@ FPwin::DOCSTATE FPwin::savePrompt (int tabIndex, bool noToAll)
     }
     return state;
 }
-/*************************/
-// Enable or disable some widgets.
 void FPwin::enableWidgets (bool enable) const
 {
     if (!enable && ui->dockReplace->isVisible())
@@ -899,7 +869,6 @@ void FPwin::enableWidgets (bool enable) const
     ui->actionFind->setEnabled (enable);
     ui->actionJump->setEnabled (enable);
     ui->actionReplace->setEnabled (enable);
-    ui->actionClose->setEnabled (enable);
     ui->actionSaveAs->setEnabled (enable);
     ui->actionSaveAllFiles->setEnabled (enable);
     ui->menuEncoding->setEnabled (enable);
@@ -1015,23 +984,16 @@ TabPage* FPwin::createEmptyTab (bool setCurrent, bool allowNormalHighlighter)
         textEdit->setThickCursor (true);
 
     if (allowNormalHighlighter && ui->actionSyntax->isChecked())
-        syntaxHighlighting (textEdit); // the default (url) syntax highlighter
+        syntaxHighlighting (textEdit);
 
     int index = ui->tabWidget->currentIndex();
     if (index == -1) enableWidgets (true);
-
-    /* hide the searchbar consistently */
     if ((index == -1 && config.getHideSearchbar())
         || (index > -1 && !qobject_cast< TabPage *>(ui->tabWidget->widget (index))->isSearchBarVisible()))
     {
         tabPage->setSearchBarVisible (false);
     }
-
     ui->tabWidget->insertTab (index + 1, tabPage, tr ("Untitled"));
-
-    /* set all preliminary properties */
-    if (index >= 0)
-        updateGUIForSingleTab (false);
     ui->tabWidget->setTabToolTip (index + 1, tr ("Unsaved"));
     if (!ui->actionWrap->isChecked())
         textEdit->setLineWrapMode (QPlainTextEdit::NoWrap);
@@ -1444,7 +1406,7 @@ void FPwin::closeTab()
     QListWidgetItem *curItem = nullptr;
     int index = -1;
 	index = ui->tabWidget->currentIndex();
-	if (index == -1)  // not needed
+	if (index == -1)
 	{
 	pauseAutoSaving (false);
 	return;
@@ -1466,11 +1428,7 @@ void FPwin::closeTab()
     }
     else
     {
-        if (count == 1)
-            updateGUIForSingleTab (true);
-
         if (curItem)
-
         if (TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget()))
             tabPage->textEdit()->setFocus();
     }
@@ -1502,10 +1460,7 @@ void FPwin::closeTabAtIndex (int index)
     }
     else
     {
-        if (count == 1)
-            updateGUIForSingleTab (true);
-
-        if (curPage) // restore the current page
+        if (curPage)
             ui->tabWidget->setCurrentWidget (curPage);
 
         if (TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget()))
@@ -3381,7 +3336,6 @@ void FPwin::dropTab (const QString& str)
     disconnect (textEdit, &QPlainTextEdit::blockCountChanged, dragSource, &FPwin::formatOnBlockChange);
     disconnect (textEdit, &TextEdit::updateRect, dragSource, &FPwin::formatTextRect);
     disconnect (textEdit, &TextEdit::resized, dragSource, &FPwin::formatTextRect);
-
     disconnect (textEdit->document(), &QTextDocument::contentsChange, dragSource, &FPwin::updateWordInfo);
     disconnect (textEdit->document(), &QTextDocument::contentsChange, dragSource, &FPwin::formatOnTextChange);
     disconnect (textEdit->document(), &QTextDocument::blockCountChanged, dragSource, &FPwin::setMax);
@@ -3389,35 +3343,21 @@ void FPwin::dropTab (const QString& str)
     disconnect (textEdit->document(), &QTextDocument::undoAvailable, dragSource->ui->actionUndo, &QAction::setEnabled);
     disconnect (textEdit->document(), &QTextDocument::redoAvailable, dragSource->ui->actionRedo, &QAction::setEnabled);
     if (!config.getSaveUnmodified())
+    {
         disconnect (textEdit->document(), &QTextDocument::modificationChanged, dragSource, &FPwin::enableSaving);
-
+    }
     disconnect (tabPage, &TabPage::find, dragSource, &FPwin::find);
     disconnect (tabPage, &TabPage::searchFlagChanged, dragSource, &FPwin::searchFlagChanged);
-
-    /* it's important to release mouse before tab removal because otherwise, the source
-       tabbar might not be updated properly with tab reordering during a fast drag-and-drop */
     dragSource->ui->tabWidget->tabBar()->releaseMouse();
-
-    dragSource->ui->tabWidget->removeTab (index); // there can't be a side-pane here
+    dragSource->ui->tabWidget->removeTab (index);
     int count = dragSource->ui->tabWidget->count();
-    if (count == 1)
-        dragSource->updateGUIForSingleTab (true);
-
-    /***************************************************************************
-     ***** The tab is dropped into this window; so insert it as a new tab. *****
-     ***************************************************************************/
-
     int insertIndex = ui->tabWidget->currentIndex() + 1;
-
-    /* first, set the new info... */
     lastFile_ = textEdit->getFileName();
     textEdit->setGreenSel (QList<QTextEdit::ExtraSelection>());
     textEdit->setRedSel (QList<QTextEdit::ExtraSelection>());
-    /* ... then insert the detached widget,
-       considering whether the searchbar should be shown... */
     if (!textEdit->getSearchedText().isEmpty())
     {
-        if (insertIndex == 0 // the window has no tab yet
+        if (insertIndex == 0
             || !qobject_cast< TabPage *>(ui->tabWidget->widget (insertIndex - 1))->isSearchBarVisible())
         {
             for (int i = 0; i < ui->tabWidget->count(); ++i)
@@ -3429,10 +3369,8 @@ void FPwin::dropTab (const QString& str)
         tabPage->setSearchBarVisible (qobject_cast< TabPage *>(ui->tabWidget->widget (insertIndex - 1))
                                       ->isSearchBarVisible());
     }
-    if (ui->tabWidget->count() == 0) // the tab will be inserted and switched to below
+    if (ui->tabWidget->count() == 0)
         enableWidgets (true);
-    else if (ui->tabWidget->count() == 1)
-        updateGUIForSingleTab (false); // tab detach and switch actions
     bool isLink = lastFile_.isEmpty() ? false : QFileInfo (lastFile_).isSymLink();
     ui->tabWidget->insertTab (insertIndex, tabPage,
                               isLink ? QIcon (":icons/link.svg") : QIcon(),
@@ -3527,7 +3465,6 @@ void FPwin::dropTab (const QString& str)
     if (count == 0)
         QTimer::singleShot (0, dragSource, &QWidget::close);
 }
-/*************************/
 void FPwin::tabContextMenu (const QPoint& p)
 {
     int tabNum = ui->tabWidget->count();

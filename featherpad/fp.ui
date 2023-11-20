@@ -150,23 +150,11 @@
     </property>
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
-    <addaction name="separator"/>
-    <addaction name="actionRun"/>
-    <addaction name="separator"/>
-    <addaction name="actionRightTab"/>
-    <addaction name="actionLeftTab"/>
-    <addaction name="separator"/>
     <addaction name="actionReload"/>
-    <addaction name="separator"/>
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
     <addaction name="actionSaveAllFiles"/>
-    <addaction name="separator"/>
-    <addaction name="separator"/>
     <addaction name="actionDoc"/>
-    <addaction name="separator"/>
-    <addaction name="actionClose"/>
-    <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -550,22 +538,6 @@
     <string>Ctrl+Shift+D</string>
    </property>
   </action>
-  <action name="actionClose">
-   <property name="text">
-    <string>&amp;Close</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+Q</string>
-   </property>
-  </action>
-  <action name="actionQuit">
-   <property name="text">
-    <string>&amp;Quit</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Q</string>
-   </property>
-  </action>
   <action name="actionCut">
    <property name="enabled">
     <bool>false</bool>
@@ -932,28 +904,6 @@
   <action name="actionCopyPath">
    <property name="text">
     <string>Copy File &amp;Path</string>
-   </property>
-  </action>
-  <action name="actionRightTab">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Ne&amp;xt Tab</string>
-   </property>
-   <property name="shortcut">
-    <string>Alt+Right</string>
-   </property>
-  </action>
-  <action name="actionLeftTab">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Previous Ta&amp;b</string>
-   </property>
-   <property name="shortcut">
-    <string>Alt+Left</string>
    </property>
   </action>
   <action name="actionMenu">
