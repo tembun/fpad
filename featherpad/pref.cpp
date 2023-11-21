@@ -35,7 +35,6 @@ namespace FeatherPad {
 
 static QHash<QString, QString> OBJECT_NAMES;
 static QHash<QString, QString> DEFAULT_SHORTCUTS;
-/*************************/
 FPKeySequenceEdit::FPKeySequenceEdit (QWidget *parent) : QKeySequenceEdit (parent) {}
 
 void FPKeySequenceEdit::keyPressEvent (QKeyEvent *event)
@@ -51,7 +50,6 @@ void FPKeySequenceEdit::keyPressEvent (QKeyEvent *event)
     }
     QKeySequenceEdit::keyPressEvent (event);
 }
-/*************************/
 Delegate::Delegate (QObject *parent) : QStyledItemDelegate (parent) {}
 
 QWidget* Delegate::createEditor (QWidget *parent,
@@ -60,7 +58,6 @@ QWidget* Delegate::createEditor (QWidget *parent,
 {
     return new FPKeySequenceEdit (parent);
 }
-/*************************/
 bool Delegate::eventFilter (QObject *object, QEvent *event)
 {
     QWidget *editor = qobject_cast<QWidget*>(object);
@@ -76,7 +73,6 @@ bool Delegate::eventFilter (QObject *object, QEvent *event)
     }
     return QStyledItemDelegate::eventFilter (object, event);
 }
-/*************************/
 PrefDialog::PrefDialog (QWidget *parent)
     : QDialog (parent), ui (new Ui::PrefDialog)
 {
@@ -217,37 +213,22 @@ PrefDialog::PrefDialog (QWidget *parent)
         ui->colorValueSpin->setValue (config.getDarkBgColorValue());
     }
     connect (ui->colorValueSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefColValue);
-
     ui->thickCursorBox->setChecked (config.getThickCursor());
-
     ui->selHighlightBox->setChecked (selHighlighting_);
-
     ui->dateEdit->setText (config.getDateFormat());
-
     ui->lastLineBox->setChecked (config.getAppendEmptyLine());
     connect (ui->lastLineBox, &QCheckBox::stateChanged, this, &PrefDialog::prefAppendEmptyLine);
-
     ui->trailingSpacesBox->setChecked (config.getRemoveTrailingSpaces());
     connect (ui->trailingSpacesBox, &QCheckBox::stateChanged, this, &PrefDialog::prefRemoveTrailingSpaces);
-
     ui->skipNonTextBox->setChecked (config.getSkipNonText());
     connect (ui->skipNonTextBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSkipNontext);
-
     ui->pastePathsBox->setChecked (pastePaths_);
-
     ui->spinBox->setValue (config.getMaxSHSize());
     connect (ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefMaxSHSize);
-
     ui->inertiaBox->setChecked (config.getInertialScrolling());
     connect (ui->inertiaBox, &QCheckBox::stateChanged, this, &PrefDialog::prefInertialScrolling);
-
     ui->textTabSpin->setValue (textTabSize_);
     connect (ui->textTabSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefTextTabSize);
-
-    /*************
-     *** Files ***
-     *************/
-
     ui->exeBox->setChecked (config.getExecuteScripts());
     connect (ui->exeBox, &QCheckBox::stateChanged, this, &PrefDialog::prefExecute);
     ui->commandEdit->setText (config.getExecuteCommand());
@@ -448,7 +429,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     else
         resize (config.getPrefSize().boundedTo(ag));
 }
-/*************************/
 PrefDialog::~PrefDialog()
 {
     if (promptTimer_)
@@ -458,13 +438,11 @@ PrefDialog::~PrefDialog()
     }
     delete ui; ui = nullptr;
 }
-/*************************/
 void PrefDialog::closeEvent (QCloseEvent *event)
 {
     onClosing();
     event->accept();
 }
-/*************************/
 void PrefDialog::onClosing()
 {
     prefShortcuts();
@@ -483,7 +461,6 @@ void PrefDialog::onClosing()
     config.setPrefSize (size());
     config.writeConfig();
 }
-/*************************/
 void PrefDialog::showPrompt (const QString& str, bool temporary)
 {
     Config config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -546,12 +523,10 @@ void PrefDialog::showPrompt (const QString& str, bool temporary)
     }
     ui->promptLabel->show();
 }
-/*************************/
 void PrefDialog::showWhatsThis()
 {
     QWhatsThis::enterWhatsThisMode();
 }
-/*************************/
 void PrefDialog::prefSize (int checked)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -572,7 +547,6 @@ void PrefDialog::prefSize (int checked)
         ui->sizeLable->setEnabled (true);
     }
 }
-/*************************/
 void PrefDialog::prefPos (int checked)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -581,7 +555,6 @@ void PrefDialog::prefPos (int checked)
     else if (checked == Qt::Unchecked)
         config.setRemPos (false);
 }
-/*************************/
 void PrefDialog::prefToolbar (int checked)
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -601,7 +574,6 @@ void PrefDialog::prefToolbar (int checked)
             singleton->Wins.at (i)->ui->mainToolBar->setVisible (true);
     }
 }
-/*************************/
 void PrefDialog::prefMenubar (int checked)
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -627,7 +599,6 @@ void PrefDialog::prefMenubar (int checked)
         }
     }
 }
-/*************************/
 void PrefDialog::prefSearchbar (int checked)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -636,7 +607,6 @@ void PrefDialog::prefSearchbar (int checked)
     else if (checked == Qt::Unchecked)
         config.setHideSearchbar (false);
 }
-/*************************/
 void PrefDialog::prefSearchHistory (int checked)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -647,7 +617,6 @@ void PrefDialog::prefSearchHistory (int checked)
 
     showPrompt();
 }
-/*************************/
 void PrefDialog::prefStatusbar (int checked)
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -704,7 +673,6 @@ void PrefDialog::prefStatusbar (int checked)
             singleton->Wins.at (i)->ui->actionDoc->setVisible (true);
     }
 }
-/*************************/
 void PrefDialog::prefStatusCursor (int checked)
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -750,7 +718,6 @@ void PrefDialog::prefStatusCursor (int checked)
         }
     }
 }
-/*************************/
 void PrefDialog::prefTabPosition()
 {
     int index = ui->tabCombo->currentIndex();
@@ -763,14 +730,12 @@ void PrefDialog::prefTabPosition()
             singleton->Wins.at (i)->ui->tabWidget->setTabPosition (static_cast<QTabWidget::TabPosition>(index));
     }
 }
-/*************************/
 void PrefDialog::prefFont (int checked)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
     if (checked == Qt::Checked)
     {
         config.setRemFont (true);
-        // get the document font of the current window
         if (FPwin *win = static_cast<FPwin *>(parent_))
         {
             if (TabPage *tabPage = qobject_cast<TabPage*>(win->ui->tabWidget->currentWidget()))
@@ -780,11 +745,9 @@ void PrefDialog::prefFont (int checked)
     else if (checked == Qt::Unchecked)
     {
         config.setRemFont (false);
-        // return to our default font
         config.resetFont();
     }
 }
-/*************************/
 void PrefDialog::prefWrap (int checked)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -793,7 +756,6 @@ void PrefDialog::prefWrap (int checked)
     else if (checked == Qt::Unchecked)
         config.setWrapByDefault (false);
 }
-/*************************/
 void PrefDialog::prefIndent (int checked)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -802,7 +764,6 @@ void PrefDialog::prefIndent (int checked)
     else if (checked == Qt::Unchecked)
         config.setIndentByDefault (false);
 }
-/*************************/
 void PrefDialog::prefAutoBracket (int checked)
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -840,7 +801,6 @@ void PrefDialog::prefAutoBracket (int checked)
         }
     }
 }
-/*************************/
 void PrefDialog::prefAutoReplace (int checked)
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -878,7 +838,6 @@ void PrefDialog::prefAutoReplace (int checked)
         }
     }
 }
-/*************************/
 void PrefDialog::prefLine (int checked)
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -900,16 +859,13 @@ void PrefDialog::prefLine (int checked)
             singleton->Wins.at (i)->ui->actionLineNumbers->setEnabled (true);
     }
 }
-/*************************/
 void PrefDialog::prefSyntax (int checked)
 {
-    /* only set the state of the syntax enforcing checkbox */
     if (checked == Qt::Checked)
         ui->enforceSyntaxBox->setEnabled (true);
     else if (checked == Qt::Unchecked)
         ui->enforceSyntaxBox->setEnabled (false);
 }
-/*************************/
 void PrefDialog::prefApplySyntax()
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -923,12 +879,11 @@ void PrefDialog::prefApplySyntax()
     config.setShowLangSelector (ui->enforceSyntaxBox->isChecked());
 
     if (addLnagBtn || removeLangBtn)
-    { // add or remove all language buttons based on the new settings
+    {
         for (int i = 0; i < singleton->Wins.count(); ++i)
             singleton->Wins.at (i)->addRemoveLangBtn (addLnagBtn);
     }
 }
-/*************************/
 void PrefDialog::prefApplyDateFormat()
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -949,7 +904,6 @@ void PrefDialog::prefApplyDateFormat()
         }
     }
 }
-/*************************/
 void PrefDialog::prefWhiteSpace (int checked)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -960,7 +914,6 @@ void PrefDialog::prefWhiteSpace (int checked)
 
     showPrompt();
 }
-/*************************/
 void PrefDialog::prefVLine (int checked)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -978,7 +931,6 @@ void PrefDialog::prefVLine (int checked)
 
     showPrompt();
 }
-/*************************/
 void PrefDialog::prefVLineDistance (int value)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -986,7 +938,6 @@ void PrefDialog::prefVLineDistance (int value)
     config.setVLineDistance (dsitance);
     showPrompt();
 }
-/*************************/
 void PrefDialog::prefEndings (int checked)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -997,7 +948,6 @@ void PrefDialog::prefEndings (int checked)
 
     showPrompt();
 }
-/*************************/
 void PrefDialog::prefDarkColScheme (int checked)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -1081,7 +1031,6 @@ void PrefDialog::prefDarkColScheme (int checked)
     ui->curLineSpin->setValue (config.getCurLineHighlight());
     connect (ui->curLineSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::changeCurLineHighlight);
 }
-/*************************/
 void PrefDialog::prefColValue (int value)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -1092,7 +1041,6 @@ void PrefDialog::prefColValue (int value)
 
     showPrompt();
 }
-/*************************/
 void PrefDialog::prefThickCursor()
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -1112,7 +1060,6 @@ void PrefDialog::prefThickCursor()
         }
     }
 }
-/*************************/
 void PrefDialog::prefSelHighlight()
 {
     bool selHighlighting = ui->selHighlightBox->isChecked();
@@ -1131,7 +1078,6 @@ void PrefDialog::prefSelHighlight()
         }
     }
 }
-/*************************/
 void PrefDialog::prefPastePaths()
 {
     bool pastePaths = ui->pastePathsBox->isChecked();
@@ -1150,7 +1096,6 @@ void PrefDialog::prefPastePaths()
         }
     }
 }
-/*************************/
 void PrefDialog::prefAppendEmptyLine (int checked)
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -1160,7 +1105,6 @@ void PrefDialog::prefAppendEmptyLine (int checked)
     else if (checked == Qt::Unchecked)
         config.setAppendEmptyLine (false);
 }
-/*************************/
 void PrefDialog::prefRemoveTrailingSpaces (int checked)
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -1170,7 +1114,6 @@ void PrefDialog::prefRemoveTrailingSpaces (int checked)
     else if (checked == Qt::Unchecked)
         config.setRemoveTrailingSpaces (false);
 }
-/*************************/
 void PrefDialog::prefSkipNontext (int checked)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -1218,7 +1161,6 @@ void PrefDialog::prefMaxSHSize (int value)
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
     config.setMaxSHSize (value);
 }
-/*************************/
 void PrefDialog::prefInertialScrolling (int checked)
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -1244,7 +1186,6 @@ void PrefDialog::prefInertialScrolling (int checked)
         }
     }
 }
-/*************************/
 void PrefDialog::prefExecute (int checked)
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -1254,33 +1195,19 @@ void PrefDialog::prefExecute (int checked)
         config.setExecuteScripts (true);
         ui->commandEdit->setEnabled (true);
         ui->commandLabel->setEnabled (true);
-        for (int i = 0; i < singleton->Wins.count(); ++i)
-        {
-            FPwin *win = singleton->Wins.at (i);
-            if (TabPage *tabPage = qobject_cast<TabPage*>(win->ui->tabWidget->currentWidget()))
-            {
-                TextEdit *textEdit = tabPage->textEdit();
-                if (win->isScriptLang (textEdit->getProg()) && QFileInfo (textEdit->getFileName()).isExecutable())
-                    win->ui->actionRun->setVisible (true);
-            }
-        }
     }
     else if (checked == Qt::Unchecked)
     {
         config.setExecuteScripts (false);
         ui->commandEdit->setEnabled (false);
         ui->commandLabel->setEnabled (false);
-        for (int i = 0; i < singleton->Wins.count(); ++i)
-            singleton->Wins.at (i)->ui->actionRun->setVisible (false);
     }
 }
-/*************************/
 void PrefDialog::prefCommand (const QString& command)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
     config.setExecuteCommand (command);
 }
-/*************************/
 void PrefDialog::prefRecentFilesNumber (int value)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -1406,7 +1333,6 @@ void PrefDialog::onShortcutChange (QTableWidgetItem *item)
         ui->defaultButton->setEnabled (false);
     }
 }
-/*************************/
 void PrefDialog::restoreDefaultShortcuts()
 {
     if (newShortcuts_.isEmpty()
@@ -1443,7 +1369,6 @@ void PrefDialog::restoreDefaultShortcuts()
         showPrompt();
     }
 }
-/*************************/
 void PrefDialog::prefShortcuts()
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -1466,7 +1391,6 @@ void PrefDialog::prefShortcuts()
             win->updateCustomizableShortcuts();
     }
 }
-/*************************/
 void PrefDialog::prefAutoSave (int checked)
 {
     /* don't do anything other than enabling/disabling the spinbox */
@@ -1475,7 +1399,6 @@ void PrefDialog::prefAutoSave (int checked)
     else if (checked == Qt::Unchecked)
         ui->autoSaveSpin->setEnabled (false);
 }
-/*************************/
 void PrefDialog::prefSaveUnmodified()
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -1507,7 +1430,6 @@ void PrefDialog::prefSaveUnmodified()
         }
     }
 }
-/*************************/
 void PrefDialog::prefApplyAutoSave()
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -1522,22 +1444,19 @@ void PrefDialog::prefApplyAutoSave()
             singleton->Wins.at (i)->startAutoSaving (as, interval);
     }
 }
-/*************************/
 void PrefDialog::prefTextTabSize (int value)
-{ // textTabSize_ is updated but the config isn't
+{
     if (value >= 2 && value <= 10)
     {
         textTabSize_ = value;
         showPrompt();
     }
 }
-/*************************/
 void PrefDialog::prefTextTab()
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
     config.setTextTabSize (textTabSize_);
 }
-/*************************/
 void PrefDialog::prefCloseWithLastTab (int checked)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -1546,7 +1465,6 @@ void PrefDialog::prefCloseWithLastTab (int checked)
     else if (checked == Qt::Unchecked)
         config.setCloseWithLastTab (false);
 }
-/*************************/
 void PrefDialog::restoreDefaultSyntaxColors()
 {
     prefCustomSyntaxColors_.clear();
@@ -1579,19 +1497,15 @@ void PrefDialog::restoreDefaultSyntaxColors()
             }
         }
     }
-    /* update whiteSpace value */
     disconnect (ui->whiteSpaceSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::changeWhitespaceValue);
     ui->whiteSpaceSpin->setValue (config.getWhiteSpaceValue());
     connect (ui->whiteSpaceSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::changeWhitespaceValue);
-
-    /* also, update current line bg value */
     disconnect (ui->curLineSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::changeCurLineHighlight);
     ui->curLineSpin->setValue (config.getMinCurLineHighlight() - 1);
     connect (ui->curLineSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::changeCurLineHighlight);
 
     showPrompt();
 }
-/*************************/
 void PrefDialog::changeSyntaxColor (int row, int column)
 {
     if (column != 1) return;
@@ -1658,7 +1572,6 @@ void PrefDialog::changeSyntaxColor (int row, int column)
         }
     }
 }
-/*************************/
 void PrefDialog::changeWhitespaceValue (int value)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -1668,7 +1581,6 @@ void PrefDialog::changeWhitespaceValue (int value)
                                          || config.getCurLineHighlight() != -1);
     showPrompt();
 }
-/*************************/
 void PrefDialog::changeCurLineHighlight (int value)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();

@@ -117,8 +117,6 @@ private slots:
     void newTabFromRecent();
     void closeTab();
     void closeTabAtIndex (int index);
-    void copyTabFileName();
-    void copyTabFilePath();
     void closeAllTabs();
     void closeNextTabs();
     void closePreviousTabs();
@@ -131,7 +129,6 @@ private slots:
     void pasteText();
     void deleteText();
     void selectAllText();
-    void makeEditable();
     void undoing();
     void redoing();
     void onTabChanged (int index);
@@ -162,7 +159,6 @@ private slots:
     void focus_view_soft();
     void focus_view_hard();
     void manageSessions();
-    void executeProcess();
     void exitProcess();
     void displayError();
     void displayOutput();
