@@ -127,27 +127,13 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     aGroup_ = new QActionGroup (this);
     ui->actionUTF_8->setActionGroup (aGroup_);
     ui->actionUTF_16->setActionGroup (aGroup_);
-    ui->actionWindows_Arabic->setActionGroup (aGroup_);
     ui->actionISO_8859_1->setActionGroup (aGroup_);
     ui->actionISO_8859_15->setActionGroup (aGroup_);
     ui->actionWindows_1252->setActionGroup (aGroup_);
     ui->actionCyrillic_CP1251->setActionGroup (aGroup_);
     ui->actionCyrillic_KOI8_U->setActionGroup (aGroup_);
     ui->actionCyrillic_ISO_8859_5->setActionGroup (aGroup_);
-    ui->actionChinese_BIG5->setActionGroup (aGroup_);
-    ui->actionChinese_GB18030->setActionGroup (aGroup_);
-    ui->actionJapanese_ISO_2022_JP->setActionGroup (aGroup_);
-    ui->actionJapanese_ISO_2022_JP_2->setActionGroup (aGroup_);
-    ui->actionJapanese_ISO_2022_KR->setActionGroup (aGroup_);
-    ui->actionJapanese_CP932->setActionGroup (aGroup_);
-    ui->actionJapanese_EUC_JP->setActionGroup (aGroup_);
-    ui->actionKorean_CP949->setActionGroup (aGroup_);
-    ui->actionKorean_CP1361->setActionGroup (aGroup_);
-    ui->actionKorean_EUC_KR->setActionGroup (aGroup_);
-    ui->actionOther->setActionGroup (aGroup_);
     ui->actionUTF_8->setChecked (true);
-    ui->actionOther->setDisabled (true);
-
     if (standalone_
         || !static_cast<FPsingleton*>(qApp)->isX11())
     {
@@ -2510,15 +2496,10 @@ void FPwin::toggleIndent()
 }
 void FPwin::encodingToCheck (const QString& encoding)
 {
-    if (encoding != "UTF-8")
-        ui->actionOther->setDisabled (true);
-
     if (encoding == "UTF-8")
         ui->actionUTF_8->setChecked (true);
     else if (encoding == "UTF-16")
         ui->actionUTF_16->setChecked (true);
-    else if (encoding == "CP1256")
-        ui->actionWindows_Arabic->setChecked (true);
     else if (encoding == "ISO-8859-1")
         ui->actionISO_8859_1->setChecked (true);
     else if (encoding == "ISO-8859-15")
@@ -2531,31 +2512,6 @@ void FPwin::encodingToCheck (const QString& encoding)
         ui->actionCyrillic_KOI8_U->setChecked (true);
     else if (encoding == "ISO-8859-5")
         ui->actionCyrillic_ISO_8859_5->setChecked (true);
-    else if (encoding == "BIG5")
-        ui->actionChinese_BIG5->setChecked (true);
-    else if (encoding == "GB18030")
-        ui->actionChinese_GB18030->setChecked (true);
-    else if (encoding == "ISO-2022-JP")
-        ui->actionJapanese_ISO_2022_JP->setChecked (true);
-    else if (encoding == "ISO-2022-JP-2")
-        ui->actionJapanese_ISO_2022_JP_2->setChecked (true);
-    else if (encoding == "ISO-2022-KR")
-        ui->actionJapanese_ISO_2022_KR->setChecked (true);
-    else if (encoding == "CP932")
-        ui->actionJapanese_CP932->setChecked (true);
-    else if (encoding == "EUC-JP")
-        ui->actionJapanese_EUC_JP->setChecked (true);
-    else if (encoding == "CP949")
-        ui->actionKorean_CP949->setChecked (true);
-    else if (encoding == "CP1361")
-        ui->actionKorean_CP1361->setChecked (true);
-    else if (encoding == "EUC-KR")
-        ui->actionKorean_EUC_KR->setChecked (true);
-    else
-    {
-        ui->actionOther->setDisabled (false);
-        ui->actionOther->setChecked (true);
-    }
 }
 const QString FPwin::checkToEncoding() const
 {
@@ -2565,8 +2521,6 @@ const QString FPwin::checkToEncoding() const
         encoding = "UTF-8";
     else if (ui->actionUTF_16->isChecked())
         encoding = "UTF-16";
-    else if (ui->actionWindows_Arabic->isChecked())
-        encoding = "CP1256";
     else if (ui->actionISO_8859_1->isChecked())
         encoding = "ISO-8859-1";
     else if (ui->actionISO_8859_15->isChecked())
@@ -2579,26 +2533,6 @@ const QString FPwin::checkToEncoding() const
         encoding = "KOI8-U";
     else if (ui->actionCyrillic_ISO_8859_5->isChecked())
         encoding = "ISO-8859-5";
-    else if (ui->actionChinese_BIG5->isChecked())
-        encoding = "BIG5";
-    else if (ui->actionChinese_GB18030->isChecked())
-        encoding = "GB18030";
-    else if (ui->actionJapanese_ISO_2022_JP->isChecked())
-        encoding = "ISO-2022-JP";
-    else if (ui->actionJapanese_ISO_2022_JP_2->isChecked())
-        encoding = "ISO-2022-JP-2";
-    else if (ui->actionJapanese_ISO_2022_KR->isChecked())
-        encoding = "ISO-2022-KR";
-    else if (ui->actionJapanese_CP932->isChecked())
-        encoding = "CP932";
-    else if (ui->actionJapanese_EUC_JP->isChecked())
-        encoding = "EUC-JP";
-    else if (ui->actionKorean_CP949->isChecked())
-        encoding = "CP949";
-    else if (ui->actionKorean_CP1361->isChecked())
-        encoding = "CP1361";
-    else if (ui->actionKorean_EUC_KR->isChecked())
-        encoding = "EUC-KR";
     else
         encoding = "UTF-8";
 

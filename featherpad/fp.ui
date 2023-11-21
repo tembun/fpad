@@ -192,35 +192,15 @@
       <addaction name="actionCyrillic_KOI8_U"/>
       <addaction name="actionCyrillic_ISO_8859_5"/>
      </widget>
-     <widget class="QMenu" name="menuEast_Asian">
-      <property name="title">
-       <string>Ea&amp;st Asian</string>
-      </property>
-      <addaction name="actionChinese_BIG5"/>
-      <addaction name="actionChinese_GB18030"/>
-      <addaction name="actionJapanese_ISO_2022_JP"/>
-      <addaction name="actionJapanese_ISO_2022_JP_2"/>
-      <addaction name="actionJapanese_ISO_2022_KR"/>
-      <addaction name="actionJapanese_CP932"/>
-      <addaction name="actionJapanese_EUC_JP"/>
-      <addaction name="actionKorean_CP949"/>
-      <addaction name="actionKorean_CP1361"/>
-      <addaction name="actionKorean_EUC_KR"/>
-     </widget>
      <addaction name="menuUnicode"/>
      <addaction name="menuWestern_European"/>
-     <addaction name="actionWindows_Arabic"/>
      <addaction name="menuEast_European"/>
-     <addaction name="menuEast_Asian"/>
-     <addaction name="actionOther"/>
     </widget>
     <addaction name="actionLineNumbers"/>
     <addaction name="actionWrap"/>
     <addaction name="actionIndent"/>
     <addaction name="actionSyntax"/>
-    <addaction name="separator"/>
     <addaction name="menuEncoding"/>
-    <addaction name="separator"/>
     <addaction name="actionFont"/>
     <addaction name="actionPreferences"/>
    </widget>
@@ -544,25 +524,6 @@
     <string>Ctrl+Shift+P</string>
    </property>
   </action>
-  <action name="actionWindows_Arabic">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Windows Arabic (&amp;CP1256)</string>
-   </property>
-  </action>
-  <action name="actionOther">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Other</string>
-   </property>
-  </action>
   <action name="actionEnforce_UTF_8">
    <property name="checkable">
     <bool>true</bool>
@@ -646,107 +607,6 @@
    </property>
    <property name="text">
     <string>Cyrillic (&amp;ISO-8859-5)</string>
-   </property>
-  </action>
-  <action name="actionChinese_BIG5">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Chinese (BIG5)</string>
-   </property>
-  </action>
-  <action name="actionChinese_GB18030">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Chinese (&amp;GB18030)</string>
-   </property>
-  </action>
-  <action name="actionJapanese_ISO_2022_JP">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Japanese (ISO-2022-JP)</string>
-   </property>
-  </action>
-  <action name="actionJapanese_ISO_2022_JP_2">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Japanese (&amp;ISO-2022-JP-2)</string>
-   </property>
-  </action>
-  <action name="actionJapanese_ISO_2022_KR">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Japanese (ISO-&amp;2022-KR)</string>
-   </property>
-  </action>
-  <action name="actionJapanese_CP932">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Ja&amp;panese (CP932)</string>
-   </property>
-  </action>
-  <action name="actionJapanese_EUC_JP">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Japa&amp;nese (EUC-JP)</string>
-   </property>
-  </action>
-  <action name="actionKorean_CP949">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Korean (CP949)</string>
-   </property>
-  </action>
-  <action name="actionKorean_CP1361">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>K&amp;orean (CP1361)</string>
-   </property>
-  </action>
-  <action name="actionKorean_EUC_KR">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Korean (&amp;EUC-KR)</string>
    </property>
   </action>
   <action name="actionISO_8859_15">
