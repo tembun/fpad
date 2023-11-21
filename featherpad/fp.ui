@@ -757,11 +757,6 @@
     <string>ISO-&amp;8859-15</string>
    </property>
   </action>
-  <action name="actionCloseOther">
-   <property name="text">
-    <string>Close &amp;Other Tabs</string>
-   </property>
-  </action>
   <action name="actionMenu">
    <property name="text">
     <string>Menu</string>

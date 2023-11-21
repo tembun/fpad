@@ -186,7 +186,8 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     connect (ui->tabWidget, &TabWidget::currentTabChanged, this, &FPwin::tabSwitch);
     ui->tabWidget->tabBar()->setContextMenuPolicy (Qt::CustomContextMenu);
     connect (ui->tabWidget->tabBar(), &QWidget::customContextMenuRequested, this, &FPwin::tabContextMenu);
-    connect (ui->actionCloseOther, &QAction::triggered, this, &FPwin::closeOtherTabs);
+    QShortcut* close_other_shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this);
+    connect (close_other_shortcut , &QShortcut::activated, this, &FPwin::closeOtherTabs);
     connect (ui->actionFont, &QAction::triggered, this, &FPwin::fontDialog);
     QShortcut* find_shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F), this);
     connect (find_shortcut , &QShortcut::activated, this, &FPwin::showHideSearch);
@@ -653,8 +654,9 @@ bool FPwin::closeTabs (int first, int last, bool saveFilesList)
 }
 void FPwin::closeOtherTabs()
 {
-    if (!closeTabs (rightClicked_, -1))
-        closeTabs (-1, rightClicked_);
+    int cur = ui->tabWidget->currentIndex();
+    closeTabs( cur , -1 );
+    closeTabs( -1 , cur );
 }
 void FPwin::dragEnterEvent (QDragEnterEvent *event)
 {
