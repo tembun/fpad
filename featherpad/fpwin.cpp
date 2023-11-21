@@ -186,20 +186,20 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     connect (ui->tabWidget, &TabWidget::currentTabChanged, this, &FPwin::tabSwitch);
     ui->tabWidget->tabBar()->setContextMenuPolicy (Qt::CustomContextMenu);
     connect (ui->tabWidget->tabBar(), &QWidget::customContextMenuRequested, this, &FPwin::tabContextMenu);
-    connect (ui->actionCloseAll, &QAction::triggered, this, &FPwin::closeAllTabs);
-    connect (ui->actionCloseRight, &QAction::triggered, this, &FPwin::closeNextTabs);
-    connect (ui->actionCloseLeft, &QAction::triggered, this, &FPwin::closePreviousTabs);
     connect (ui->actionCloseOther, &QAction::triggered, this, &FPwin::closeOtherTabs);
     connect (ui->actionFont, &QAction::triggered, this, &FPwin::fontDialog);
-    connect (ui->actionFind, &QAction::triggered, this, &FPwin::showHideSearch);
-    connect (ui->actionJump, &QAction::triggered, this, &FPwin::jumpTo);
+    QShortcut* find_shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F), this);
+    connect (find_shortcut , &QShortcut::activated, this, &FPwin::showHideSearch);
+    QShortcut* jump_shortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_1), this);
+    connect (jump_shortcut , &QShortcut::activated, this, &FPwin::jumpTo);
     connect (ui->spinBox, &QAbstractSpinBox::editingFinished, this, &FPwin::goTo);
     connect (ui->actionLineNumbers, &QAction::toggled, this, &FPwin::showLN);
     connect (ui->actionWrap, &QAction::triggered, this, &FPwin::toggleWrapping);
     connect (ui->actionSyntax, &QAction::triggered, this, &FPwin::toggleSyntaxHighlighting);
     connect (ui->actionIndent, &QAction::triggered, this, &FPwin::toggleIndent);
     connect (ui->actionPreferences, &QAction::triggered, this, &FPwin::prefDialog);
-    connect (ui->actionReplace, &QAction::triggered, this, &FPwin::replaceDock);
+    QShortcut* replace_shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_H), this);
+    connect (replace_shortcut , &QShortcut::activated, this, &FPwin::replaceDock);
     connect (ui->toolButtonNext, &QAbstractButton::clicked, this, &FPwin::replace);
     connect (ui->toolButtonPrv, &QAbstractButton::clicked, this, &FPwin::replace);
     connect (ui->toolButtonAll, &QAbstractButton::clicked, this, &FPwin::replaceAll);
@@ -328,23 +328,10 @@ void FPwin::applyConfigOnStarting()
     ui->actionReload->setIcon (symbolicIcon::icon (":icons/view-refresh.svg"));
     ui->actionFont->setIcon (symbolicIcon::icon (":icons/preferences-desktop-font.svg"));
     ui->actionPreferences->setIcon (symbolicIcon::icon (":icons/preferences-system.svg"));
-    ui->actionCloseOther->setIcon (symbolicIcon::icon (":icons/tab-close-other.svg"));
     ui->actionMenu->setIcon (symbolicIcon::icon (":icons/application-menu.svg"));
     ui->toolButtonNext->setIcon (symbolicIcon::icon (":icons/go-down.svg"));
     ui->toolButtonPrv->setIcon (symbolicIcon::icon (":icons/go-up.svg"));
     ui->toolButtonAll->setIcon (symbolicIcon::icon (":icons/arrow-down-double.svg"));
-
-    if (QApplication::layoutDirection() == Qt::RightToLeft)
-    {
-        ui->actionCloseRight->setIcon (symbolicIcon::icon (":icons/go-previous.svg"));
-        ui->actionCloseLeft->setIcon (symbolicIcon::icon (":icons/go-next.svg"));
-    }
-    else
-    {
-        ui->actionCloseRight->setIcon (symbolicIcon::icon (":icons/go-next.svg"));
-        ui->actionCloseLeft->setIcon (symbolicIcon::icon (":icons/go-previous.svg"));
-    }
-
     QIcon icn = QIcon::fromTheme ("featherpad");
     if (icn.isNull())
         icn = QIcon (":icons/featherpad.svg");
@@ -664,18 +651,6 @@ bool FPwin::closeTabs (int first, int last, bool saveFilesList)
 
     return keep;
 }
-void FPwin::closeAllTabs()
-{
-    closeTabs (-1, -1);
-}
-void FPwin::closeNextTabs()
-{
-    closeTabs (rightClicked_, -1);
-}
-void FPwin::closePreviousTabs()
-{
-    closeTabs (-1, rightClicked_);
-}
 void FPwin::closeOtherTabs()
 {
     if (!closeTabs (rightClicked_, -1))
@@ -754,10 +729,6 @@ FPwin::DOCSTATE FPwin::savePrompt (int tabIndex, bool noToAll)
             msgBox.changeButtonText (QMessageBox::NoToAll, tr ("&No to all"));
         msgBox.setDefaultButton (QMessageBox::Save);
         msgBox.setWindowModality (Qt::WindowModal);
-        /* enforce a central position */
-        /*msgBox.show();
-        msgBox.move (x() + width()/2 - msgBox.width()/2,
-                     y() + height()/2 - msgBox.height()/ 2);*/
         switch (msgBox.exec()) {
         case QMessageBox::Save:
             if (!saveFile (true))
@@ -797,9 +768,6 @@ void FPwin::enableWidgets (bool enable) const
     {
         ui->statusBar->setVisible (enable);
     }
-    ui->actionFind->setEnabled (enable);
-    ui->actionJump->setEnabled (enable);
-    ui->actionReplace->setEnabled (enable);
     ui->actionSaveAs->setEnabled (enable);
     ui->actionSaveAllFiles->setEnabled (enable);
     ui->menuEncoding->setEnabled (enable);
@@ -1003,8 +971,6 @@ void FPwin::editorContextMenu (const QPoint& p)
                 QUrl url (str);
                 if (url.isRelative())
                     url = QUrl::fromUserInput (str, "/");
-                /* QDesktopServices::openUrl() may resort to "xdg-open", which isn't
-                   the best choice. "gio" is always reliable, so we check it first. */
                 if (!QProcess::startDetached ("gio", QStringList() << "open" << url.toString()))
                     QDesktopServices::openUrl (url);
             });
@@ -1535,8 +1501,6 @@ void FPwin::addText (const QString& text, const QString& fileName, const QString
     if (ui->actionSyntax->isChecked())
         syntaxHighlighting (textEdit);
     setTitle (fileName, (multiple && !openInCurrentTab) ?
-                        /* An Old comment not valid anymore: "The index may have changed because syntaxHighlighting()
-                           waits for all events to be processed (but it won't change from here on)." */
                         ui->tabWidget->indexOf (tabPage) : -1);
     QString tip (fInfo.absolutePath());
     if (!tip.endsWith ("/")) tip += "/";
@@ -1661,8 +1625,6 @@ void FPwin::onPermissionDenied()
 void FPwin::onOpeningUneditable()
 {
     disconnect (this, &FPwin::finishedLoading, this, &FPwin::onOpeningUneditable);
-    /* A timer is needed here because the scrollbar position is restored on reloading by a
-       lambda connection. Timers are also used in similar places for the sake of certainty. */
     QTimer::singleShot (0, this, [=]() {
         showWarningBar ("<center><b><big>" + tr ("Uneditable file(s)!") + "</big></b></center>\n"
                         + "<center>" + tr ("Non-text files or files with huge lines cannot be edited.") + "</center>");
@@ -1672,7 +1634,6 @@ void FPwin::onOpeningNonexistent()
 {
     disconnect (this, &FPwin::finishedLoading, this, &FPwin::onOpeningNonexistent);
     QTimer::singleShot (0, this, [=]() {
-        /* show the bar only if the current file doesn't exist at this very moment */
         if (TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget()))
         {
             QString fname = tabPage->textEdit()->getFileName();
@@ -1683,14 +1644,12 @@ void FPwin::onOpeningNonexistent()
 }
 void FPwin::showWarningBar (const QString& message, bool startupBar)
 {
-    /* don't show the warning bar when there's a modal dialog */
     QList<QDialog*> dialogs = findChildren<QDialog*>();
     for (int i = 0; i < dialogs.count(); ++i)
     {
         if (dialogs.at (i)->isModal())
             return;
     }
-    /* don't close and show the same warning bar */
     if (WarningBar *prevBar = ui->tabWidget->findChild<WarningBar *>())
     {
         if (!prevBar->isClosing() && prevBar->getMessage() == message)
@@ -1744,7 +1703,6 @@ void FPwin::fileOpen()
 {
     if (isLoading()) return;
 
-    /* find a suitable directory */
     QString fname;
     if (TabPage *tabPage = qobject_cast<TabPage*>(ui->tabWidget->currentWidget()))
         fname = tabPage->textEdit()->getFileName();
@@ -1764,7 +1722,6 @@ void FPwin::fileOpen()
     }
     else
     {
-        /* I like the last opened file to be remembered */
         fname = lastFile_;
         if (!fname.isEmpty())
         {
@@ -1786,7 +1743,6 @@ void FPwin::fileOpen()
     if (!fname.isEmpty()
         && QFileInfo (fname).fileName().contains ('.'))
     {
-        /* if relevant, do filtering to make opening of similar files easier */
         filter = tr ("All Files (*);;.%1 Files (*.%1)").arg (fname.section ('.', -1, -1));
     }
     FileDialog dialog (this, static_cast<FPsingleton*>(qApp)->getConfig().getNativeDialog());
@@ -1846,9 +1802,6 @@ bool FPwin::alreadyOpen (TabPage *tabPage) const
 }
 void FPwin::enforceEncoding (QAction*)
 {
-    /* here, we don't need to check if some files are loading
-       because encoding has no keyboard shortcut or tool button */
-
     int index = ui->tabWidget->currentIndex();
     TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->widget (index));
     if (tabPage == nullptr) return;
@@ -1862,7 +1815,6 @@ void FPwin::enforceEncoding (QAction*)
             encodingToCheck (textEdit->getEncoding());
             return;
         }
-        /* if the file is removed, close its tab to open a new one */
         if (!QFile::exists (fname))
             deleteTabPage (index, false, false);
         loadText (fname, true, true,
@@ -1933,7 +1885,6 @@ bool FPwin::saveFile (bool keepSyntax)
         fname = lastFile_;
     else if (QFileInfo (fname).fileName().contains ('.'))
     {
-        /* if relevant, do filtering to prevent disastrous overwritings */
         filter = tr (".%1 Files (*.%1);;All Files (*)").arg (fname.section ('.', -1, -1));
     }
 
@@ -1958,8 +1909,6 @@ bool FPwin::saveFile (bool keepSyntax)
                 if (textEdit->getFileName().isEmpty())
                     filter = tr ("All Files (*)");
             }
-            /* if the removed file is opened in this tab and its
-               containing folder still exists, it's restorable */
             else if (!textEdit->getFileName().isEmpty())
                 restorable = true;
 
@@ -3068,18 +3017,7 @@ void FPwin::tabContextMenu (const QPoint& p)
         labelAction->setDefaultWidget (label);
         menu.addAction (labelAction);
         menu.addSeparator();
-
         showMenu = true;
-        if (rightClicked_ < tabNum - 1)
-            menu.addAction (ui->actionCloseRight);
-        if (rightClicked_ > 0)
-            menu.addAction (ui->actionCloseLeft);
-        menu.addSeparator();
-        if (rightClicked_ < tabNum - 1 && rightClicked_ > 0)
-            menu.addAction (ui->actionCloseOther);
-        menu.addAction (ui->actionCloseAll);
-        if (!fname.isEmpty())
-            menu.addSeparator();
     }
     if (!fname.isEmpty())
     {

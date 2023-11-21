@@ -117,9 +117,6 @@ private slots:
     void newTabFromRecent();
     void closeTab();
     void closeTabAtIndex (int index);
-    void closeAllTabs();
-    void closeNextTabs();
-    void closePreviousTabs();
     void closeOtherTabs();
     void fileOpen();
     void reload();
@@ -174,8 +171,8 @@ private slots:
     void addText (const QString& text, const QString& fileName, const QString& charset,
                   bool enforceEncod, bool reload,
                   int restoreCursor, int posInLine,
-                  bool uneditable, // This doc should be uneditable?
-                  bool multiple); // Multiple files are being loaded?
+                  bool uneditable,
+                  bool multiple);
     void onOpeningHugeFiles();
     void onOpeninNonTextFiles();
     void onPermissionDenied();
@@ -186,7 +183,7 @@ private slots:
     void enforceLang (QAction *action);
 
 public:
-    QWidget *dummyWidget; // Bypasses KDE's demand for a new window.
+    QWidget *dummyWidget;
     Ui::FPwin *ui;
 
 private:

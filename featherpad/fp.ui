@@ -225,9 +225,6 @@
     <addaction name="actionPreferences"/>
    </widget>
    <widget class="QMenu" name="menuSearch">
-    <addaction name="actionFind"/>
-    <addaction name="actionReplace"/>
-    <addaction name="actionJump"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -251,9 +248,6 @@
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
    <addaction name="actionReload"/>
-   <addaction name="actionFind"/>
-   <addaction name="actionReplace"/>
-   <addaction name="actionJump"/>
    <addaction name="actionMenu"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -466,22 +460,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+R</string>
-   </property>
-  </action>
-  <action name="actionFind">
-    <property name="text">
-      <string>&amp;Find</string>
-    </property>
-    <property name="shortcut">
-    	<string>Ctrl+F</string>
-    </property>
-  </action>
-  <action name="actionReplace">
-    <property name="text">
-      <string>&amp;Replace</string>
-    </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
    </property>
   </action>
   <action name="actionSaveAs">
@@ -771,35 +749,12 @@
     <string>Korean (&amp;EUC-KR)</string>
    </property>
   </action>
-  <action name="actionJump">
-    <property name="text">
-      <string>&amp;Jump To</string>
-    </property>
-    <property name="shortcut">
-    	<string>Alt+1</string>
-    </property>
-  </action>
   <action name="actionISO_8859_15">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
     <string>ISO-&amp;8859-15</string>
-   </property>
-  </action>
-  <action name="actionCloseRight">
-   <property name="text">
-    <string>Close Ne&amp;xt Tabs</string>
-   </property>
-  </action>
-  <action name="actionCloseLeft">
-   <property name="text">
-    <string>Close &amp;Previous Tabs</string>
-   </property>
-  </action>
-  <action name="actionCloseAll">
-   <property name="text">
-    <string>Close &amp;All Tabs</string>
    </property>
   </action>
   <action name="actionCloseOther">
