@@ -135,8 +135,6 @@ void FPsingleton::receiveMessage()
     emit messageReceived (message);
     localSocket->disconnectFromServer();
 }
-/*************************/
-// A new instance will be started only if this function returns false.
 bool FPsingleton::sendMessage (const QString& message)
 {
     if (standalone_ // it's standalone or...
@@ -147,8 +145,6 @@ bool FPsingleton::sendMessage (const QString& message)
 
     QLocalSocket localSocket (this);
     localSocket.connectToServer (uniqueKey_, QIODevice::WriteOnly);
-    /* NOTE: If "QStandardPaths::TempLocation" isn't on RAM, the socket may not be
-             ready yet. So, we retry a few times to make sure this isn't about a crash. */
     int waiting = 0;
     while (waiting < 5 && !localSocket.waitForConnected (timeout_))
     {

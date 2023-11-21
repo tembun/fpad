@@ -377,7 +377,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->defaultSyntaxButton->setDisabled (config.customSyntaxColors().isEmpty()
                                           && whiteSpaceValue_ == config.getDefaultWhiteSpaceValue()
                                           && curLineHighlight_ == -1);
-    /* also, context menus for changing syntax colors */
     ui->syntaxTableWidget->setContextMenuPolicy (Qt::CustomContextMenu);
     connect (ui->syntaxTableWidget, &QWidget::customContextMenuRequested, [this] (const QPoint& p) {
         QModelIndex index = ui->syntaxTableWidget->indexAt (p);
@@ -389,9 +388,6 @@ PrefDialog::PrefDialog (QWidget *parent)
         });
         menu.exec (ui->syntaxTableWidget->viewport()->mapToGlobal (p));
     });
-
-    /* this isn't about syntax but comes here because
-       it has different values for light and dark color schemes */
     ui->curLineSpin->setMinimum (config.getMinCurLineHighlight() - 1); // for the special text
     ui->curLineSpin->setMaximum (config.getMaxCurLineHighlight());
     ui->curLineSpin->setValue (curLineHighlight_);

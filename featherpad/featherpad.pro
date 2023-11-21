@@ -67,8 +67,7 @@ HEADERS += singleton.h \
 FORMS += fp.ui \
          prefDialog.ui \
          sessionDialog.ui \
-         fontDialog.ui \
-         about.ui
+         fontDialog.ui
 
 RESOURCES += data/fp.qrc
 
@@ -107,11 +106,7 @@ unix:!haiku:!macx {
   iconsvg.path = $$DATADIR/icons/hicolor/scalable/apps
   iconsvg.files += ./data/$${TARGET}.svg
 
-  help.path = $$DATADIR/featherpad
-  help.files += ./data/help
-  help.files += ./data/help_*
-
-  INSTALLS += target slink desktop iconsvg help
+  INSTALLS += target slink desktop iconsvg
 }
 else:haiku {
   isEmpty(PREFIX) {
@@ -124,11 +119,7 @@ else:haiku {
 
   target.path =$$BINDIR
 
-  help.path = $$DATADIR
-  help.files += ./data/help
-  help.files += ./data/help_*
-
-  INSTALLS += target help
+  INSTALLS += target
 }
 else:macx{
   #VARIABLES
@@ -144,9 +135,5 @@ else:macx{
 
   target.path =$$BINDIR
 
-  help.path = $$DATADIR/Contents/Resources/
-  help.files += ./data/help
-  help.files += ./data/help_*
-
-  INSTALLS += target help
+  INSTALLS += target
 }

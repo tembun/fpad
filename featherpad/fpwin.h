@@ -164,7 +164,6 @@ private slots:
     void editorContextMenu (const QPoint& p);
     void changeTab (QListWidgetItem *current, QListWidgetItem*);
     void prefDialog();
-    void aboutDialog();
     void matchBrackets();
     void addText (const QString& text, const QString& fileName, const QString& charset,
                   bool enforceEncod, bool reload,

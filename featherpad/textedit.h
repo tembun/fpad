@@ -233,12 +233,12 @@ public:
 signals:
     /* inform the main widget */
     void fileDropped (const QString& localFile,
-                      int restoreCursor, // Only for connecting to FPwin::newTabFromName().
-                      int posInLine, // Only for connecting to FPwin::newTabFromName().
-                      bool multiple); // Multiple files are dropped?
-    void resized(); // needed by syntax highlighting
+                      int restoreCursor,
+                      int posInLine,
+                      bool multiple);
+    void resized();
     void updateRect();
-    void zoomedOut (TextEdit *textEdit); // needed for reformatting text
+    void zoomedOut (TextEdit *textEdit);
     void updateBracketMatching();
 
 public slots:
@@ -261,7 +261,7 @@ protected:
     void wheelEvent (QWheelEvent *event);
     void resizeEvent (QResizeEvent *event);
     void timerEvent (QTimerEvent *event);
-    void paintEvent (QPaintEvent *event); // only for working around the RTL bug
+    void paintEvent (QPaintEvent *event);
     void showEvent (QShowEvent *event);
     void mouseMoveEvent (QMouseEvent *event);
     void mousePressEvent (QMouseEvent *event);
@@ -302,7 +302,7 @@ private:
     QString remainingSpaces (const QString& spaceTab, const QTextCursor& cursor) const;
     QTextCursor backTabCursor(const QTextCursor& cursor, bool twoSpace) const;
 
-    int prevAnchor_, prevPos_; // used only for bracket matching
+    int prevAnchor_, prevPos_;
     QWidget *lineNumberArea_;
     QTextEdit::ExtraSelection currentLine_;
     QRect lastCurrentLine_;
@@ -312,53 +312,38 @@ private:
     bool drawIndetLines_;
     bool autoBracket_;
     int darkValue_;
-    QColor separatorColor_; // only used internally
+    QColor separatorColor_;
     int vLineDistance_;
     QString dateFormat_;
     QColor lineHColor_;
-    int resizeTimerId_, selectionTimerId_; // for not wasting CPU's time
-    QPoint pressPoint_; // used internally for hyperlinks
-    QPoint selectionPressPoint_; // used internally to delay dragging until mouse movement
-    QFont font_; // used internally for keeping track of the unzoomed font
-    QString textTab_; // text tab in terms of spaces
+    int resizeTimerId_, selectionTimerId_;
+    QPoint pressPoint_;
+    QPoint selectionPressPoint_;
+    QFont font_;
+    QString textTab_;
     QElapsedTimer tripleClickTimer_;
-    /* To keep text cursor's horizontal position with Up/Down keys
-       (also used in a workaround for a Qt regression): */
     bool keepTxtCurHPos_;
     int txtCurHPos_;
-    /********************************************
-     ***** All needed information on a page *****
-     ********************************************/
-    qint64 size_; // file size for limiting syntax highlighting (the file may be removed)
-    QDateTime lastModified_; // the last modification time for knowing about changes.
-    int wordNumber_; // the calculated number of words (-1 if not counted yet)
-    QString searchedText_; // the text that is being searched in the document
-    QString replaceTitle_; // the title of the Replacement dock (can change)
-    QString fileName_; // opened file
-    QString prog_; // real programming language (never empty; defaults to "url")
-    QString lang_; // selected (enforced) programming language (empty if nothing's enforced)
-    QString encoding_; // text encoding (UTF-8 by default)
-    /*
-       Highlighting order: (1) current line;
-                           (2) replacing;
-                           (3) search matches;
-                           (4) selection matches;
-                           (5) bracket matches.
-    */
-    QList<QTextEdit::ExtraSelection> greenSel_; // for replaced matches
-    QList<QTextEdit::ExtraSelection> blueSel_; // for selection highlighting
-    QList<QTextEdit::ExtraSelection> redSel_; // for bracket matching
-    bool selectionHighlighting_; // should selections be highlighted?
-    bool highlightThisSelection_; // should this selection be highlighted?
-    bool removeSelectionHighlights_; // used only internally
-    bool matchedBrackets_; // is bracket matching done (is FPwin::matchBrackets called)?
-    bool uneditable_; // the doc should be made uneditable because of its contents
-    QSyntaxHighlighter *highlighter_; // syntax highlighter
+    qint64 size_;
+    QDateTime lastModified_;
+    int wordNumber_;
+    QString searchedText_;
+    QString replaceTitle_;
+    QString fileName_;
+    QString prog_;
+    QString lang_;
+    QString encoding_;
+    QList<QTextEdit::ExtraSelection> greenSel_;
+    QList<QTextEdit::ExtraSelection> blueSel_;
+    QList<QTextEdit::ExtraSelection> redSel_;
+    bool selectionHighlighting_;
+    bool highlightThisSelection_;
+    bool removeSelectionHighlights_;
+    bool matchedBrackets_;
+    bool uneditable_;
+    QSyntaxHighlighter *highlighter_;
     bool saveCursor_;
     bool pastePaths_;
-    /******************************
-     ***** Inertial scrolling *****
-     ******************************/
     bool inertialScrolling_;
     struct scrollData {
       int delta;
@@ -368,7 +353,6 @@ private:
     QList<scrollData> queuedScrollSteps_;
     QTimer *scrollTimer_;
 };
-/*************************/
 class LineNumberArea : public QWidget
 {
     Q_OBJECT
@@ -399,4 +383,4 @@ private:
 
 }
 
-#endif // TEXTEDIT_H
+#endif

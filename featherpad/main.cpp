@@ -32,12 +32,11 @@ void handleQuitSignals (const std::vector<int>& quitSignals)
 {
     auto handler = [](int sig) ->void {
         Q_UNUSED (sig)
-        //printf("\nUser signal = %d.\n", sig);
         QCoreApplication::quit();
     };
 
     for (int sig : quitSignals)
-        signal (sig, handler); // handle these signals by quitting gracefully
+        signal (sig, handler);
 }
 
 int main (int argc, char **argv)

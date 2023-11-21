@@ -19,7 +19,6 @@
 
 #include "singleton.h"
 #include "ui_fp.h"
-#include "ui_about.h"
 #include "encoding.h"
 #include "filedialog.h"
 #include "messagebox.h"
@@ -2173,10 +2172,7 @@ void FPwin::tabSwitch (int index)
     QString shownName;
     if (fname.isEmpty())
     {
-        if (textEdit->getProg() == "help")
-            shownName = "** " + tr ("Help") + " **";
-        else
-            shownName = tr ("Untitled");
+       shownName = tr ("Untitled");
     }
     else
     {
@@ -2560,7 +2556,7 @@ void FPwin::statusMsgWithLineCount (const int lines)
     QLabel *statusLabel = ui->statusBar->findChild<QLabel *>("statusLabel");
     QString encodStr = "<b>" + tr ("Encoding") + QString (":</b> <i>%1</i>").arg (textEdit->getEncoding());
     QString syntaxStr;
-    if (textEdit->getProg() != "help" && textEdit->getProg() != "url")
+    if (textEdit->getProg() != "url")
         syntaxStr = "&nbsp;&nbsp;&nbsp;<b>" + tr ("Syntax") + QString (":</b> <i>%1</i>").arg (textEdit->getProg());
     QString lineStr = "&nbsp;&nbsp;&nbsp;<b>" + tr ("Lines") + QString (":</b> <i>%1</i>").arg (lines);
     QString selStr = "&nbsp;&nbsp;&nbsp;<b>" + tr ("Sel. Chars")
@@ -2647,7 +2643,7 @@ void FPwin::enforceLang (QAction *action)
         else
             lang = "url";
     }
-    if (textEdit->getProg() == lang || textEdit->getProg() == "help")
+    if (textEdit->getProg() == lang)
         textEdit->setLang (QString());
     else
         textEdit->setLang (lang);
@@ -3174,56 +3170,6 @@ void FPwin::saveAllFiles (bool showWarning)
     }
     if (showWarning && error)
         showWarningBar ("<center><b><big>" + tr ("Some files cannot be saved!") + "</big></b></center>");
-}
-void FPwin::aboutDialog()
-{
-    if (isLoading()) return;
-
-    if (hasAnotherDialog()) return;
-    updateShortcuts (true);
-
-    class AboutDialog : public QDialog {
-    public:
-#if (QT_VERSION >= QT_VERSION_CHECK(5,15,0))
-        explicit AboutDialog (QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags()) : QDialog (parent, f) {
-#else
-        explicit AboutDialog (QWidget* parent = nullptr, Qt::WindowFlags f = nullptr) : QDialog (parent, f) {
-#endif
-            aboutUi.setupUi (this);
-            aboutUi.textLabel->setOpenExternalLinks (true);
-        }
-        void setTabTexts (const QString& first, const QString& sec) {
-            aboutUi.tabWidget->setTabText (0, first);
-            aboutUi.tabWidget->setTabText (1, sec);
-        }
-        void setMainIcon (const QIcon& icn) {
-            aboutUi.iconLabel->setPixmap (icn.pixmap (64, 64));
-        }
-        void settMainTitle (const QString& title) {
-            aboutUi.titleLabel->setText (title);
-        }
-        void setMainText (const QString& txt) {
-            aboutUi.textLabel->setText (txt);
-        }
-    private:
-        Ui::AboutDialog aboutUi;
-    };
-
-    AboutDialog dialog (this);
-    QIcon FPIcon = QIcon::fromTheme ("featherpad");
-    if (FPIcon.isNull())
-        FPIcon = QIcon (":icons/featherpad.svg");
-    dialog.setMainIcon (FPIcon);
-    dialog.settMainTitle (QString ("<center><b><big>%1 %2</big></b></center><br>").arg (qApp->applicationName()).arg (qApp->applicationVersion()));
-    dialog.setMainText ("<center> " + tr ("A lightweight, tabbed, plain-text editor") + " </center>\n<center> "
-                        + tr ("based on Qt") + " </center><br><center> "
-                        + tr ("Author")+": <a href='mailto:tsujan2000@gmail.com?Subject=My%20Subject'>Pedram Pourang ("
-                        + tr ("aka.") + " Tsu Jan)</a> </center><p></p>");
-    dialog.setTabTexts (tr ("About FeatherPad"), tr ("Translators"));
-    dialog.setWindowTitle (tr ("About FeatherPad"));
-    dialog.setWindowModality (Qt::WindowModal);
-    dialog.exec();
-    updateShortcuts (false);
 }
 void FPwin::stealFocus()
 {
