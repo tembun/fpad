@@ -161,7 +161,6 @@ private slots:
     void docProp();
     void nextTab();
     void previousTab();
-    void tabContextMenu (const QPoint& p);
     void editorContextMenu (const QPoint& p);
     void changeTab (QListWidgetItem *current, QListWidgetItem*);
     void prefDialog();

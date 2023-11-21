@@ -171,7 +171,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     connect (ui->tabWidget, &QTabWidget::currentChanged, this, &FPwin::onTabChanged);
     connect (ui->tabWidget, &TabWidget::currentTabChanged, this, &FPwin::tabSwitch);
     ui->tabWidget->tabBar()->setContextMenuPolicy (Qt::CustomContextMenu);
-    connect (ui->tabWidget->tabBar(), &QWidget::customContextMenuRequested, this, &FPwin::tabContextMenu);
     QShortcut* close_other_shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this);
     connect (close_other_shortcut , &QShortcut::activated, this, &FPwin::closeOtherTabs);
     connect (ui->actionFont, &QAction::triggered, this, &FPwin::fontDialog);
@@ -2900,68 +2899,6 @@ void FPwin::dropTab (const QString& str)
     stealFocus();
     if (count == 0)
         QTimer::singleShot (0, dragSource, &QWidget::close);
-}
-void FPwin::tabContextMenu (const QPoint& p)
-{
-    int tabNum = ui->tabWidget->count();
-    QTabBar *tbar = ui->tabWidget->tabBar();
-    rightClicked_ = tbar->tabAt (p);
-    if (rightClicked_ < 0) return;
-
-    QString fname = qobject_cast< TabPage *>(ui->tabWidget->widget (rightClicked_))
-                    ->textEdit()->getFileName();
-    QMenu menu;
-    bool showMenu = false;
-    if (tabNum > 1)
-    {
-        QWidgetAction *labelAction = new QWidgetAction (&menu);
-        QLabel *label = new QLabel ("<center><b>" + tr ("%1 Pages").arg (tabNum) + "</b></center>");
-        label->setMargin (4);
-        labelAction->setDefaultWidget (label);
-        menu.addAction (labelAction);
-        menu.addSeparator();
-        showMenu = true;
-    }
-    if (!fname.isEmpty())
-    {
-        showMenu = true;
-        QFileInfo info (fname);
-        if (info.isSymLink())
-        {
-            menu.addSeparator();
-            QAction *action = menu.addAction (QIcon (":icons/link.svg"), tr ("Copy Target Path"));
-            connect (action, &QAction::triggered, [info] {
-                QApplication::clipboard()->setText (info.symLinkTarget());
-            });
-            action = menu.addAction (QIcon (":icons/link.svg"), tr ("Open Target Here"));
-            connect (action, &QAction::triggered, this, [this, info] {
-                QString targetName = info.symLinkTarget();
-                for (int i = 0; i < ui->tabWidget->count(); ++i)
-                {
-                    TabPage *thisTabPage = qobject_cast<TabPage*>(ui->tabWidget->widget (i));
-                    if (targetName == thisTabPage->textEdit()->getFileName())
-                    {
-                        ui->tabWidget->setCurrentWidget (thisTabPage);
-                        return;
-                    }
-                }
-                newTabFromName (targetName, 0, 0);
-            });
-        }
-        if (QFile::exists (fname))
-        {
-            menu.addSeparator();
-            QAction *action = menu.addAction (symbolicIcon::icon (":icons/document-open.svg"), tr ("Open Containing Folder"));
-            connect (action, &QAction::triggered, this, [fname] {
-                QString folder = fname.section ("/", 0, -2);
-                if (!QProcess::startDetached ("gio", QStringList() << "open" << folder))
-                    QDesktopServices::openUrl (QUrl::fromLocalFile (folder));
-            });
-        }
-    }
-    if (showMenu)
-        menu.exec (tbar->mapToGlobal (p));
-    rightClicked_ = -1;
 }
 void FPwin::prefDialog()
 {
