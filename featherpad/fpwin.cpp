@@ -180,7 +180,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     QShortcut* jump_shortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_1), this);
     connect (jump_shortcut , &QShortcut::activated, this, &FPwin::jumpTo);
     connect (ui->spinBox, &QAbstractSpinBox::editingFinished, this, &FPwin::goTo);
-    connect (ui->actionLineNumbers, &QAction::toggled, this, &FPwin::showLN);
     connect (ui->actionWrap, &QAction::triggered, this, &FPwin::toggleWrapping);
     connect (ui->actionSyntax, &QAction::triggered, this, &FPwin::toggleSyntaxHighlighting);
     connect (ui->actionIndent, &QAction::triggered, this, &FPwin::toggleIndent);
@@ -278,8 +277,6 @@ void FPwin::applyConfigOnStarting()
     ui->actionDoc->setVisible (!config.getShowStatusbar());
     ui->actionWrap->setChecked (config.getWrapByDefault());
     ui->actionIndent->setChecked (config.getIndentByDefault());
-    ui->actionLineNumbers->setChecked (config.getLineByDefault());
-    ui->actionLineNumbers->setDisabled (config.getLineByDefault());
     ui->actionSyntax->setChecked (config.getSyntaxByDefault());
     if (!config.getShowStatusbar())
         ui->statusBar->hide();
@@ -833,7 +830,6 @@ TabPage* FPwin::createEmptyTab (bool setCurrent, bool allowNormalHighlighter)
     textEdit->setAutoReplace (config.getAutoReplace());
     textEdit->setAutoBracket (config.getAutoBracket());
     textEdit->setTtextTab (config.getTextTabSize());
-    textEdit->setCurLineHighlight (config.getCurLineHighlight());
     textEdit->setEditorFont (config.getFont());
     textEdit->setInertialScrolling (config.getInertialScrolling());
     textEdit->setDateFormat (config.getDateFormat());
@@ -856,8 +852,6 @@ TabPage* FPwin::createEmptyTab (bool setCurrent, bool allowNormalHighlighter)
         textEdit->setLineWrapMode (QPlainTextEdit::NoWrap);
     if (!ui->actionIndent->isChecked())
         textEdit->setAutoIndentation (false);
-    if (ui->actionLineNumbers->isChecked() || ui->spinBox->isVisible())
-        textEdit->showLineNumbers (true);
     if (ui->spinBox->isVisible())
         connect (textEdit->document(), &QTextDocument::blockCountChanged, this, &FPwin::setMax);
     if (ui->statusBar->isVisible()
@@ -1026,7 +1020,6 @@ void FPwin::focus_view_hard()
 			textEdit->setSearchedText (QString());
 			QList<QTextEdit::ExtraSelection> es;
 			textEdit->setGreenSel (es);
-			if (ui->actionLineNumbers->isChecked() || ui->spinBox->isVisible())
 			es.prepend (textEdit->currentLineSelection());
 			es.append (textEdit->getBlueSel());
 			es.append (textEdit->getRedSel());
@@ -2393,12 +2386,8 @@ void FPwin::jumpTo()
     for (int i = 0; i < ui->tabWidget->count(); ++i)
     {
         TextEdit *thisTextEdit = qobject_cast< TabPage *>(ui->tabWidget->widget (i))->textEdit();
-        if (!ui->actionLineNumbers->isChecked())
-            thisTextEdit->showLineNumbers (!visibility);
-
         if (!visibility)
         {
-            /* setMaximum() isn't a slot */
             connect (thisTextEdit->document(),
                      &QTextDocument::blockCountChanged,
                      this,
@@ -2449,22 +2438,6 @@ void FPwin::goTo()
         ui->label->setVisible(false);
         ui->checkBox->setVisible(false);
         
-    }
-}
-void FPwin::showLN (bool checked)
-{
-    int count = ui->tabWidget->count();
-    if (count == 0) return;
-
-    if (checked)
-    {
-        for (int i = 0; i < count; ++i)
-            qobject_cast< TabPage *>(ui->tabWidget->widget (i))->textEdit()->showLineNumbers (true);
-    }
-    else if (!ui->spinBox->isVisible())
-    {
-        for (int i = 0; i < count; ++i)
-            qobject_cast< TabPage *>(ui->tabWidget->widget (i))->textEdit()->showLineNumbers (false);
     }
 }
 void FPwin::toggleWrapping()
@@ -2798,11 +2771,9 @@ void FPwin::dropTab (const QString& str)
     QString tooltip = dragSource->ui->tabWidget->tabToolTip (index);
     QString tabText = dragSource->ui->tabWidget->tabText (index);
     bool spin = false;
-    bool ln = false;
+    bool ln = true;
     if (dragSource->ui->spinBox->isVisible())
         spin = true;
-    if (dragSource->ui->actionLineNumbers->isChecked())
-        ln = true;
 
     TabPage *tabPage = qobject_cast< TabPage *>(dragSource->ui->tabWidget->widget (index));
     if (tabPage == nullptr)
@@ -2868,7 +2839,7 @@ void FPwin::dropTab (const QString& str)
     ui->tabWidget->setCurrentIndex (insertIndex);
     QList<QTextEdit::ExtraSelection> es;
     if ((ln || spin)
-        && (ui->actionLineNumbers->isChecked() || ui->spinBox->isVisible()))
+        && (ui->spinBox->isVisible()))
     {
         es.prepend (textEdit->currentLineSelection());
     }
@@ -2889,10 +2860,6 @@ void FPwin::dropTab (const QString& str)
     }
     if (ui->spinBox->isVisible())
         connect (textEdit->document(), &QTextDocument::blockCountChanged, this, &FPwin::setMax);
-    if (ui->actionLineNumbers->isChecked() || ui->spinBox->isVisible())
-        textEdit->showLineNumbers (true);
-    else
-        textEdit->showLineNumbers (false);
     /* searching */
     if (!textEdit->getSearchedText().isEmpty())
     {

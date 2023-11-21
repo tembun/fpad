@@ -196,7 +196,6 @@
      <addaction name="menuWestern_European"/>
      <addaction name="menuEast_European"/>
     </widget>
-    <addaction name="actionLineNumbers"/>
     <addaction name="actionWrap"/>
     <addaction name="actionIndent"/>
     <addaction name="actionSyntax"/>
@@ -461,17 +460,6 @@
   <action name="actionFont">
    <property name="text">
     <string>&amp;Font</string>
-   </property>
-  </action>
-  <action name="actionLineNumbers">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Line Numbers</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+L</string>
    </property>
   </action>
   <action name="actionWrap">

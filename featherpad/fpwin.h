@@ -135,7 +135,6 @@ private slots:
     void hlight() const;
     void searchFlagChanged();
     void showHideSearch();
-    void showLN (bool checked);
     void toggleSyntaxHighlighting();
     void formatOnBlockChange (int) const;
     void formatOnTextChange (int, int charsRemoved, int charsAdded) const;

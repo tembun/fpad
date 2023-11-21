@@ -24,15 +24,13 @@ namespace FeatherPad {
 
 void FPwin::removeGreenSel()
 {
-    /* remove green highlights, considering the selection order, namely,
-       current line -> replacement -> found matches -> selection highlights -> bracket matches */
     int count = ui->tabWidget->count();
     for (int i = 0; i < count; ++i)
     {
         TextEdit *textEdit = qobject_cast< TabPage *>(ui->tabWidget->widget (i))->textEdit();
         QTextEdit::ExtraSelection curLineSel;
         QList<QTextEdit::ExtraSelection> es = textEdit->extraSelections();
-        if (ui->actionLineNumbers->isChecked() || ui->spinBox->isVisible())
+        if (ui->spinBox->isVisible())
         {
             curLineSel = textEdit->currentLineSelection();
             if (!es.isEmpty())
@@ -49,7 +47,6 @@ void FPwin::removeGreenSel()
         textEdit->setExtraSelections (es);
     }
 }
-/*************************/
 void FPwin::replaceDock()
 {
     if (!isReady()) return;
@@ -80,19 +77,11 @@ void FPwin::replaceDock()
     };
     return;
 }
-/*************************/
-// When the dock becomes invisible, clear the replacing text and remove only green highlights.
-// Although it doesn't concern us, when docking or undocking, the widget first becomes invisible
-// for a moment and then visible again.
 void FPwin::closeReplaceDock (bool visible)
 {
     if (visible || isMinimized()) return;
-
     txtReplace_.clear();
     removeGreenSel();
-
-    /* return focus to the document and remove the title
-       (other titles will be removed by tabSwitch()) */
     if (ui->tabWidget->count() > 0)
     {
         TextEdit *textEdit = qobject_cast< TabPage *>(ui->tabWidget->currentWidget())->textEdit();
@@ -100,15 +89,12 @@ void FPwin::closeReplaceDock (bool visible)
         textEdit->setReplaceTitle (QString());
     }
 }
-/*************************/
-// Resize the floating dock widget to its minimum size.
 void FPwin::resizeDock (bool topLevel)
 {
     if (topLevel)
         ui->dockReplace->resize (ui->dockReplace->minimumWidth(),
                                  ui->dockReplace->minimumHeight());
 }
-/*************************/
 void FPwin::replace()
 {
     if (!isReady()) return;
@@ -124,23 +110,18 @@ void FPwin::replace()
 
     QString txtFind = ui->lineEditFind->text();
     if (txtFind.isEmpty()) return;
-
-    /* remove previous green highlights if the replacing text is changed */
     if (txtReplace_ != ui->lineEditReplace->text())
     {
         txtReplace_ = ui->lineEditReplace->text();
         textEdit->setGreenSel (QList<QTextEdit::ExtraSelection>());
     }
-
-    bool lineNumShown (ui->actionLineNumbers->isChecked() || ui->spinBox->isVisible());
-
     QTextDocument::FindFlags searchFlags = getSearchFlags();
     QTextCursor start = textEdit->textCursor();
     QTextCursor tmp = start;
     QTextCursor found;
     if (QObject::sender() == ui->toolButtonNext)
         found = textEdit->finding (txtFind, start, searchFlags, tabPage->matchRegex());
-    else// if (QObject::sender() == ui->toolButtonPrv)
+    else
         found = textEdit->finding (txtFind, start, searchFlags | QTextDocument::FindBackward, tabPage->matchRegex());
     QColor color = QColor (textEdit->hasDarkScheme() ? Qt::darkGreen : Qt::green);
     int pos;
@@ -164,38 +145,26 @@ void FPwin::replace()
 
         if (QObject::sender() != ui->toolButtonNext)
         {
-            /* With the cursor at the end of the replacing text, if the backward replacement
-               is repeated and the text is matched again (which is especially possible with
-               regex), the replacement won't proceed. So, the cursor should be moved. */
             start.setPosition (start.position() - txtReplace_.length());
             textEdit->setTextCursor (start);
         }
     }
     textEdit->setGreenSel (es);
-    if (lineNumShown)
-        es.prepend (textEdit->currentLineSelection());
-    /* append blue and red highlights */
+    es.prepend (textEdit->currentLineSelection());
     es.append (textEdit->getBlueSel());
     es.append (textEdit->getRedSel());
     textEdit->setExtraSelections (es);
-    /* add yellow highlights (perhaps with corrections) */
     hlight();
 }
-/*************************/
 void FPwin::replaceAll()
 {
     if (!isReady()) return;
-
     TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget());
     if (tabPage == nullptr) return;
-
     TextEdit *textEdit = tabPage->textEdit();
     if (textEdit->isReadOnly()) return;
-
     QString txtFind = ui->lineEditFind->text();
     if (txtFind.isEmpty()) return;
-
-    /* remove previous green highlights if the replacing text is changed */
     if (txtReplace_ != ui->lineEditReplace->text())
     {
         txtReplace_ = ui->lineEditReplace->text();
@@ -240,8 +209,7 @@ void FPwin::replaceAll()
 
     textEdit->setGreenSel (es);
     start.endEditBlock();
-    if ((ui->actionLineNumbers->isChecked() || ui->spinBox->isVisible()))
-        es.prepend (textEdit->currentLineSelection());
+    es.prepend (textEdit->currentLineSelection());
     es.append (textEdit->getBlueSel());
     es.append (textEdit->getRedSel());
     textEdit->setExtraSelections (es);

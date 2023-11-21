@@ -631,8 +631,6 @@ void PrefDialog::prefStatusbar (int checked)
 
             if (!win->ui->statusBar->isVisible())
             {
-                /* here we can't use docProp() directly
-                   because we don't want to count words */
                 if (TabPage *tabPage = qobject_cast<TabPage*>(win->ui->tabWidget->currentWidget()))
                 {
                     TextEdit *textEdit = tabPage->textEdit();
@@ -654,7 +652,7 @@ void PrefDialog::prefStatusbar (int checked)
                     if (QToolButton *wordButton = win->ui->statusBar->findChild<QToolButton *>("wordButton"))
                     {
                         wordButton->setVisible (true);
-                        if (textEdit->getWordNumber() != -1 // when words are already counted
+                        if (textEdit->getWordNumber() != -1
                             || textEdit->document()->isEmpty())
                         {
                             win->updateWordInfo();
@@ -662,7 +660,6 @@ void PrefDialog::prefStatusbar (int checked)
                     }
                 }
             }
-            /* no need for this menu item anymore */
             win->ui->actionDoc->setVisible (false);
         }
     }
@@ -845,18 +842,10 @@ void PrefDialog::prefLine (int checked)
     if (checked == Qt::Checked)
     {
         config.setLineByDefault (true);
-        for (int i = 0; i < singleton->Wins.count(); ++i)
-        {
-            FPwin *thisWin = singleton->Wins.at (i);
-            thisWin->ui->actionLineNumbers->setChecked (true);
-            thisWin->ui->actionLineNumbers->setDisabled (true);
-        }
     }
     else if (checked == Qt::Unchecked)
     {
         config.setLineByDefault (false);
-        for (int i = 0; i < singleton->Wins.count(); ++i)
-            singleton->Wins.at (i)->ui->actionLineNumbers->setEnabled (true);
     }
 }
 void PrefDialog::prefSyntax (int checked)

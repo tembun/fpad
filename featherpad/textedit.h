@@ -46,7 +46,6 @@ public:
     void adjustScrollbars();
     void lineNumberAreaPaintEvent (QPaintEvent *event);
     int lineNumberAreaWidth();
-    void showLineNumbers (bool show);
     QString getUrl (const int pos) const;
     QFont getDefaultFont() const {
         return font_;
@@ -99,53 +98,44 @@ public:
     int getDarkValue() const {
         return darkValue_;
     }
-
-    void setCurLineHighlight (int value);
-
     qint64 getSize() const {
         return size_;
     }
     void setSize (qint64 size) {
         size_ = size;
     }
-
     QDateTime getLastModified() const {
         return lastModified_;
     }
     void setLastModified (const QDateTime& m) {
         lastModified_ = m;
     }
-
     int getWordNumber() const {
         return wordNumber_;
     }
     void setWordNumber (int n) {
         wordNumber_ = n;
     }
-
     QString getSearchedText() const {
         return searchedText_;
     }
     void setSearchedText (const QString &text) {
         searchedText_ = text;
     }
-
     QString getReplaceTitle() const {
         return replaceTitle_;
     }
     void setReplaceTitle (const QString &title) {
         replaceTitle_ = title;
     }
-
     QString getFileName() const {
         return fileName_;
     }
     void setFileName (const QString &name) {
         fileName_ = name;
     }
-
     QString getProg() const {
-        return prog_.isEmpty() ? "url" // impossible; just a precaution
+        return prog_.isEmpty() ? "url"
                                : prog_;
     }
     void setProg (const QString &prog) {
@@ -158,14 +148,12 @@ public:
     void setLang (const QString &lang) {
         lang_ = lang;
     }
-
     QString getEncoding() const {
         return encoding_;
     }
     void setEncoding (const QString &encoding) {
         encoding_ = encoding;
     }
-
     QList<QTextEdit::ExtraSelection> getGreenSel() const {
         return greenSel_;
     }
@@ -281,9 +269,6 @@ protected:
     void mouseDoubleClickEvent (QMouseEvent *event);
     bool event (QEvent *event);
     bool eventFilter (QObject *watched, QEvent *event);
-
-    /* we want to pass dropping of files to
-       the main widget with a custom signal */
     bool canInsertFromMimeData (const QMimeData* source) const {
         return source->hasUrls() || QPlainTextEdit::canInsertFromMimeData (source);
     }
@@ -291,11 +276,11 @@ protected:
         keepTxtCurHPos_ = false;
         if (source->hasUrls())
         {
-            txtCurHPos_ = -1; // Qt bug: cursorPositionChanged() isn't emitted with file dropping
+            txtCurHPos_ = -1;
             const QList<QUrl> urlList = source->urls();
             bool multiple (urlList.count() > 1);
             for (const QUrl &url : urlList)
-                emit fileDropped (url.adjusted (QUrl::NormalizePathSegments) // KDE may give a double slash
+                emit fileDropped (url.adjusted (QUrl::NormalizePathSegments)
                                      .toLocalFile(),
                                   0,
                                   0,
@@ -307,7 +292,6 @@ protected:
 
 private slots:
     void updateLineNumberAreaWidth (int newBlockCount);
-    void highlightCurrentLine();
     void updateLineNumberArea (const QRect &rect, int dy);
     void onUpdateRequesting (const QRect&, int dy);
     void onSelectionChanged();

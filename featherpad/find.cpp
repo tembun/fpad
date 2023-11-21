@@ -48,10 +48,9 @@ void FPwin::find (bool forward)
 
     if (txt.isEmpty())
     {
-        /* remove all yellow and green highlights */
         QList<QTextEdit::ExtraSelection> es;
         textEdit->setGreenSel (es); // not needed
-        if (ui->actionLineNumbers->isChecked() || ui->spinBox->isVisible())
+        if (ui->spinBox->isVisible())
             es.prepend (textEdit->currentLineSelection());
         es.append (textEdit->getBlueSel());
         es.append (textEdit->getRedSel());
@@ -128,7 +127,7 @@ void FPwin::hlight() const
         end.setPosition (endPos);
     QTextCursor visCur = start;
     visCur.setPosition (end.position(), QTextCursor::KeepAnchor);
-    const QString str = visCur.selection().toPlainText(); // '\n' is included in this way
+    const QString str = visCur.selection().toPlainText();
     Qt::CaseSensitivity cs = tabPage->matchCase() ? Qt::CaseSensitive : Qt::CaseInsensitive;
     
     QColor bg = QColor( 0 , 0 , 0 );
@@ -140,7 +139,7 @@ void FPwin::hlight() const
 	  fg = QColor( 0 , 0 , 0 );
     }
     
-    if (tabPage->matchRegex() || str.contains (txt, cs)) // don't waste time if the searched text isn't visible
+    if (tabPage->matchRegex() || str.contains (txt, cs))
     {
         while (!(found = textEdit->finding (txt, start, searchFlags,  tabPage->matchRegex(), endLimit)).isNull())
         {
@@ -152,7 +151,7 @@ void FPwin::hlight() const
             start.setPosition (found.position());
         }
     }
-    if (ui->actionLineNumbers->isChecked() || ui->spinBox->isVisible())
+    if (ui->spinBox->isVisible())
         es.prepend (textEdit->currentLineSelection());
     es.append (textEdit->getBlueSel());
     es.append (textEdit->getRedSel());
@@ -161,11 +160,8 @@ void FPwin::hlight() const
 void FPwin::searchFlagChanged()
 {
     if (!isReady()) return;
-
     TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget());
     if (tabPage == nullptr) return;
-
-    /* deselect text for consistency */
     TextEdit *textEdit = tabPage->textEdit();
     QTextCursor start = textEdit->textCursor();
     if (start.hasSelection())
@@ -173,7 +169,6 @@ void FPwin::searchFlagChanged()
         start.setPosition (start.anchor());
         textEdit->setTextCursor (start);
     }
-
     hlight();
 }
 QTextDocument::FindFlags FPwin::getSearchFlags() const
