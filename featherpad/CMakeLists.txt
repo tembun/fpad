@@ -100,21 +100,7 @@ else()
   set(EXTRA_HEADERS warningbar.h messagebox.h filedialog.h)
 endif()
 
-# translations
-if(Qt5LinguistTools_FOUND)
-  file(GLOB TS_FILES data/translations/featherpad_*.ts)
-  qt5_add_translation(QM_FILES ${TS_FILES})
-  add_executable(featherpad ${featherpad_SRCS} ${featherpad_RESOURCES} ${EXTRA_HEADERS} ${DESKTOP_FILE} ${QM_FILES})
-  if(HAIKU)
-    install(FILES ${QM_FILES} DESTINATION "${CMAKE_INSTALL_PREFIX}")
-  elseif(APPLE)
-    SET_SOURCE_FILES_PROPERTIES(${QM_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/translations)
-  elseif(UNIX)
-    install(FILES ${QM_FILES} DESTINATION "${CMAKE_INSTALL_PREFIX}/share/featherpad/translations")
-  endif()
-else(Qt5LinguistTools_FOUND)
-  add_executable(featherpad ${featherpad_SRCS} ${featherpad_RESOURCES} ${EXTRA_HEADERS} ${DESKTOP_FILE})
-endif(Qt5LinguistTools_FOUND)
+add_executable(featherpad ${featherpad_SRCS} ${featherpad_RESOURCES} ${EXTRA_HEADERS} ${DESKTOP_FILE})
 
 if(NOT WITHOUT_X11 AND UNIX AND NOT APPLE AND NOT HAIKU)
   target_link_libraries(featherpad ${Qt5Core_LIBRARIES}
@@ -149,13 +135,10 @@ elseif(APPLE)
 elseif(UNIX)
   # make symlink
   add_custom_target(fpad_symlink ALL ${CMAKE_COMMAND} -E create_symlink featherpad fpad DEPENDS featherpad COMMENT "Creating fpad as a symlink to featherpad")
-
   install(TARGETS featherpad RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
   install(FILES ${DESKTOP_FILE} DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications")
   install(FILES ${ICON_FILE} DESTINATION "${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps")
   install(FILES ${HELP_FILE} DESTINATION "${CMAKE_INSTALL_PREFIX}/share/featherpad")
-  # also install translated help files
-  install(FILES ${HELP_TR_FILES} DESTINATION "${CMAKE_INSTALL_PREFIX}/share/featherpad")
   # install symlink
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/fpad DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 endif()

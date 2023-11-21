@@ -322,7 +322,7 @@ PrefDialog::PrefDialog (QWidget *parent)
 
     static QHash<QString, QString> syntaxNames;
     if (syntaxNames.isEmpty())
-    { // it's a shame that QObject::tr() doesn't work in FeatherPad::Config
+    {
         syntaxNames.insert ("function", tr ("Functions, URLs,…"));
         syntaxNames.insert ("BuiltinFunction", tr ("Built-in Functions"));
         syntaxNames.insert ("comment", tr ("Comments"));
@@ -335,7 +335,6 @@ PrefDialog::PrefDialog (QWidget *parent)
         syntaxNames.insert ("cssValue", tr ("Markdown Headings, CSS Values,…"));
         syntaxNames.insert ("other", tr ("Extra Elements"));
     }
-
     ui->syntaxTableWidget->setSortingEnabled (false);
     origSyntaxColors_ = !config.customSyntaxColors().isEmpty()
                             ? config.customSyntaxColors()
@@ -347,7 +346,7 @@ PrefDialog::PrefDialog (QWidget *parent)
     while (sIter != origSyntaxColors_.constEnd())
     {
         QTableWidgetItem *item = new QTableWidgetItem (syntaxNames.value (sIter.key()));
-        item->setData (Qt::UserRole, sIter.key()); // remember syntax independently of translations
+        item->setData (Qt::UserRole, sIter.key());
         item->setFlags (item->flags() & ~Qt::ItemIsEditable & ~Qt::ItemIsSelectable);
         ui->syntaxTableWidget->setItem (index, 0, item);
 

@@ -32,12 +32,10 @@ TabWidget::TabWidget (QWidget *parent) : QTabWidget (parent)
     timerId_ = 0;
     connect (this, &QTabWidget::currentChanged, this, &TabWidget::tabSwitch);
 }
-/*************************/
 TabWidget::~TabWidget()
 {
     delete tb_;
 }
-/*************************/
 void TabWidget::tabSwitch (int index)
 {
     curIndx_ = index;
@@ -60,7 +58,6 @@ void TabWidget::timerEvent (QTimerEvent *e)
 
         if (QWidget *w = widget (curIndx_))
         {
-            const int n = activatedTabs_.size();
             activatedTabs_.removeOne (w);
             activatedTabs_ << w;
         }
@@ -70,7 +67,6 @@ void TabWidget::removeTab (int index)
 {
     if (QWidget *w = widget (index))
     {
-        const int n = activatedTabs_.size();
         activatedTabs_.removeOne (w);
     }
     QTabWidget::removeTab (index);

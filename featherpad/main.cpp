@@ -27,7 +27,6 @@
 
 #include <signal.h>
 #include <QLibraryInfo>
-#include <QTranslator>
 
 void handleQuitSignals (const std::vector<int>& quitSignals)
 {
@@ -88,41 +87,15 @@ int main (int argc, char **argv)
 #endif
         return 0;
     }
-
     FeatherPad::FPsingleton singleton (argc, argv, option == "--standalone" || option == "-s");
     singleton.setApplicationName (name);
     singleton.setApplicationVersion (version);
-
-    handleQuitSignals ({SIGQUIT, SIGINT, SIGTERM, SIGHUP}); // -> https://en.wikipedia.org/wiki/Unix_signal
-
+    handleQuitSignals ({SIGQUIT, SIGINT, SIGTERM, SIGHUP});
     singleton.setAttribute(Qt::AA_UseHighDpiPixmaps, true);
-
     QStringList langs (QLocale::system().uiLanguages());
     QString lang; // bcp47Name() doesn't work under vbox
     if (!langs.isEmpty())
         lang = langs.first().replace ('-', '_');
-
-    QTranslator qtTranslator;
-    if (!qtTranslator.load ("qt_" + lang, QLibraryInfo::location (QLibraryInfo::TranslationsPath)))
-    { // shouldn't be needed
-        if (!langs.isEmpty())
-        {
-            lang = langs.first().split (QLatin1Char ('_')).first();
-            qtTranslator.load ("qt_" + lang, QLibraryInfo::location (QLibraryInfo::TranslationsPath));
-        }
-    }
-    singleton.installTranslator (&qtTranslator);
-
-    QTranslator FPTranslator;
-#if defined(Q_OS_HAIKU)
-    FPTranslator.load ("featherpad_" + lang, "/translations");
-#elif defined(Q_OS_MAC)
-    FPTranslator.load ("featherpad_" + lang, singleton.applicationDirPath() + QStringLiteral ("/../Resources/translations/"));
-#else
-    FPTranslator.load ("featherpad_" + lang, QStringLiteral (DATADIR) + "/featherpad/translations");
-#endif
-    singleton.installTranslator (&FPTranslator);
-
     QString info;
 #ifdef HAS_X11
     int d = singleton.isX11() ? static_cast<int>(FeatherPad::fromDesktop()) : -1;
@@ -130,7 +103,7 @@ int main (int argc, char **argv)
     int d = -1;
 #endif
     info.setNum (d);
-    info += "\n\r"; // a string that can't be used in file names
+    info += "\n\r";
     info += QDir::currentPath();
     info += "\n\r";
     for (int i = 1; i < argc; ++i)
@@ -139,11 +112,8 @@ int main (int argc, char **argv)
         if (i < argc - 1)
             info += "\n\r";
     }
-
-    // the slot is executed in the receiver's thread
     if (singleton.sendMessage (info))
         return 0;
-
     QObject::connect (&singleton, &QCoreApplication::aboutToQuit, &singleton, &FeatherPad::FPsingleton::quitting);
     singleton.firstWin (info);
     QObject::connect (&singleton, &FeatherPad::FPsingleton::messageReceived,

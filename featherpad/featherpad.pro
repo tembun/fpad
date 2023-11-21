@@ -83,18 +83,6 @@ else:unix:!macx:!haiku {
   DEFINES += HAS_X11
 }
 
-unix {
-  #TRANSLATIONS
-  exists($$[QT_INSTALL_BINS]/lrelease) {
-    TRANSLATIONS = $$system("find data/translations/ -name 'featherpad_*.ts'")
-    updateqm.input = TRANSLATIONS
-    updateqm.output = data/translations/translations/${QMAKE_FILE_BASE}.qm
-    updateqm.commands = $$[QT_INSTALL_BINS]/lrelease ${QMAKE_FILE_IN} -qm data/translations/translations/${QMAKE_FILE_BASE}.qm
-    updateqm.CONFIG += no_link target_predeps
-    QMAKE_EXTRA_COMPILERS += updateqm
-  }
-}
-
 unix:!haiku:!macx {
   #VARIABLES
   isEmpty(PREFIX) {
@@ -123,10 +111,7 @@ unix:!haiku:!macx {
   help.files += ./data/help
   help.files += ./data/help_*
 
-  trans.path = $$DATADIR/featherpad
-  trans.files += data/translations/translations
-
-  INSTALLS += target slink desktop iconsvg help trans
+  INSTALLS += target slink desktop iconsvg help
 }
 else:haiku {
   isEmpty(PREFIX) {
@@ -143,9 +128,7 @@ else:haiku {
   help.files += ./data/help
   help.files += ./data/help_*
 
-  trans.path = $$PREFIX
-  trans.files += data/translations/translations
-  INSTALLS += target help trans
+  INSTALLS += target help
 }
 else:macx{
   #VARIABLES
@@ -165,8 +148,5 @@ else:macx{
   help.files += ./data/help
   help.files += ./data/help_*
 
-  trans.path = $$DATADIR/Contents/Resources/
-  trans.files += data/translations/translations
-
-  INSTALLS += target help trans
+  INSTALLS += target help
 }
