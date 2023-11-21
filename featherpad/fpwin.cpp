@@ -204,8 +204,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     	new QShortcut( QKeySequence( Qt::ALT | Qt::Key_2 ) , this )
     );
     connect( focus_view_soft , &QShortcut::activated , this, &FPwin::focus_view_soft );
-    QShortcut *kill = new QShortcut (QKeySequence (Qt::CTRL + Qt::ALT + Qt::Key_E), this);
-    connect (kill, &QShortcut::activated, this, &FPwin::exitProcess);
     dummyWidget = new QWidget();
     setAcceptDrops (true);
     setAttribute (Qt::WA_AlwaysShowToolTips);
@@ -1040,92 +1038,6 @@ bool FPwin::isScriptLang (const QString& lang) const
     return (lang == "sh" || lang == "python"
             || lang == "ruby" || lang == "lua"
             || lang == "perl");
-}
-void FPwin::exitProcess()
-{
-    if (TabPage *tabPage = qobject_cast<TabPage*>(ui->tabWidget->currentWidget()))
-    {
-        if (QProcess *process = tabPage->findChild<QProcess *>(QString(), Qt::FindDirectChildrenOnly))
-            process->kill();
-    }
-}
-void FPwin::displayMessage (bool error)
-{
-    QProcess *process = static_cast<QProcess*>(QObject::sender());
-    if (!process) return;
-    QByteArray msg;
-    if (error)
-    {
-        process->setReadChannel(QProcess::StandardError);
-        msg = process->readAllStandardError();
-    }
-    else
-    {
-        process->setReadChannel(QProcess::StandardOutput);
-        msg = process->readAllStandardOutput();
-    }
-    if (msg.isEmpty()) return;
-
-    QPointer<QDialog> msgDlg = nullptr;
-    QList<QDialog*> dialogs = findChildren<QDialog*>();
-    for (int i = 0; i < dialogs.count(); ++i)
-    {
-        if (dialogs.at (i)->parent() == process->parent())
-        {
-            msgDlg = dialogs.at (i);
-            break;
-        }
-    }
-    if (msgDlg)
-    {
-        if (QPlainTextEdit *tEdit = msgDlg->findChild<QPlainTextEdit*>())
-        {
-            tEdit->setPlainText (tEdit->toPlainText() + "\n" + msg.constData());
-            QTextCursor cur = tEdit->textCursor();
-            cur.movePosition (QTextCursor::End);
-            tEdit->setTextCursor (cur);
-        }
-    }
-    else
-    {
-        msgDlg = new QDialog (qobject_cast<QWidget*>(process->parent()));
-        msgDlg->setWindowTitle (tr ("Script Output"));
-        msgDlg->setSizeGripEnabled (true);
-        QGridLayout *grid = new QGridLayout;
-        QLabel *label = new QLabel (msgDlg);
-        label->setText ("<center><b>" + tr ("Script File") + ": </b></center><i>" + process->objectName() + "</i>");
-        label->setTextInteractionFlags (Qt::TextSelectableByMouse);
-        label->setWordWrap (true);
-        label->setMargin (5);
-        grid->addWidget (label, 0, 0, 1, 2);
-        QPlainTextEdit *tEdit = new QPlainTextEdit (msgDlg);
-        tEdit->setTextInteractionFlags (Qt::TextSelectableByMouse);
-        tEdit->ensureCursorVisible();
-        grid->addWidget (tEdit, 1, 0, 1, 2);
-        QPushButton *closeButton = new QPushButton (QIcon::fromTheme ("edit-delete"), tr ("Close"));
-        connect (closeButton, &QAbstractButton::clicked, msgDlg, &QDialog::reject);
-        grid->addWidget (closeButton, 2, 1, Qt::AlignRight);
-        QPushButton *clearButton = new QPushButton (QIcon::fromTheme ("edit-clear"), tr ("Clear"));
-        connect (clearButton, &QAbstractButton::clicked, tEdit, &QPlainTextEdit::clear);
-        grid->addWidget (clearButton, 2, 0, Qt::AlignLeft);
-        msgDlg->setLayout (grid);
-        tEdit->setPlainText (msg.constData());
-        QTextCursor cur = tEdit->textCursor();
-        cur.movePosition (QTextCursor::End);
-        tEdit->setTextCursor (cur);
-        msgDlg->setAttribute (Qt::WA_DeleteOnClose);
-        msgDlg->show();
-        msgDlg->raise();
-        msgDlg->activateWindow();
-    }
-}
-void FPwin::displayOutput()
-{
-    displayMessage (false);
-}
-void FPwin::displayError()
-{
-    displayMessage (true);
 }
 void FPwin::closeTab()
 {
