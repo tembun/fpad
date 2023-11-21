@@ -89,7 +89,6 @@ if(NOT WITHOUT_X11 AND UNIX AND NOT APPLE AND NOT HAIKU)
 endif()
 
 set(featherpad_RESOURCES data/fp.qrc)
-set(DESKTOP_FILE data/featherpad.desktop)
 set(ICON_FILE data/featherpad.svg)
 
 if(CMAKE_VERSION VERSION_LESS "3.10.0") # CMP0071 in 3.10: Let AUTOMOC and AUTOUIC process GENERATED files
@@ -98,7 +97,7 @@ else()
   set(EXTRA_HEADERS warningbar.h messagebox.h filedialog.h)
 endif()
 
-add_executable(featherpad ${featherpad_SRCS} ${featherpad_RESOURCES} ${EXTRA_HEADERS} ${DESKTOP_FILE})
+add_executable(featherpad ${featherpad_SRCS} ${featherpad_RESOURCES} ${EXTRA_HEADERS})
 
 if(NOT WITHOUT_X11 AND UNIX AND NOT APPLE AND NOT HAIKU)
   target_link_libraries(featherpad ${Qt5Core_LIBRARIES}
@@ -128,7 +127,6 @@ elseif(UNIX)
   # make symlink
   add_custom_target(fpad_symlink ALL ${CMAKE_COMMAND} -E create_symlink featherpad fpad DEPENDS featherpad COMMENT "Creating fpad as a symlink to featherpad")
   install(TARGETS featherpad RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-  install(FILES ${DESKTOP_FILE} DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications")
   install(FILES ${ICON_FILE} DESTINATION "${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps")
   # install symlink
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/fpad DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

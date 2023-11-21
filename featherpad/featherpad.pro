@@ -100,13 +100,10 @@ unix:!haiku:!macx {
   slink.path = $$BINDIR
   slink.extra += ln -sf $${TARGET} fpad && cp -P fpad $(INSTALL_ROOT)$$BINDIR
 
-  desktop.path = $$DATADIR/applications
-  desktop.files += ./data/$${TARGET}.desktop
-
   iconsvg.path = $$DATADIR/icons/hicolor/scalable/apps
   iconsvg.files += ./data/$${TARGET}.svg
 
-  INSTALLS += target slink desktop iconsvg
+  INSTALLS += target slink iconsvg
 }
 else:haiku {
   isEmpty(PREFIX) {
