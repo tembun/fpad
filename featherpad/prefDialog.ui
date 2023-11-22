@@ -447,13 +447,6 @@ Tab navigation with mouse wheel is not affected.</string>
                </layout>
               </item>
               <item>
-               <widget class="QCheckBox" name="trailingSpacesBox">
-                <property name="text">
-                 <string>Remove trailing spaces on saving</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="thickCursorBox">
                 <property name="text">
                  <string>Thick text cursor</string>

@@ -35,7 +35,6 @@ Config::Config():
     isFull_ (false),
     thickCursor_ (false),
     tabWrapAround_ (false),
-    removeTrailingSpaces_ (false),
     inertialScrolling_ (false),
     autoSave_ (false),
     skipNonText_ (true),
@@ -163,8 +162,6 @@ void Config::readConfig()
     maxSHSize_ = qBound (1, settings.value ("maxSHSize", 2).toInt(), 10);
     lightBgColorValue_ = qBound (230, settings.value ("lightBgColorValue", 255).toInt(), 255);
     v = settings.value ("appendEmptyLine");
-    if (settings.value ("removeTrailingSpaces").toBool())
-        removeTrailingSpaces_ = true; // false by default
     recentFilesNumber_ = qBound (0, settings.value ("recentFilesNumber", 10).toInt(), 20);
     curRecentFilesNumber_ = recentFilesNumber_; // fixed
     recentFiles_ = settings.value ("recentFiles").toStringList();
@@ -272,7 +269,6 @@ void Config::writeConfig()
     settings.setValue ("pastePaths", pastePaths_);
     settings.setValue ("maxSHSize", maxSHSize_);
     settings.setValue ("lightBgColorValue", lightBgColorValue_);
-    settings.setValue ("removeTrailingSpaces", removeTrailingSpaces_);
     settings.setValue ("recentFilesNumber", recentFilesNumber_);
     while (recentFiles_.count() > recentFilesNumber_)
         recentFiles_.removeLast();

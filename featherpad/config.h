@@ -215,12 +215,6 @@ public:
     void setSkipNonText (bool skip) {
         skipNonText_ = skip;
     }
-    bool getRemoveTrailingSpaces() const {
-        return removeTrailingSpaces_;
-    }
-    void setRemoveTrailingSpaces (bool remove) {
-        removeTrailingSpaces_ = remove;
-    }
     bool getRecentOpened() const {
         return recentOpened_;
     }
@@ -345,7 +339,6 @@ private:
          isMaxed_, isFull_,
          thickCursor_,
          tabWrapAround_,
-         removeTrailingSpaces_,
          inertialScrolling_,
          autoSave_,
          skipNonText_,
