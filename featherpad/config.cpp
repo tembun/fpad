@@ -43,7 +43,6 @@ Config::Config():
     saveUnmodified_ (false),
     pastePaths_ (false),
     sharedSearchHistory_ (false),
-    vLineDistance_ (-80),
     tabPosition_ (0),
     maxSHSize_ (2),
     lightBgColorValue_ (255),
@@ -152,10 +151,6 @@ void Config::readConfig()
 
     if (settings.value ("autoSave").toBool())
         autoSave_ = true; // false by default
-
-    int distance = settings.value ("vLineDistance").toInt();
-    if (qAbs (distance) >= 10 && qAbs (distance) < 1000)
-        vLineDistance_ = distance; // -80 by default
 
     v = settings.value ("skipNonText");
     if (v.isValid()) // true by default
@@ -282,7 +277,6 @@ void Config::writeConfig()
     settings.setValue ("lightBgColorValue", lightBgColorValue_);
     settings.setValue ("appendEmptyLine", appendEmptyLine_);
     settings.setValue ("removeTrailingSpaces", removeTrailingSpaces_);
-    settings.setValue ("vLineDistance", vLineDistance_);
     settings.setValue ("recentFilesNumber", recentFilesNumber_);
     while (recentFiles_.count() > recentFilesNumber_)
         recentFiles_.removeLast();

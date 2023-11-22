@@ -203,12 +203,6 @@ public:
         font_ = font;
     }
     void resetFont();
-    int getVLineDistance() const {
-        return vLineDistance_;
-    }
-    void setVLineDistance (int distance) {
-        vLineDistance_ = distance;
-    }
     int getMaxSHSize() const {
         return maxSHSize_;
     }
@@ -365,8 +359,7 @@ private:
          saveUnmodified_,
          pastePaths_,
          sharedSearchHistory_;
-    int vLineDistance_,
-        tabPosition_,
+    int tabPosition_,
         maxSHSize_,
         lightBgColorValue_,
         recentFilesNumber_,

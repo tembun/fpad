@@ -90,7 +90,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     Config config = static_cast<FPsingleton*>(qApp)->getConfig();
     lightColValue_ = config.getLightBgColorValue();
     recentNumber_ = config.getRecentFilesNumber();
-    vLineDistance_ = config.getVLineDistance();
     textTabSize_ = config.getTextTabSize();
     saveUnmodified_ = config.getSaveUnmodified();
     sharedSearchHistory_ = config.getSharedSearchHistory();
@@ -137,11 +136,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->tabCombo->setCurrentIndex (config.getTabPosition());
     ui->tabBox->setChecked (config.getTabWrapAround());
     connect (ui->tabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefTabWrapAround);
-    ui->vLineBox->setChecked (vLineDistance_ >= 10);
-    connect (ui->vLineBox, &QCheckBox::stateChanged, this, &PrefDialog::prefVLine);
-    ui->vLineSpin->setEnabled (vLineDistance_ >= 10);
-    ui->vLineSpin->setValue (qAbs (vLineDistance_));
-    connect (ui->vLineSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefVLineDistance);
     ui->thickCursorBox->setChecked (config.getThickCursor());
     ui->lastLineBox->setChecked (config.getAppendEmptyLine());
     connect (ui->lastLineBox, &QCheckBox::stateChanged, this, &PrefDialog::prefAppendEmptyLine);
@@ -519,30 +513,6 @@ void PrefDialog::prefTabPosition()
         for (int i = 0; i < singleton->Wins.count(); ++i)
             singleton->Wins.at (i)->ui->tabWidget->setTabPosition (static_cast<QTabWidget::TabPosition>(index));
     }
-}
-void PrefDialog::prefVLine (int checked)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    int dsitance = qMax (qMin (ui->vLineSpin->value(), 999), 10);
-    if (checked == Qt::Checked)
-    {
-        config.setVLineDistance (dsitance);
-        ui->vLineSpin->setEnabled (true);
-    }
-    else if (checked == Qt::Unchecked)
-    {
-        config.setVLineDistance (-1 * dsitance);
-        ui->vLineSpin->setEnabled (false);
-    }
-
-    showPrompt();
-}
-void PrefDialog::prefVLineDistance (int value)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    int dsitance = qMax (qMin (value, 999), 10);
-    config.setVLineDistance (dsitance);
-    showPrompt();
 }
 void PrefDialog::prefThickCursor()
 {

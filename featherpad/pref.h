@@ -77,8 +77,6 @@ private slots:
     void prefSearchHistory (int checked);
     void prefStatusbar (int checked);
     void prefStatusCursor (int checked);
-    void prefVLine (int checked);
-    void prefVLineDistance (int value);
     void prefAppendEmptyLine (int checked);
     void prefRemoveTrailingSpaces (int checked);
     void prefSkipNontext (int checked);
