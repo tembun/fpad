@@ -83,7 +83,6 @@ private slots:
     void prefRecentFilesNumber (int value);
     void prefSaveLastFilesList (int checked);
     void prefSplitterPos (int checked);
-    void prefInertialScrolling (int checked);
     void showWhatsThis();
     void prefShortcuts();
     void restoreDefaultShortcuts();

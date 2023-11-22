@@ -368,42 +368,6 @@ Tab navigation with mouse wheel is not affected.</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_3">
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_5">
-                <item>
-                 <spacer name="horizontalSpacer_5">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeType">
-                   <enum>QSizePolicy::Fixed</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>22</width>
-                    <height>5</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_6">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeType">
-                   <enum>QSizePolicy::MinimumExpanding</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>5</width>
-                    <height>5</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
-              <item>
                <layout class="QHBoxLayout" name="horizontalLayout_9">
                 <item>
                  <widget class="QLabel" name="textTabLabel">
@@ -428,50 +392,7 @@ Tab navigation with mouse wheel is not affected.</string>
                   </property>
                  </widget>
                 </item>
-                <item>
-                 <spacer name="horizontalSpacer_10">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeType">
-                   <enum>QSizePolicy::Expanding</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>5</width>
-                    <height>5</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
                </layout>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="inertiaBox">
-                <property name="toolTip">
-                 <string>Should the mouse wheel scrolling be inertial
-if the cursor is inside the text view?</string>
-                </property>
-                <property name="text">
-                 <string>Inertial scrolling with mouse wheel</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_1">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::MinimumExpanding</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>5</width>
-                  <height>1</height>
-                 </size>
-                </property>
-               </spacer>
               </item>
              </layout>
             </widget>

@@ -68,7 +68,6 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
     saveCursor_ = false;
     pastePaths_ = false;
     vLineDistance_ = 0;
-    inertialScrolling_ = false;
     scrollTimer_ = nullptr;
     keepTxtCurHPos_ = false;
     txtCurHPos_ = -1;
@@ -1002,47 +1001,6 @@ void TextEdit::wheelEvent (QWheelEvent *event)
                                          : verticalScrollBar(), &e);
         return;
     }
-
-    /* inertial scrolling */
-    if (inertialScrolling_
-        && event->spontaneous()
-        && !horizontal
-        && event->source() == Qt::MouseEventNotSynthesized)
-    {
-        if (QScrollBar* vbar = verticalScrollBar())
-        {
-            /* always set the initial speed to 3 lines per wheel turn */
-            int delta = event->angleDelta().y() * 3 / QApplication::wheelScrollLines();
-            if((delta > 0 && vbar->value() == vbar->minimum())
-               || (delta < 0 && vbar->value() == vbar->maximum()))
-            {
-                return; // the scrollbar can't move
-            }
-            /* find the number of wheel events in 500 ms
-               and set the scroll frames per second accordingly */
-            static QList<qint64> wheelEvents;
-            wheelEvents << QDateTime::currentMSecsSinceEpoch();
-            while (wheelEvents.last() - wheelEvents.first() > 500)
-                wheelEvents.removeFirst();
-            int fps = qMax (SCROLL_FRAMES_PER_SEC / wheelEvents.size(), 5);
-
-            /* set the data for inertial scrolling */
-            scrollData data;
-            data.delta = delta;
-            data.totalSteps = data.leftSteps = fps * SCROLL_DURATION / 1000;
-            queuedScrollSteps_.append (data);
-            if (!scrollTimer_)
-            {
-                scrollTimer_ = new QTimer();
-                scrollTimer_->setTimerType (Qt::PreciseTimer);
-                connect (scrollTimer_, &QTimer::timeout, this, &TextEdit::scrollWithInertia);
-            }
-            scrollTimer_->start (1000 / SCROLL_FRAMES_PER_SEC);
-            return;
-        }
-    }
-
-    /* proceed as in QPlainTextEdit::wheelEvent() */
     QAbstractScrollArea::wheelEvent (event);
     updateMicroFocus();
 }
@@ -1057,10 +1015,9 @@ void TextEdit::scrollWithInertia()
         totalDelta += qRound (static_cast<qreal>(it->delta) / static_cast<qreal>(it->totalSteps));
         -- it->leftSteps;
     }
-    /* only remove the first queue to simulate an inertia */
     while (!queuedScrollSteps_.empty())
     {
-        int t = queuedScrollSteps_.begin()->totalSteps; // 18 for one wheel turn
+        int t = queuedScrollSteps_.begin()->totalSteps;
         int l = queuedScrollSteps_.begin()->leftSteps;
         if ((t > 10 && l <= 0)
             || (t > 5 && t <= 10 && l <= -3)

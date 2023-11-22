@@ -243,14 +243,6 @@ public:
     void setReservedShortcuts (const QStringList &s) {
         reservedShortcuts_ = s;
     }
-
-    bool getInertialScrolling() const {
-        return inertialScrolling_;
-    }
-    void setInertialScrolling (bool inertial) {
-        inertialScrolling_ = inertial;
-    }
-
     QHash<QString, QVariant> savedCursorPos() {
         readCursorPos();
         return cursorPos_;
@@ -331,7 +323,6 @@ private:
          showStatusbar_, showCursorPos_,
          isMaxed_, isFull_,
          tabWrapAround_,
-         inertialScrolling_,
          autoSave_,
          skipNonText_,
          saveUnmodified_,

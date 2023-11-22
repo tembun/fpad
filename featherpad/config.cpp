@@ -34,7 +34,6 @@ Config::Config():
     isMaxed_ (false),
     isFull_ (false),
     tabWrapAround_ (false),
-    inertialScrolling_ (false),
     autoSave_ (false),
     skipNonText_ (true),
     saveUnmodified_ (false),
@@ -139,9 +138,6 @@ void Config::readConfig()
         else
             font_.setPointSize (qMax (QFont().pointSize(), 9));
     }
-
-    if (settings.value ("inertialScrolling").toBool())
-        inertialScrolling_ = true; // false by default
 
     if (settings.value ("autoSave").toBool())
         autoSave_ = true; // false by default
@@ -257,7 +253,6 @@ void Config::writeConfig()
     settings.endGroup();
     settings.beginGroup ("text");
     settings.setValue ("font", font_.toString());
-    settings.setValue ("inertialScrolling", inertialScrolling_);
     settings.setValue ("autoSave", autoSave_);
     settings.setValue ("skipNonText", skipNonText_);
     settings.setValue ("saveUnmodified", saveUnmodified_);

@@ -153,14 +153,6 @@ public:
     void makeUneditable (bool readOnly) {
         uneditable_ = readOnly;
     }
-
-    bool getInertialScrolling() const {
-        return inertialScrolling_;
-    }
-    void setInertialScrolling (bool inertial) {
-        inertialScrolling_ = inertial;
-    }
-
     bool getSaveCursor() const {
         return saveCursor_;
     }
@@ -276,7 +268,6 @@ private:
     bool uneditable_;
     bool saveCursor_;
     bool pastePaths_;
-    bool inertialScrolling_;
     struct scrollData {
       int delta;
       int leftSteps;
