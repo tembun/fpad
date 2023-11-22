@@ -32,11 +32,10 @@ LineEdit::LineEdit (QWidget *parent)
     if (clearButton)
     {
         clearButton->setToolTip (tr ("Clear text (Ctrl+K)"));
-        /* we'll need this for clearing found matches highlighting */
         connect (clearButton, &QAbstractButton::clicked, this, &LineEdit::returnPressed);
     }
 }
-/*************************/
+
 void LineEdit::keyPressEvent (QKeyEvent *event)
 {
     /* because of a bug in Qt5, the non-breaking space (ZWNJ) isn't inserted with SHIFT+SPACE */
@@ -49,17 +48,15 @@ void LineEdit::keyPressEvent (QKeyEvent *event)
     if (event->modifiers() == Qt::ControlModifier)
     {
         if (event->key() == Qt::Key_Up || event->key() == Qt::Key_Down)
-        { // in case it belongs to a combo box
+        {
             emit showComboPopup();
             event->accept();
             return;
         }
-        /* since two line-ediits can be shown, Ctrl+K can't be used
-           as a QShortcut but can come here for clearing the text */
         if (event->key() == Qt::Key_K)
         {
             clear();
-            returnPressed(); // for clearing found matches highlighting
+            returnPressed();
         }
     }
     
@@ -79,7 +76,7 @@ void LineEdit::keyPressEvent (QKeyEvent *event)
     
     QLineEdit::keyPressEvent (event);
 }
-/*************************/
+
 void LineEdit::focusInEvent (QFocusEvent * ev)
 {
     /* first do what QLineEdit does */

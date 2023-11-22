@@ -198,7 +198,6 @@
     </widget>
     <addaction name="actionWrap"/>
     <addaction name="actionIndent"/>
-    <addaction name="actionSyntax"/>
     <addaction name="menuEncoding"/>
     <addaction name="actionFont"/>
     <addaction name="actionPreferences"/>
@@ -488,20 +487,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
-   </property>
-  </action>
-  <action name="actionSyntax">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Syntax Highlighting</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+H</string>
    </property>
   </action>
   <action name="actionPreferences">

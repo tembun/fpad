@@ -31,14 +31,11 @@ Config::Config():
     hideSearchbar_ (false),
     showStatusbar_ (true),
     showCursorPos_ (false),
-    showLangSelector_ (false),
     remFont_ (true),
     wrapByDefault_ (true),
     indentByDefault_ (true),
     autoReplace_ (false),
     lineByDefault_ (false),
-    syntaxByDefault_ (true),
-    showWhiteSpace_ (false),
     showEndings_ (false),
     isMaxed_ (false),
     isFull_ (false),
@@ -55,7 +52,6 @@ Config::Config():
     autoSave_ (false),
     skipNonText_ (true),
     saveUnmodified_ (false),
-    selectionHighlighting_ (false),
     pastePaths_ (false),
     closeWithLastTab_ (false),
     sharedSearchHistory_ (false),
@@ -65,35 +61,27 @@ Config::Config():
     lightBgColorValue_ (255),
     darkBgColorValue_ (15),
     recentFilesNumber_ (10),
-    curRecentFilesNumber_ (10), // not needed
-    autoSaveInterval_ (1), // not needed
-    textTabSize_ (4), // not needed
+    curRecentFilesNumber_ (10),
+    autoSaveInterval_ (1),
+    textTabSize_ (6),
     winSize_ (QSize (700, 500)),
     startSize_ (QSize (700, 500)),
     winPos_ (QPoint (0, 0)),
-    splitterPos_ (20), // percentage
+    splitterPos_ (20),
     font_ (QFont ("Monospace")),
     recentOpened_ (false),
     saveLastFilesList_ (false),
-    cursorPosRetrieved_ (false),
-    whiteSpaceValue_ (180),
-    curLineHighlight_ (-1) {}
-/*************************/
+    cursorPosRetrieved_ (false) {}
+
 Config::~Config() {}
-/*************************/
 void Config::readConfig()
 {
     QVariant v;
     Settings settings ("featherpad", "fp");
-
-    /**************
-     *** Window ***
-     **************/
-
     settings.beginGroup ("window");
 
     if (settings.value ("size") == "none")
-        remSize_ = false; // true by default
+        remSize_ = false;
     else
     {
         winSize_ = settings.value ("size", QSize (700, 500)).toSize();
@@ -127,23 +115,20 @@ void Config::readConfig()
         noMenubar_ = true; // false by default
 
     if (noToolbar_ && noMenubar_)
-    { // we don't want to hide all actions
+    {
         noToolbar_ = false;
         noMenubar_ = true;
     }
 
     if (settings.value ("hideSearchbar").toBool())
-        hideSearchbar_ = true; // false by default
+        hideSearchbar_ = true;
 
     v = settings.value ("showStatusbar");
-    if (v.isValid()) // true by default
+    if (v.isValid())
         showStatusbar_ = v.toBool();
 
     if (settings.value ("showCursorPos").toBool())
-        showCursorPos_ = true; // false by default
-
-    if (settings.value ("showLangSelector").toBool())
-        showLangSelector_ = true; // false by default
+        showCursorPos_ = true;
 
     int pos = settings.value ("tabPosition").toInt();
     if (pos > 0 && pos <= 3)
@@ -169,10 +154,6 @@ void Config::readConfig()
         sharedSearchHistory_ = true; // false by default
 
     settings.endGroup();
-
-    /************
-     *** Text ***
-     ************/
 
     settings.beginGroup ("text");
 
@@ -202,12 +183,6 @@ void Config::readConfig()
     if (settings.value ("lineNumbers").toBool())
         lineByDefault_ = true; // false by default
 
-    if (settings.value ("noSyntaxHighlighting").toBool())
-        syntaxByDefault_ = false; // true by default
-
-    if (settings.value ("showWhiteSpace").toBool())
-        showWhiteSpace_ = true; // false by default
-
     if (settings.value ("showEndings").toBool())
         showEndings_ = true; // false by default
 
@@ -234,18 +209,11 @@ void Config::readConfig()
     if (settings.value ("saveUnmodified").toBool())
         saveUnmodified_ = true; // false by default
 
-    if (settings.value ("selectionHighlighting").toBool())
-        selectionHighlighting_ = true; // false by default
-
     if (settings.value ("pastePaths").toBool())
         pastePaths_ = true; // false by default
 
     maxSHSize_ = qBound (1, settings.value ("maxSHSize", 2).toInt(), 10);
-
-    /* don't let the dark bg be darker than #e6e6e6 */
     lightBgColorValue_ = qBound (230, settings.value ("lightBgColorValue", 255).toInt(), 255);
-
-    /* don't let the dark bg be lighter than #323232 */
     darkBgColorValue_ = qBound (0, settings.value ("darkBgColorValue", 15).toInt(), 50);
 
     dateFormat_ = settings.value ("dateFormat").toString();
@@ -279,20 +247,14 @@ void Config::readConfig()
     textTabSize_ = qBound (2, settings.value ("textTabSize", 4).toInt(), 10);
     
     settings.endGroup();
-
-    readSyntaxColors();
 }
-/*************************/
 void Config::resetFont()
 {
     font_ = QFont ("Monospace");
     font_.setPointSize (qMax (QFont().pointSize(), 9));
 }
-/*************************/
 void Config::readShortcuts()
 {
-    /* NOTE: We don't read the custom shortcuts from global config files
-             because we want the user to be able to restore their default values. */
     Settings tmp ("featherpad", "fp");
     Settings settings (tmp.fileName(), QSettings::NativeFormat);
 
@@ -305,15 +267,14 @@ void Config::readShortcuts()
         QString vs = validatedShortcut (v, &isValid);
         if (isValid)
             setActionShortcut (actions.at (i), vs);
-        else // remove the key on writing config
+        else
             removedActions_ << actions.at (i);
     }
     settings.endGroup();
 }
-/*************************/
 QStringList Config::getLastFiles()
 {
-    if (!saveLastFilesList_) // it's already decided
+    if (!saveLastFilesList_)
         return QStringList();
 
     Settings settingsLastCur ("featherpad", "fp_last_cursor_pos");
@@ -326,64 +287,10 @@ QStringList Config::getLastFiles()
         lastFiles.removeLast();
     return lastFiles;
 }
-/*************************/
-void Config::readSyntaxColors()// may be called multiple times
-{
-    setDfaultSyntaxColors();
-    customSyntaxColors_.clear();
-
-    /* NOTE: We don't read the custom syntax colors from global config files
-             because we want the user to be able to restore their default values. */
-    Settings tmp ("featherpad", darkColScheme_ ? "fp_dark_syntax_colors" : "fp_light_syntax_colors");
-    Settings settingsColors (tmp.fileName(), QSettings::NativeFormat);
-
-    settingsColors.beginGroup ("curLineHighlight");
-    curLineHighlight_ = qBound (-1, settingsColors.value ("value", -1).toInt(), 255);
-    settingsColors.endGroup();
-    if (curLineHighlight_ >= 0
-        && (darkColScheme_ ? curLineHighlight_ > 70
-                           : curLineHighlight_ < 210))
-    {
-        curLineHighlight_ = -1;
-    }
-
-
-    settingsColors.beginGroup ("whiteSpace");
-    int ws = settingsColors.value ("value").toInt();
-    settingsColors.endGroup();
-    if (ws < getMinWhiteSpaceValue() || ws > getMaxWhiteSpaceValue())
-        whiteSpaceValue_ = getDefaultWhiteSpaceValue();
-    else
-        whiteSpaceValue_ = ws;
-
-    const auto syntaxes = defaultLightSyntaxColors_.keys();
-    QList<QColor> l;
-    l << (darkColScheme_ ? QColor (Qt::white) : QColor (Qt::black));
-    l << QColor (whiteSpaceValue_, whiteSpaceValue_, whiteSpaceValue_);
-    for (auto &syntax : syntaxes)
-    {
-        QColor col;
-        col.setNamedColor (settingsColors.value (syntax).toString());
-        if (col.isValid())
-            col.setAlpha (255); // only opaque custom colors
-        if (!col.isValid() || l.contains (col))
-        { // an invalid or repeated color shows a corrupted configuration
-            customSyntaxColors_.clear();
-            break;
-        }
-        l << col;
-        customSyntaxColors_.insert (syntax, col);
-    }
-}
-/*************************/
 void Config::writeConfig()
 {
     Settings settings ("featherpad", "fp");
     if (!settings.isWritable()) return;
-
-    /**************
-     *** Window ***
-     **************/
 
     settings.beginGroup ("window");
 
@@ -418,7 +325,6 @@ void Config::writeConfig()
     settings.setValue ("hideSearchbar", hideSearchbar_);
     settings.setValue ("showStatusbar", showStatusbar_);
     settings.setValue ("showCursorPos", showCursorPos_);
-    settings.setValue ("showLangSelector", showLangSelector_);
     settings.setValue ("tabPosition", tabPosition_);
     settings.setValue ("tabWrapAround", tabWrapAround_);
     settings.setValue ("hideSingleTab", hideSingleTab_);
@@ -426,26 +332,16 @@ void Config::writeConfig()
     settings.setValue ("nativeDialog", nativeDialog_);
     settings.setValue ("closeWithLastTab", closeWithLastTab_);
     settings.setValue ("sharedSearchHistory", sharedSearchHistory_);
-
     settings.endGroup();
-
-    /************
-     *** Text ***
-     ************/
-
     settings.beginGroup ("text");
-
     if (remFont_)
         settings.setValue ("font", font_.toString());
     else
         settings.setValue ("font", "none");
-
     settings.setValue ("noWrap", !wrapByDefault_);
     settings.setValue ("noIndent", !indentByDefault_);
     settings.setValue ("autoReplace", autoReplace_);
     settings.setValue ("lineNumbers", lineByDefault_);
-    settings.setValue ("noSyntaxHighlighting", !syntaxByDefault_);
-    settings.setValue ("showWhiteSpace", showWhiteSpace_);
     settings.setValue ("showEndings", showEndings_);
     settings.setValue ("darkColorScheme", darkColScheme_);
     settings.setValue ("thickCursor", thickCursor_);
@@ -453,7 +349,6 @@ void Config::writeConfig()
     settings.setValue ("autoSave", autoSave_);
     settings.setValue ("skipNonText", skipNonText_);
     settings.setValue ("saveUnmodified", saveUnmodified_);
-    settings.setValue ("selectionHighlighting", selectionHighlighting_);
     settings.setValue ("pastePaths", pastePaths_);
     settings.setValue ("maxSHSize", maxSHSize_);
 
@@ -468,9 +363,9 @@ void Config::writeConfig()
 
     settings.setValue ("recentFilesNumber", recentFilesNumber_);
     settings.setValue ("executeCommand", executeCommand_);
-    while (recentFiles_.count() > recentFilesNumber_) // recentFilesNumber_ may have decreased
+    while (recentFiles_.count() > recentFilesNumber_)
         recentFiles_.removeLast();
-    if (recentFiles_.isEmpty()) // don't save "@Invalid()"
+    if (recentFiles_.isEmpty())
         settings.setValue ("recentFiles", "");
     else
         settings.setValue ("recentFiles", recentFiles_);
@@ -483,11 +378,6 @@ void Config::writeConfig()
     settings.setValue ("textTabSize", textTabSize_);
 
     settings.endGroup();
-
-    /*****************
-     *** Shortcuts ***
-     *****************/
-
     settings.beginGroup ("shortcuts");
 
     for (int i = 0; i < removedActions_.size(); ++i)
@@ -499,14 +389,9 @@ void Config::writeConfig()
         settings.setValue (it.key(), it.value());
         ++it;
     }
-
     settings.endGroup();
-
     writeCursorPos();
-
-    writeSyntaxColors();
 }
-/*************************/
 void Config::readCursorPos()
 {
     if (!cursorPosRetrieved_)
@@ -516,7 +401,6 @@ void Config::readCursorPos()
         cursorPosRetrieved_ = true;
     }
 }
-/*************************/
 void Config::writeCursorPos()
 {
     Settings settings ("featherpad", "fp_cursor_pos");
@@ -524,15 +408,6 @@ void Config::writeCursorPos()
     {
         if (!cursorPos_.isEmpty())
         {
-            /* no need to clean up the config file here because
-           it's more or less cleaned by the session dialog */
-            /*QHash<QString, QVariant>::iterator it = cursorPos_.begin();
-            while (it != cursorPos_.end())
-            {
-                if (!QFileInfo (it.key()).isFile())
-                    it = cursorPos_.erase (it);
-                else ++it;
-            }*/
             settings.setValue ("cursorPositions", cursorPos_);
         }
     }
@@ -546,83 +421,6 @@ void Config::writeCursorPos()
             settingsLastCur.remove ("cursorPositions");
     }
 }
-/*************************/
-void Config::writeSyntaxColors()
-{
-    Settings settingsColors ("featherpad", darkColScheme_ ? "fp_dark_syntax_colors" : "fp_light_syntax_colors");
-
-    if (customSyntaxColors_.isEmpty())
-    { // avoid redundant writing as far as possible
-        if (whiteSpaceValue_ != getDefaultWhiteSpaceValue()
-            || curLineHighlight_ != -1)
-        {
-            if (settingsColors.allKeys().size() > 2)
-                settingsColors.clear();
-        }
-        else
-        {
-            settingsColors.clear();
-            return;
-        }
-    }
-    else
-    {
-        QHash<QString, QColor>::const_iterator it = customSyntaxColors_.constBegin();
-        while (it != customSyntaxColors_.constEnd())
-        {
-            settingsColors.setValue (it.key(), it.value().name());
-            ++it;
-        }
-    }
-
-    /* NOTE: QSettings has a strange bug that makes it unreliable. If the config file can
-       have a subkey but has none, QSettings might empty the file when a new window is
-       opened. This happens when nothing is written to the config file by the code. It
-       should be related to some kind of cache because I've also seen cases, where a key
-       has been removed from the code but is created after reading the config file. Since
-       we write the settings on quitting, the bug has no effect under usual circumstances,
-       but if a crash happens or the system is shut down inappropriately, the settings
-       might be lost. So, we always add a subkey if there is color customization. */
-    settingsColors.beginGroup ("whiteSpace");
-    settingsColors.setValue ("value", whiteSpaceValue_);
-    settingsColors.endGroup();
-
-    settingsColors.beginGroup ("curLineHighlight");
-    settingsColors.setValue ("value", curLineHighlight_);
-    settingsColors.endGroup();
-}
-/*************************/
-void Config::setWhiteSpaceValue (int value)
-{
-    value = qBound (getMinWhiteSpaceValue(), value, getMaxWhiteSpaceValue());
-    QList<QColor> colors;
-    colors << (darkColScheme_ ? QColor (Qt::white) : QColor (Qt::black));
-    if (!customSyntaxColors_.isEmpty())
-        colors = customSyntaxColors_.values();
-    else if (darkColScheme_)
-        colors = defaultDarkSyntaxColors_.values();
-    else
-        colors = defaultLightSyntaxColors_.values();
-    const int average = (getMinWhiteSpaceValue() + getMaxWhiteSpaceValue()) / 2;
-    QColor ws (value, value, value);
-    while (colors.contains (ws))
-    {
-        int r = ws.red();
-        if (value >= average) --r;
-        else ++r;
-        ws = QColor (r, r, r);
-    }
-    whiteSpaceValue_ = ws.red();
-}
-/*************************/
-void Config::setCurLineHighlight (int value)
-{
-    if (value < getMinCurLineHighlight() || value > getMaxCurLineHighlight())
-        curLineHighlight_ = -1;
-    else
-        curLineHighlight_ = value;
-}
-/*************************/
 void Config::addRecentFile (const QString& file)
 {
     if (curRecentFilesNumber_ > 0)
@@ -633,7 +431,6 @@ void Config::addRecentFile (const QString& file)
             recentFiles_.removeLast();
     }
 }
-/*************************/
 QString Config::validatedShortcut (const QVariant v, bool *isValid)
 {
     static QStringList added;
@@ -641,14 +438,11 @@ QString Config::validatedShortcut (const QVariant v, bool *isValid)
     {
         QString str = v.toString();
         if (str.isEmpty())
-        { // it means the removal of a shortcut
+        {
             *isValid = true;
             return QString();
         }
 
-        /* NOTE: In older versions of FeatherPad, shorcuts were saved in
-           the NativeText format. For the sake of backward compatibility,
-           we convert them into the PortableText format. */
         QKeySequence keySeq (str);
         if (str == keySeq.toString (QKeySequence::NativeText))
             str = keySeq.toString();
@@ -668,36 +462,6 @@ QString Config::validatedShortcut (const QVariant v, bool *isValid)
 
     *isValid = false;
     return QString();
-}
-/*************************/
-void Config::setDfaultSyntaxColors()
-{
-    if (defaultLightSyntaxColors_.isEmpty())
-    {
-        defaultLightSyntaxColors_.insert ("function", QColor (Qt::blue));
-        defaultLightSyntaxColors_.insert ("BuiltinFunction", QColor (Qt::magenta));
-        defaultLightSyntaxColors_.insert ("comment", QColor (Qt::red));
-        defaultLightSyntaxColors_.insert ("quote", QColor (Qt::darkGreen));
-        defaultLightSyntaxColors_.insert ("type", QColor (Qt::darkMagenta));
-        defaultLightSyntaxColors_.insert ("keyWord", QColor (Qt::darkBlue));
-        defaultLightSyntaxColors_.insert ("number", QColor (160, 80, 0));
-        defaultLightSyntaxColors_.insert ("regex", QColor (150, 0, 0));
-        defaultLightSyntaxColors_.insert ("xmlElement", QColor (126, 0, 230));
-        defaultLightSyntaxColors_.insert ("cssValue", QColor (0, 110, 110));
-        defaultLightSyntaxColors_.insert ("other", QColor (100, 100, 0));
-
-        defaultDarkSyntaxColors_.insert ("function", QColor (85, 227, 255));
-        defaultDarkSyntaxColors_.insert ("BuiltinFunction", QColor (Qt::magenta));
-        defaultDarkSyntaxColors_.insert ("comment", QColor (255, 120, 120));
-        defaultDarkSyntaxColors_.insert ("quote", QColor (Qt::green));
-        defaultDarkSyntaxColors_.insert ("type", QColor (255, 153, 255));
-        defaultDarkSyntaxColors_.insert ("keyWord", QColor (65, 154, 255));
-        defaultDarkSyntaxColors_.insert ("number", QColor (255, 200, 0));
-        defaultDarkSyntaxColors_.insert ("regex", QColor (255, 160, 0));
-        defaultDarkSyntaxColors_.insert ("xmlElement", QColor (255, 255, 1));
-        defaultDarkSyntaxColors_.insert ("cssValue", QColor (150, 255, 0));
-        defaultDarkSyntaxColors_.insert ("other", QColor (Qt::yellow));
-    }
 }
 
 }

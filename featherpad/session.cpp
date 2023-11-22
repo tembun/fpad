@@ -26,8 +26,6 @@
 
 namespace FeatherPad {
 
-// Since we don't want extra prompt dialogs, we make the
-// session dialog behave like a prompt dialog when needed.
 SessionDialog::SessionDialog (QWidget *parent):QDialog (parent), ui (new Ui::SessionDialog)
 {
     ui->setupUi (this);
@@ -37,22 +35,17 @@ SessionDialog::SessionDialog (QWidget *parent):QDialog (parent), ui (new Ui::Ses
     ui->listWidget->setSizeAdjustPolicy (QAbstractScrollArea::AdjustToContents);
     ui->listWidget->setContextMenuPolicy (Qt::CustomContextMenu);
     filterTimer_ = nullptr;
-
     connect (ui->listWidget, &QListWidget::itemDoubleClicked, [=]{openSessions();});
     connect (ui->listWidget, &QListWidget::itemSelectionChanged, this, &SessionDialog::selectionChanged);
     connect (ui->listWidget, &QWidget::customContextMenuRequested, this, &SessionDialog::showContextMenu);
     connect (ui->listWidget->itemDelegate(), &QAbstractItemDelegate::commitData, this, &SessionDialog::OnCommittingName);
-
     QSettings settings ("featherpad", "fp");
     settings.beginGroup ("sessions");
     allItems_ = settings.allKeys();
     settings.endGroup();
-
     ui->listWidget->installEventFilter (this);
-
     connect (ui->saveBtn, &QAbstractButton::clicked, this, &SessionDialog::saveSession);
     connect (ui->lineEdit, &QLineEdit::returnPressed, this, &SessionDialog::saveSession);
-    /* we don't want to open a session by pressing Enter inside the line-edit */
     connect (ui->lineEdit, &LineEdit::receivedFocus, [=]{ui->openBtn->setDefault (false);});
     connect (ui->lineEdit, &QLineEdit::textEdited, [=](const QString &text){ui->saveBtn->setEnabled (!text.isEmpty());});
     connect (ui->openBtn, &QAbstractButton::clicked, this, &SessionDialog::openSessions);
@@ -83,7 +76,6 @@ SessionDialog::SessionDialog (QWidget *parent):QDialog (parent), ui (new Ui::Ses
 
     resize (QSize (parent_->size().width()/2, 3*parent_->size().height()/4));
 }
-/*************************/
 SessionDialog::~SessionDialog()
 {
     if (filterTimer_)
@@ -94,11 +86,10 @@ SessionDialog::~SessionDialog()
     }
     delete ui; ui = nullptr;
 }
-/*************************/
 bool SessionDialog::eventFilter (QObject *watched, QEvent *event)
 {
     if (watched == ui->listWidget && event->type() == QEvent::KeyPress)
-    { // when a text is typed inside the list, type it inside the filter line-edit too
+    {
         if (QKeyEvent *ke = static_cast<QKeyEvent*>(event))
         {
             ui->filterLineEdit->pressKey (ke);
@@ -107,7 +98,6 @@ bool SessionDialog::eventFilter (QObject *watched, QEvent *event)
     }
     return QDialog::eventFilter (watched, event);
 }
-/*************************/
 void SessionDialog::showContextMenu (const QPoint &p)
 {
     QModelIndex index = ui->listWidget->indexAt (p);
@@ -121,7 +111,6 @@ void SessionDialog::showContextMenu (const QPoint &p)
     menu.addAction (ui->actionRename);
     menu.exec (ui->listWidget->mapToGlobal (p));
 }
-/*************************/
 void SessionDialog::saveSession()
 {
     if (ui->lineEdit->text().isEmpty()) return;
@@ -166,7 +155,6 @@ void SessionDialog::saveSession()
     else
         reallySaveSession();
 }
-/*************************/
 void SessionDialog::reallySaveSession()
 {
     QList<QListWidgetItem*> sameItems = ui->listWidget->findItems (ui->lineEdit->text(), Qt::MatchExactly);
@@ -238,22 +226,19 @@ void SessionDialog::openSessions()
             {
                 if (!QFileInfo (files.at (i)).isFile())
                 {
-                    /* first, clean up the cursor config file */
                     config.removeCursorPos (files.at (i));
-
                     ++broken;
                     continue;
                 }
                 win->newTabFromName (files.at (i),
-                                     1, // to save the cursor position
-                                     0, // irrelevant
+                                     1,
+                                     0,
                                      multiple);
             }
             if (broken == files.count())
                 showPrompt (tr ("No file exists or can be opened."));
             else
             {
-                /* return the focus to the dialog */
                 connect (win, &FPwin::finishedLoading, this, &SessionDialog::activate);
                 if (broken > 0)
                     showPrompt (tr ("Not all files exist or can be opened."));
@@ -261,7 +246,6 @@ void SessionDialog::openSessions()
         }
     }
 }
-/*************************/
 void SessionDialog::activate()
 {
     if (FPwin *win = static_cast<FPwin *>(parent_))
@@ -269,12 +253,9 @@ void SessionDialog::activate()
     raise();
     activateWindow();
 }
-/*************************/
-// These slots are called for processes to have time to be completed,
-// especially for the returnPressed signal of the line-edit to be emiited.
 void SessionDialog::showMainPage()
 {
-    if (!rename_.newName.isEmpty() && !rename_.oldName.isEmpty()) // renaming cancelled
+    if (!rename_.newName.isEmpty() && !rename_.oldName.isEmpty())
     {
         if (QListWidgetItem* cur = ui->listWidget->currentItem())
             cur->setText (rename_.oldName);
@@ -287,23 +268,18 @@ void SessionDialog::showPromptPage()
     ui->stackedWidget->setCurrentIndex (1);
     QTimer::singleShot (0, ui->confirmBtn, QOverload<>::of(&QWidget::setFocus));
 }
-/*************************/
 void SessionDialog::showPrompt (const QString& message)
 {
     disconnect (ui->confirmBtn, &QAbstractButton::clicked, this, &SessionDialog::removeAll);
     disconnect (ui->confirmBtn, &QAbstractButton::clicked, this, &SessionDialog::removeSelected);
     disconnect (ui->confirmBtn, &QAbstractButton::clicked, this, &SessionDialog::reallySaveSession);
     disconnect (ui->confirmBtn, &QAbstractButton::clicked, this, &SessionDialog::reallyRenameSession);
-
     if (message.isEmpty()) return;
-
     QTimer::singleShot (0, this, &SessionDialog::showPromptPage);
-
     ui->confirmBtn->setText (tr ("&OK"));
     ui->cancelBtn->setVisible (false);
     ui->promptLabel->setText ("<b>" + message + "</b>");
 }
-/*************************/
 void SessionDialog::showPrompt (PROMPT prompt)
 {
     disconnect (ui->confirmBtn, &QAbstractButton::clicked, this, &SessionDialog::removeAll);
@@ -329,7 +305,7 @@ void SessionDialog::showPrompt (PROMPT prompt)
             ui->promptLabel->setText ("<b>" + tr ("Do you really want to remove the selected session?") + "</b>");
         connect (ui->confirmBtn, &QAbstractButton::clicked, this, &SessionDialog::removeSelected);
     }
-    else// if (prompt == NAME || prompt == RENAME)
+    else
     {
         ui->promptLabel->setText ("<b>" + tr ("A session with the same name exists.<br>Do you want to overwrite it?") + "</b>");
         if (prompt == NAME)
@@ -338,13 +314,11 @@ void SessionDialog::showPrompt (PROMPT prompt)
             connect (ui->confirmBtn, &QAbstractButton::clicked, this, &SessionDialog::reallyRenameSession);
     }
 }
-/*************************/
 void SessionDialog::closePrompt()
 {
     ui->promptLabel->clear();
     QTimer::singleShot (0, this, &SessionDialog::showMainPage);
 }
-/*************************/
 void SessionDialog::removeSelected()
 {
     QList<QListWidgetItem*> items = ui->listWidget->selectedItems();
@@ -356,7 +330,6 @@ void SessionDialog::removeSelected()
     settings.beginGroup ("sessions");
     for (int i = 0; i < count; ++i)
     {
-        /* first, clean up the cursor config file */
         QStringList files = settings.value (items.at (i)->text()).toStringList();
         for (int j = 0; j < files.count(); ++j)
             config.removeCursorPos (files.at (j));
@@ -376,15 +349,12 @@ void SessionDialog::removeSelected()
     if (allItems_.count() == 0)
         onEmptinessChanged (true);
 }
-/*************************/
 void SessionDialog::removeAll()
 {
-    /* first, clean up the cursor config file */
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
     config.removeAllCursorPos();
     Settings curSettings ("featherpad", "fp_cursor_pos");
     curSettings.remove ("cursorPositions");
-
     ui->listWidget->clear();
     onEmptinessChanged (true);
     QSettings settings ("featherpad", "fp");
@@ -392,17 +362,13 @@ void SessionDialog::removeAll()
     settings.remove ("");
     settings.endGroup();
 }
-/*************************/
 void SessionDialog::selectionChanged()
 {
     bool noSel = ui->listWidget->selectedItems().isEmpty();
     ui->openBtn->setEnabled (!noSel);
     ui->removeBtn->setEnabled (!noSel);
-    /* we want to open sessions by pressing Enter inside the list widget
-       without connecting to QAbstractItemView::activated() */
     ui->openBtn->setDefault (true);
 }
-/*************************/
 void SessionDialog::renameSession()
 {
     if (QListWidgetItem* cur = ui->listWidget->currentItem())
@@ -412,7 +378,6 @@ void SessionDialog::renameSession()
         ui->listWidget->editItem (cur);
     }
 }
-/*************************/
 void SessionDialog::OnCommittingName (QWidget* editor)
 {
     if (QListWidgetItem* cur = ui->listWidget->currentItem())
@@ -431,7 +396,6 @@ void SessionDialog::OnCommittingName (QWidget* editor)
     else
         reallyRenameSession();
 }
-/*************************/
 void SessionDialog::reallyRenameSession()
 {
     if (rename_.newName.isEmpty() || rename_.oldName.isEmpty()) // impossible
@@ -505,7 +469,6 @@ void SessionDialog::reallyApplyFilter()
         }
     }
 }
-/*************************/
 void SessionDialog::onEmptinessChanged (bool empty)
 {
     ui->clearBtn->setEnabled (!empty);

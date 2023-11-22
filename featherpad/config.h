@@ -224,14 +224,6 @@ public:
     void setShowCursorPos (bool show) {
         showCursorPos_ = show;
     }
-
-    bool getShowLangSelector() const {
-        return showLangSelector_;
-    }
-    void setShowLangSelector (bool show) {
-        showLangSelector_ = show;
-    }
-
     int getTabPosition() const {
         return tabPosition_;
     }
@@ -280,21 +272,6 @@ public:
     void setLineByDefault (bool line) {
         lineByDefault_ = line;
     }
-
-    bool getSyntaxByDefault() const {
-        return syntaxByDefault_;
-    }
-    void setSyntaxByDefault (bool syntax) {
-        syntaxByDefault_ = syntax;
-    }
-
-    bool getShowWhiteSpace() const {
-        return showWhiteSpace_;
-    }
-    void setShowWhiteSpace (bool show) {
-        showWhiteSpace_ = show;
-    }
-
     bool getShowEndings() const {
         return showEndings_;
     }
@@ -322,7 +299,7 @@ public:
     void setSkipNonText (bool skip) {
         skipNonText_ = skip;
     }
-/*************************/
+
     bool getExecuteScripts() const {
         return executeScripts_;
     }
@@ -335,7 +312,7 @@ public:
     void setExecuteCommand (const QString& command) {
         executeCommand_ = command;
     }
-/*************************/
+
     bool getAppendEmptyLine() const {
         return appendEmptyLine_;
     }
@@ -363,7 +340,7 @@ public:
     void setNativeDialog (bool native) {
         nativeDialog_ = native;
     }
-/*************************/
+
     bool getRecentOpened() const {
         return recentOpened_;
     }
@@ -378,7 +355,7 @@ public:
         recentFiles_ = QStringList();
     }
     void addRecentFile (const QString &file);
-/*************************/
+
     QHash<QString, QString> customShortcutActions() const {
         return actions_;
     }
@@ -399,14 +376,14 @@ public:
     void setReservedShortcuts (const QStringList &s) {
         reservedShortcuts_ = s;
     }
-/*************************/
+
     bool getInertialScrolling() const {
         return inertialScrolling_;
     }
     void setInertialScrolling (bool inertial) {
         inertialScrolling_ = inertial;
     }
-/*************************/
+
     QHash<QString, QVariant> savedCursorPos() {
         readCursorPos();
         return cursorPos_;
@@ -428,7 +405,7 @@ public:
         removedCursorPos_.append (cursorPos_.keys());
         cursorPos_.clear();
     }
-/*************************/
+
     bool getSaveLastFilesList() const {
         return saveLastFilesList_;
     }
@@ -443,7 +420,7 @@ public:
     void setLastFileCursorPos (const QHash<QString, QVariant>& curPos) {
         lasFilesCursorPos_ = curPos;
     }
-/*************************/
+
     bool getAutoSave() const {
         return autoSave_;
     }
@@ -456,96 +433,43 @@ public:
     void setAutoSaveInterval (int i) {
         autoSaveInterval_ = i;
     }
-/*************************/
+
     bool getSaveUnmodified() const {
         return saveUnmodified_;
     }
     void setSaveUnmodified (bool save) {
         saveUnmodified_ = save;
     }
-/*************************/
-    bool getSelectionHighlighting() const {
-        return selectionHighlighting_;
-    }
-    void setSelectionHighlighting (bool enable) {
-        selectionHighlighting_ = enable;
-    }
-/*************************/
     bool getPastePaths() const {
         return pastePaths_;
     }
     void setPastePaths (bool pastPaths) {
         pastePaths_ = pastPaths;
     }
-/*************************/
     bool getCloseWithLastTab() const {
         return closeWithLastTab_;
     }
     void setCloseWithLastTab (bool close) {
         closeWithLastTab_ = close;
     }
-/*************************/
+
     bool getSharedSearchHistory() const {
         return sharedSearchHistory_;
     }
     void setSharedSearchHistory (bool share) {
         sharedSearchHistory_ = share;
     }
-/*************************/
-    QHash<QString, QColor> lightSyntaxColors() const {
-        return defaultLightSyntaxColors_;
-    }
-    QHash<QString, QColor> darkSyntaxColors() const {
-        return defaultDarkSyntaxColors_;
-    }
-
-    QHash<QString, QColor> customSyntaxColors() const {
-        return customSyntaxColors_;
-    }
-    void setCustomSyntaxColors (const QHash<QString, QColor>& colors) {
-        customSyntaxColors_ = colors;
-    }
-
-    int getDefaultWhiteSpaceValue() const {
-        return darkColScheme_ ? 95 : 180;
-    }
-    int getMinWhiteSpaceValue() const {
-        return darkColScheme_ ? 50 : 130;
-    }
-    int getMaxWhiteSpaceValue() const {
-        return darkColScheme_ ? 140 : 230;
-    }
-    int getWhiteSpaceValue() const {
-        return whiteSpaceValue_;
-    }
-    void setWhiteSpaceValue (int value);
-
-    int getCurLineHighlight() const {
-        return curLineHighlight_;
-    }
-    int getMinCurLineHighlight() const {
-        return darkColScheme_ ? 0 : 210;
-    }
-    int getMaxCurLineHighlight() const {
-        return darkColScheme_ ? 70 : 255;
-    }
-    void setCurLineHighlight (int value);
-
-    void readSyntaxColors();
 
 private:
     QString validatedShortcut (const QVariant v, bool *isValid);
     void readCursorPos();
     void writeCursorPos();
-    void setDfaultSyntaxColors();
-    void writeSyntaxColors();
 
     bool remSize_, remPos_, remSplitterPos_,
          noToolbar_, noMenubar_,
          hideSearchbar_,
-         showStatusbar_, showCursorPos_, showLangSelector_,
-         remFont_, wrapByDefault_, indentByDefault_, autoReplace_, lineByDefault_,
-         syntaxByDefault_, showWhiteSpace_, showEndings_,
+         showStatusbar_, showCursorPos_,
+         remFont_, wrapByDefault_, indentByDefault_, autoReplace_, lineByDefault_,showEndings_,
          isMaxed_, isFull_,
          darkColScheme_,
          thickCursor_,
@@ -559,7 +483,6 @@ private:
          autoSave_,
          skipNonText_,
          saveUnmodified_,
-         selectionHighlighting_,
          pastePaths_,
          closeWithLastTab_,
          sharedSearchHistory_;
@@ -568,7 +491,7 @@ private:
         maxSHSize_,
         lightBgColorValue_, darkBgColorValue_,
         recentFilesNumber_,
-        curRecentFilesNumber_, // the start value of recentFilesNumber_ -- fixed during a session
+        curRecentFilesNumber_,
         autoSaveInterval_,
         textTabSize_;
     QString dateFormat_;
@@ -582,15 +505,10 @@ private:
     bool saveLastFilesList_;
     QHash<QString, QString> actions_;
     QStringList removedActions_, reservedShortcuts_;
-
     QHash<QString, QVariant> cursorPos_;
-    QStringList removedCursorPos_; // used only internally for the clean-up
-    bool cursorPosRetrieved_; // used only internally for reading once
-
+    QStringList removedCursorPos_;
+    bool cursorPosRetrieved_;
     QHash<QString, QVariant> lasFilesCursorPos_;
-
-    QHash<QString, QColor> defaultLightSyntaxColors_, defaultDarkSyntaxColors_, customSyntaxColors_;
-    int whiteSpaceValue_, curLineHighlight_;
 };
 
 }

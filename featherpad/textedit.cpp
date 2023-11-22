@@ -19,6 +19,7 @@
 
 #include <QApplication>
 #include <QTimer>
+#include <QTextBlock>
 #include <QDateTime>
 #include <QPainter>
 #include <QMenu>
@@ -30,14 +31,13 @@
 #include "textedit.h"
 #include "vscrollbar.h"
 
-#define UPDATE_INTERVAL 50 // in ms
+#define UPDATE_INTERVAL 50
 #define SCROLL_FRAMES_PER_SEC 60
-#define SCROLL_DURATION 300 // in ms
+#define SCROLL_DURATION 300
 
 namespace FeatherPad {
 
 #if (QT_VERSION == QT_VERSION_CHECK(5,14,0))
-// To work around a nasty bug in Qt 5.14.0
 static QColor overlayColor (const QColor& bgCol, const QColor& overlayCol)
 {
     if (!overlayCol.isValid()) return QColor(0,0,0);
@@ -72,8 +72,7 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
     scrollTimer_ = nullptr;
     keepTxtCurHPos_ = false;
     txtCurHPos_ = -1;
-    prog_ = "url"; // the default language
-    textTab_ = "    "; // the default text tab is four spaces
+    textTab_ = "    ";
     setMouseTracking (true);    
     setStyleSheet ("QPlainTextEdit {"
                            "selection-background-color: rgb(160, 160, 160);"
@@ -89,23 +88,9 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
                                             "color: white;"
                                             "background-color: rgb(%1, %1, %1);}")
                                    .arg (bgColorValue));
-        QColor col = p.highlight().color();
-        if (qGray (col.rgb()) - bgColorValue < 30 && col.hslSaturation() < 100)
-        {
-            setStyleSheet ("QPlainTextEdit {"
-                           "selection-background-color: rgb(180, 180, 180);"
-                           "selection-color: black;}");
-        }
-        else
-        {
-            col = p.color (QPalette::Inactive, QPalette::Highlight);
-            if (qGray (col.rgb()) - bgColorValue < 30 && col.hslSaturation() < 100)
-            { // also check the inactive highlight color
-                p.setColor (QPalette::Inactive, QPalette::Highlight, p.highlight().color());
-                p.setColor (QPalette::Inactive, QPalette::HighlightedText, p.highlightedText().color());
-                setPalette (p);
-            }
-        }
+      setStyleSheet ("QPlainTextEdit {"
+            "selection-background-color: rgb(180, 180, 180);"
+            "selection-color: black;}");
         separatorColor_ = Qt::white;
         separatorColor_.setAlpha (90 - qRound (3 * static_cast<qreal>(darkValue_) / 5));
     }
@@ -143,14 +128,10 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
 
     resizeTimerId_ = 0;
     selectionTimerId_ = 0;
-    selectionHighlighting_ = false;
-    highlightThisSelection_ = true;
-    removeSelectionHighlights_ = false;
     size_ = 0;
-    wordNumber_ = -1; // not calculated yet
+    wordNumber_ = -1;
     encoding_= "UTF-8";
     uneditable_ = false;
-    highlighter_ = nullptr;
     setFrameShape (QFrame::NoFrame);
     VScrollBar *vScrollBar = new VScrollBar;
     setVerticalScrollBar (vScrollBar);
@@ -195,9 +176,8 @@ void TextEdit::setEditorFont (const QFont &f, bool setDefault)
     if (setDefault)
         font_ = f;
     setFont (f);
-    viewport()->setFont (f); // needed when whitespaces are shown
+    viewport()->setFont (f);
     document()->setDefaultFont (f);
-    /* we want consistent tabs */
     QFontMetricsF metrics (f);
     QTextOption opt = document()->defaultTextOption();
 #if (QT_VERSION >= QT_VERSION_CHECK(5,11,0))
@@ -506,32 +486,6 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
         return;
     }
 
-    /* first, deal with spacial cases of pressing Ctrl */
-    if (event->modifiers() & Qt::ControlModifier)
-    {
-        if (event->modifiers() == Qt::ControlModifier) // no other modifier is pressed
-        {
-            /* deal with hyperlinks */
-            if (event->key() == Qt::Key_Control) // no other key is pressed either
-            {
-                if (highlighter_)
-                {
-                    if (getUrl (cursorForPosition (viewport()->mapFromGlobal (QCursor::pos())).position()).isEmpty())
-                        viewport()->setCursor (Qt::IBeamCursor);
-                    else
-                        viewport()->setCursor (Qt::PointingHandCursor);
-                    QPlainTextEdit::keyPressEvent (event);
-                    return;
-                }
-            }
-        }
-        if (event->key() != Qt::Key_Control) // another modifier/key is pressed
-        {
-            if (highlighter_)
-                viewport()->setCursor (Qt::IBeamCursor);
-        }
-    }
-
     if (isReadOnly())
     {
         QPlainTextEdit::keyPressEvent (event);
@@ -569,32 +523,6 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
             {
                 bool replaceStr = true;
                 cur.beginEditBlock();
-                if (prog_ == "url" || prog_ == "changelog"
-                    || lang_ == "url" || lang_ == "changelog")
-                { // not with programming languages
-                    cur.movePosition (QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor, 2);
-                    const QString sel = cur.selectedText();
-                    replaceStr = sel.endsWith (".");
-                    if (!replaceStr)
-                    {
-                        if (sel == "--")
-                        {
-                            QTextCursor prevCur = cur;
-                            prevCur.setPosition (cur.position());
-                            prevCur.movePosition (QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
-                            if (prevCur.selectedText() != "-")
-                                cur.insertText ("—");
-                        }
-                        else if (sel == "->")
-                            cur.insertText ("→");
-                        else if (sel == "<-")
-                            cur.insertText ("←");
-                        else if (sel == ">=")
-                            cur.insertText ("≥");
-                        else if (sel == "<=")
-                            cur.insertText ("≤");
-                    }
-                }
                 if (replaceStr && p > 2)
                 {
                     cur = textCursor();
@@ -828,7 +756,6 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
         int newLines = cursor.selectedText().count (QChar (QChar::ParagraphSeparator));
         if (newLines > 0)
         {
-            highlightThisSelection_ = false;
             cursor.beginEditBlock();
             cursor.setPosition (qMin (cursor.anchor(), cursor.position())); // go to the first block
             cursor.movePosition (QTextCursor::StartOfBlock);
@@ -848,7 +775,7 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
                 else
                     cursor.insertText ("\t");
                 if (!cursor.movePosition (QTextCursor::NextBlock))
-                    break; // not needed
+                    break;
             }
             cursor.endEditBlock();
             ensureCursorVisible();
@@ -871,7 +798,6 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
         QTextCursor cursor = textCursor();
         int newLines = cursor.selectedText().count (QChar (QChar::ParagraphSeparator));
         cursor.setPosition (qMin (cursor.anchor(), cursor.position()));
-        highlightThisSelection_ = false;
         cursor.beginEditBlock();
         cursor.movePosition (QTextCursor::StartOfBlock);
         for (int i = 0; i <= newLines; ++i)
@@ -925,32 +851,6 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
                 {
                     bool replaceStr = true;
                     cur.beginEditBlock();
-                    if (prog_ == "url" || prog_ == "changelog"
-                        || lang_ == "url" || lang_ == "changelog")
-                    { // not with programming languages
-                        cur.movePosition (QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor, 2);
-                        const QString selTxt = cur.selectedText();
-                        replaceStr = selTxt.endsWith (".");
-                        if (!replaceStr)
-                        {
-                            if (selTxt == "--")
-                            {
-                                QTextCursor prevCur = cur;
-                                prevCur.setPosition (cur.position());
-                                prevCur.movePosition (QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
-                                if (prevCur.selectedText() != "-")
-                                    cur.insertText ("—");
-                            }
-                            else if (selTxt == "->")
-                                cur.insertText ("→");
-                            else if (selTxt == "<-")
-                                cur.insertText ("←");
-                            else if (selTxt == ">=")
-                                cur.insertText ("≥");
-                            else if (selTxt == "<=")
-                                cur.insertText ("≤");
-                        }
-                    }
                     if (replaceStr && p > 2)
                     {
                         cur = textCursor();
@@ -1003,9 +903,6 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
 
     QPlainTextEdit::keyPressEvent (event);
 }
-
-// QPlainTextEdit doesn't give a plain text to the clipboard on copying/cutting
-// but we're interested only in plain text.
 void TextEdit::copy()
 {
     QTextCursor cursor = textCursor();
@@ -1023,13 +920,10 @@ void TextEdit::cut()
         cursor.removeSelectedText();
     }
 }
-
-// These methods are overridden to forget the horizontal position of the text cursor and...
 void TextEdit::undo()
 {
-    /* always remove replacing highlights before undoing */
     setGreenSel (QList<QTextEdit::ExtraSelection>());
-    if (getSearchedText().isEmpty()) // FPwin::hlight() won't be called
+    if (getSearchedText().isEmpty())
     {
         QList<QTextEdit::ExtraSelection> es;
         es.prepend (currentLineSelection());
@@ -1037,24 +931,15 @@ void TextEdit::undo()
         es.append (redSel_);
         setExtraSelections (es);
     }
-
     keepTxtCurHPos_ = false;
     txtCurHPos_ = -1;
     QPlainTextEdit::undo();
-
-    /* because of a bug in Qt, "QPlainTextEdit::selectionChanged()"
-       may not be emitted after undoing */
-    removeSelectionHighlights_ = true;
-    selectionHlight();
 }
 void TextEdit::redo()
 {
     keepTxtCurHPos_ = false;
     txtCurHPos_ = -1;
     QPlainTextEdit::redo();
-
-    removeSelectionHighlights_ = true;
-    selectionHlight();
 }
 void TextEdit::paste()
 {
@@ -1071,8 +956,6 @@ void TextEdit::paste()
                 cur.beginEditBlock();
                 for (const auto &thisUrl : urls)
                 {
-                    /* encode spaces of non-local paths to have a good highlighting
-                       but remove the schemes of local paths */
                     cur.insertText (thisUrl.isLocalFile() ? thisUrl.toLocalFile()
                                                           : thisUrl.toString(QUrl::EncodeSpaces));
                     if (multiple)
@@ -1100,9 +983,6 @@ void TextEdit::insertPlainText (const QString &text)
 
 void TextEdit::keyReleaseEvent (QKeyEvent *event)
 {
-    /* deal with hyperlinks */
-    if (highlighter_ && event->key() == Qt::Key_Control)
-        viewport()->setCursor (Qt::IBeamCursor);
     QPlainTextEdit::keyReleaseEvent (event);
 }
 
@@ -1282,7 +1162,6 @@ void TextEdit::timerEvent (QTimerEvent *event)
     else if (event->timerId() == selectionTimerId_)
     {
         killTimer (event->timerId());
-        selectionHlight();
     }
 }
 /*******************************************************
@@ -1670,14 +1549,6 @@ void TextEdit::onSelectionChanged()
         prevAnchor_ = cur.anchor();
         prevPos_ = cur.position();
     }
-    if (!selectionHighlighting_) return;
-    if (highlightThisSelection_)
-        removeSelectionHighlights_ = false;
-    else
-    {
-        removeSelectionHighlights_ = true;
-        highlightThisSelection_ = true;
-    }
     if (selectionTimerId_)
     {
         killTimer (selectionTimerId_);
@@ -1722,7 +1593,6 @@ void TextEdit::mouseMoveEvent (QMouseEvent *event)
 
     QPlainTextEdit::mouseMoveEvent (event);
 
-    if (!highlighter_) return;
     if (!(qApp->keyboardModifiers() & Qt::ControlModifier))
     {
         viewport()->setCursor (Qt::IBeamCursor);
@@ -1788,13 +1658,6 @@ void TextEdit::mousePressEvent (QMouseEvent *event)
         selectionPressPoint_ = QPoint();
 
     QPlainTextEdit::mousePressEvent (event);
-
-    if (highlighter_
-        && (event->button() & Qt::LeftButton)
-        && (qApp->keyboardModifiers() & Qt::ControlModifier))
-    {
-        pressPoint_ = event->pos();
-    }
 }
 
 void TextEdit::mouseReleaseEvent (QMouseEvent *event)
@@ -1808,25 +1671,7 @@ void TextEdit::mouseReleaseEvent (QMouseEvent *event)
             cl->setText (cursor.selection().toPlainText(), QClipboard::Selection);
     }
 
-    if (!highlighter_
-        || !(event->button() & Qt::LeftButton)
-        || !(qApp->keyboardModifiers() & Qt::ControlModifier)
-        || viewport()->cursor().shape() != Qt::PointingHandCursor)
-    {
-        return;
-    }
-
-    QTextCursor cur = cursorForPosition (event->pos());
-    QString str = getUrl (cur.position());
-    if (!str.isEmpty() && cur == cursorForPosition (pressPoint_))
-    {
-        QUrl url (str);
-        if (url.isRelative()) // treat relative URLs as local paths (not needed here)
-            url = QUrl::fromUserInput (str, "/");
-        if (!QProcess::startDetached ("gio", QStringList() << "open" << url.toString()))
-            QDesktopServices::openUrl (url);
-    }
-    pressPoint_ = QPoint();
+    return;
 }
 
 void TextEdit::mouseDoubleClickEvent (QMouseEvent *event)
@@ -1837,8 +1682,7 @@ void TextEdit::mouseDoubleClickEvent (QMouseEvent *event)
 
 bool TextEdit::event (QEvent *event)
 {
-    if (highlighter_
-        && ((event->type() == QEvent::WindowDeactivate && hasFocus()) // another window is activated
+    if (((event->type() == QEvent::WindowDeactivate && hasFocus()) // another window is activated
             || event->type() == QEvent::FocusOut)) // another widget has been focused
     {
         viewport()->setCursor (Qt::IBeamCursor);
@@ -1872,7 +1716,7 @@ static bool findBackwardInBlock (const QTextBlock &block, const QString &str, in
             const int end = start + str.length();
             if ((start != 0 && text.at (start - 1).isLetterOrNumber())
                 || (end != text.length() && text.at (end).isLetterOrNumber()))
-            { // if this is not a whole word, continue the backward search
+            {
                 offset = idx - 1;
                 idx = -1;
                 continue;
@@ -1891,7 +1735,7 @@ static bool findBackward (const QTextDocument *txtdoc, const QString &str,
     if (!str.isEmpty() && !cursor.isNull())
     {
         int pos = cursor.anchor()
-                  - str.size(); // we don't want a match with the cursor inside it
+                  - str.size();
         if (pos >= 0)
         {
             QTextBlock block = txtdoc->findBlock (pos);
@@ -2191,122 +2035,6 @@ QTextCursor TextEdit::finding (const QString& str, const QTextCursor& start, QTe
     }
 
     return res;
-}
-void TextEdit::setSelectionHighlighting (bool enable)
-{
-    selectionHighlighting_ = enable;
-    highlightThisSelection_ = true;
-    removeSelectionHighlights_ = true;
-    if (enable)
-    {
-        connect (document(), &QTextDocument::contentsChange, this, &TextEdit::onContentsChange);
-        connect (this, &TextEdit::updateRect, this, &TextEdit::selectionHlight);
-        connect (this, &TextEdit::resized, this, &TextEdit::selectionHlight);
-    }
-    else
-    {
-        disconnect (document(), &QTextDocument::contentsChange, this, &TextEdit::onContentsChange);
-        disconnect (this, &TextEdit::updateRect, this, &TextEdit::selectionHlight);
-        disconnect (this, &TextEdit::resized, this, &TextEdit::selectionHlight);
-        if (selectionTimerId_)
-        {
-            killTimer (selectionTimerId_);
-            selectionTimerId_ = 0;
-        }
-        if (!blueSel_.isEmpty())
-        {
-            QList<QTextEdit::ExtraSelection> es = extraSelections();
-            int nRed = redSel_.count();
-            int n = blueSel_.count();
-            while (n > 0 && es.size() - nRed > 0)
-            {
-                es.removeAt (es.size() - 1 - nRed);
-                --n;
-            }
-            blueSel_.clear();
-            setExtraSelections (es);
-        }
-    }
-}
-void TextEdit::selectionHlight()
-{
-    if (!selectionHighlighting_) return;
-
-    QList<QTextEdit::ExtraSelection> es = extraSelections();
-    QTextCursor selCursor = textCursor();
-    const QString selTxt = selCursor.selection().toPlainText();
-    int nRed = redSel_.count();
-    int n = blueSel_.count();
-    while (n > 0 && es.size() - nRed > 0)
-    {
-        es.removeAt (es.size() - 1 - nRed);
-        --n;
-    }
-
-    if (removeSelectionHighlights_ || selTxt.isEmpty())
-    {
-        /* avoid the computations of QWidgetTextControl::setExtraSelections
-           as far as possible */
-        if (!blueSel_.isEmpty())
-        {
-            blueSel_.clear();
-            setExtraSelections (es);
-        }
-        return;
-    }
-
-    blueSel_.clear();
-
-    /* first put a start cursor at the top left edge... */
-    QPoint Point (0, 0);
-    QTextCursor start = cursorForPosition (Point);
-    /* ... then move it backward by the search text length */
-    int startPos = start.position() - selTxt.length();
-    if (startPos >= 0)
-        start.setPosition (startPos);
-    else
-        start.setPosition (0);
-    /* get the visible text to check if the search string is inside it */
-    Point = QPoint (geometry().width(), geometry().height());
-    QTextCursor end = cursorForPosition (Point);
-    int endLimit = end.anchor();
-    int endPos = end.position() + selTxt.length();
-    end.movePosition (QTextCursor::End);
-    if (endPos <= end.position())
-        end.setPosition (endPos);
-    QTextCursor visCur = start;
-    visCur.setPosition (end.position(), QTextCursor::KeepAnchor);
-    const QString str = visCur.selection().toPlainText(); // '\n' is included in this way
-    if (str.contains (selTxt)) // don't waste time if the selected text isn't visible
-    {
-        QTextDocument::FindFlags searchFlags = (QTextDocument::FindWholeWords | QTextDocument::FindCaseSensitively);
-        QColor color = hasDarkScheme() ? QColor (0, 77, 160) : QColor (130, 255, 255); // blue highlights
-        QTextCursor found;
-
-        while (!(found = finding (selTxt, start, searchFlags,  false, endLimit)).isNull())
-        {
-            if (selCursor.anchor() <= selCursor.position()
-                    ? (found.anchor() != selCursor.anchor() || found.position() != selCursor.position())
-                    : (found.anchor() != selCursor.position() || found.position() != selCursor.anchor()))
-            {
-                QTextEdit::ExtraSelection extra;
-                extra.format.setBackground (color);
-                extra.cursor = found;
-                blueSel_.append (extra);
-                es.insert (es.size() - nRed, extra);
-            }
-            start.setPosition (found.position());
-        }
-    }
-    setExtraSelections (es);
-}
-void TextEdit::onContentsChange (int /*position*/, int charsRemoved, int charsAdded)
-{
-    if (!selectionHighlighting_) return;
-    if (charsRemoved > 0 || charsAdded > 0)
-    {
-        QTimer::singleShot (0, this, &TextEdit::selectionHlight);
-    }
 }
 
 }

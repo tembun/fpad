@@ -89,28 +89,17 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->tableWidget->horizontalHeader()->setSectionsClickable (true);
     ui->tableWidget->sortByColumn (0, Qt::AscendingOrder);
     ui->tableWidget->setToolTip (tr ("Press a modifier key to clear a shortcut\nin the editing mode."));
-
-    ui->syntaxTableWidget->horizontalHeader()->setSectionResizeMode (0, QHeaderView::Stretch);
-    ui->syntaxTableWidget->horizontalHeader()->setSectionResizeMode (1, QHeaderView::ResizeToContents);
-    ui->syntaxTableWidget->horizontalHeader()->setSectionsClickable (false);
-    ui->syntaxTableWidget->sortByColumn (0, Qt::AscendingOrder);
-    ui->syntaxTableWidget->setToolTip (tr ("Double click a color to change it."));
-
     Config config = static_cast<FPsingleton*>(qApp)->getConfig();
     darkBg_ = config.getDarkColScheme();
     darkColValue_ = config.getDarkBgColorValue();
     lightColValue_ = config.getLightBgColorValue();
     recentNumber_ = config.getRecentFilesNumber();
-    showWhiteSpace_ = config.getShowWhiteSpace();
     showEndings_ = config.getShowEndings();
     vLineDistance_ = config.getVLineDistance();
     textTabSize_ = config.getTextTabSize();
     saveUnmodified_ = config.getSaveUnmodified();
     sharedSearchHistory_ = config.getSharedSearchHistory();
-    selHighlighting_ = config.getSelectionHighlighting();
     pastePaths_ = config.getPastePaths();
-    whiteSpaceValue_ = config.getWhiteSpaceValue();
-    curLineHighlight_ = config.getCurLineHighlight();
     ui->winSizeBox->setChecked (config.getRemSize());
     connect (ui->winSizeBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSize);
     if (ui->winSizeBox->isChecked())
@@ -134,31 +123,22 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->spinY->setMaximum (ag.height());
     ui->spinX->setValue (config.getStartSize().width());
     ui->spinY->setValue (config.getStartSize().height());
-    /* old-fashioned: connect (ui->spinX, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),... */
     connect (ui->spinX, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefStartSize);
     connect (ui->spinY, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefStartSize);
-
     ui->winPosBox->setChecked (config.getRemPos());
     connect (ui->winPosBox, &QCheckBox::stateChanged, this, &PrefDialog::prefPos);
-
     ui->toolbarBox->setChecked (config.getNoToolbar());
     connect (ui->toolbarBox, &QCheckBox::stateChanged, this, &PrefDialog::prefToolbar);
     ui->menubarBox->setChecked (config.getNoMenubar());
     connect (ui->menubarBox, &QCheckBox::stateChanged, this, &PrefDialog::prefMenubar);
-
     ui->searchbarBox->setChecked (config.getHideSearchbar());
     connect (ui->searchbarBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSearchbar);
-
     ui->searchHistoryBox->setChecked (sharedSearchHistory_);
     connect (ui->searchHistoryBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSearchHistory);
-
     ui->statusBox->setChecked (config.getShowStatusbar());
     connect (ui->statusBox, &QCheckBox::stateChanged, this, &PrefDialog::prefStatusbar);
-
     ui->statusCursorsBox->setChecked (config.getShowCursorPos());
     connect (ui->statusCursorsBox, &QCheckBox::stateChanged, this, &PrefDialog::prefStatusCursor);
-
-    // no ccombo onnection because of mouse wheel; config is set at closeEvent() instead
     ui->tabCombo->setCurrentIndex (config.getTabPosition());
     ui->tabBox->setChecked (config.getTabWrapAround());
     connect (ui->tabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefTabWrapAround);
@@ -180,22 +160,13 @@ PrefDialog::PrefDialog (QWidget *parent)
     connect (ui->autoReplaceBox, &QCheckBox::stateChanged, this, &PrefDialog::prefAutoReplace);
     ui->lineBox->setChecked (config.getLineByDefault());
     connect (ui->lineBox, &QCheckBox::stateChanged, this, &PrefDialog::prefLine);
-    ui->syntaxBox->setChecked (config.getSyntaxByDefault());
-    connect (ui->syntaxBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSyntax);
-    ui->enforceSyntaxBox->setChecked (config.getShowLangSelector());
-    ui->enforceSyntaxBox->setEnabled (config.getSyntaxByDefault());
-    ui->whiteSpaceBox->setChecked (config.getShowWhiteSpace());
-    connect (ui->whiteSpaceBox, &QCheckBox::stateChanged, this, &PrefDialog::prefWhiteSpace);
-
     ui->vLineBox->setChecked (vLineDistance_ >= 10);
     connect (ui->vLineBox, &QCheckBox::stateChanged, this, &PrefDialog::prefVLine);
     ui->vLineSpin->setEnabled (vLineDistance_ >= 10);
     ui->vLineSpin->setValue (qAbs (vLineDistance_));
     connect (ui->vLineSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefVLineDistance);
-
     ui->endingsBox->setChecked (config.getShowEndings());
     connect (ui->endingsBox, &QCheckBox::stateChanged, this, &PrefDialog::prefEndings);
-
     ui->colBox->setChecked (config.getDarkColScheme());
     connect (ui->colBox, &QCheckBox::stateChanged, this, &PrefDialog::prefDarkColScheme);
     if (!ui->colBox->isChecked())
@@ -212,7 +183,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     }
     connect (ui->colorValueSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefColValue);
     ui->thickCursorBox->setChecked (config.getThickCursor());
-    ui->selHighlightBox->setChecked (selHighlighting_);
     ui->dateEdit->setText (config.getDateFormat());
     ui->lastLineBox->setChecked (config.getAppendEmptyLine());
     connect (ui->lastLineBox, &QCheckBox::stateChanged, this, &PrefDialog::prefAppendEmptyLine);
@@ -221,8 +191,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->skipNonTextBox->setChecked (config.getSkipNonText());
     connect (ui->skipNonTextBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSkipNontext);
     ui->pastePathsBox->setChecked (pastePaths_);
-    ui->spinBox->setValue (config.getMaxSHSize());
-    connect (ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefMaxSHSize);
     ui->inertiaBox->setChecked (config.getInertialScrolling());
     connect (ui->inertiaBox, &QCheckBox::stateChanged, this, &PrefDialog::prefInertialScrolling);
     ui->textTabSpin->setValue (textTabSize_);
@@ -233,27 +201,17 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->commandEdit->setEnabled (config.getExecuteScripts());
     ui->commandLabel->setEnabled (config.getExecuteScripts());
     connect (ui->commandEdit, &QLineEdit::textEdited, this, &PrefDialog::prefCommand);
-
     ui->recentSpin->setValue (config.getRecentFilesNumber());
     ui->recentSpin->setSuffix (" " + (ui->recentSpin->value() > 1 ? tr ("files") : tr ("file")));
     connect (ui->recentSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefRecentFilesNumber);
-
     ui->lastFilesBox->setChecked (config.getSaveLastFilesList());
     connect (ui->lastFilesBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSaveLastFilesList);
-
     ui->openedButton->setChecked (config.getRecentOpened());
-    // no QButtonGroup connection because we want to see if we should clear the recent list at the end
-
     ui->autoSaveBox->setChecked (config.getAutoSave());
     ui->autoSaveSpin->setValue (config.getAutoSaveInterval());
     ui->autoSaveSpin->setEnabled (ui->autoSaveBox->isChecked());
     connect (ui->autoSaveBox, &QCheckBox::stateChanged, this, &PrefDialog::prefAutoSave);
-
     ui->unmodifiedSaveBox->setChecked (saveUnmodified_);
-
-    /*****************
-     *** Shortcuts ***
-     *****************/
 
     if (FPwin *win = static_cast<FPwin *>(parent_))
     {
@@ -302,7 +260,6 @@ PrefDialog::PrefDialog (QWidget *parent)
         QTableWidgetItem *item = new QTableWidgetItem (it.key());
         item->setFlags (item->flags() & ~Qt::ItemIsEditable & ~Qt::ItemIsSelectable);
         ui->tableWidget->setItem (index, 0, item);
-        /* shortcut texts should be added in the NativeText format */
         ui->tableWidget->setItem (index, 1, new QTableWidgetItem (QKeySequence (it.value(), QKeySequence::PortableText)
                                                                   .toString (QKeySequence::NativeText)));
         ++ it;
@@ -313,93 +270,9 @@ PrefDialog::PrefDialog (QWidget *parent)
     connect (ui->tableWidget, &QTableWidget::itemChanged, this, &PrefDialog::onShortcutChange);
     connect (ui->defaultButton, &QAbstractButton::clicked, this, &PrefDialog::restoreDefaultShortcuts);
     ui->defaultButton->setDisabled (ca.isEmpty());
-
-    /*********************
-     *** Syntax Colors ***
-     *********************/
-
-    static QHash<QString, QString> syntaxNames;
-    if (syntaxNames.isEmpty())
-    {
-        syntaxNames.insert ("function", tr ("Functions, URLs,…"));
-        syntaxNames.insert ("BuiltinFunction", tr ("Built-in Functions"));
-        syntaxNames.insert ("comment", tr ("Comments"));
-        syntaxNames.insert ("quote", tr ("Quotations"));
-        syntaxNames.insert ("type", tr ("Types"));
-        syntaxNames.insert ("keyWord", tr ("Key Words"));
-        syntaxNames.insert ("number", tr ("Numbers"));
-        syntaxNames.insert ("regex", tr ("Regular Expressions, Code Blocks,…"));
-        syntaxNames.insert ("xmlElement", tr ("Document Blocks, XML/HTML Elements,…"));
-        syntaxNames.insert ("cssValue", tr ("Markdown Headings, CSS Values,…"));
-        syntaxNames.insert ("other", tr ("Extra Elements"));
-    }
-    ui->syntaxTableWidget->setSortingEnabled (false);
-    origSyntaxColors_ = !config.customSyntaxColors().isEmpty()
-                            ? config.customSyntaxColors()
-                            : config.getDarkColScheme() ? config.darkSyntaxColors()
-                                                        : config.lightSyntaxColors();
-    ui->syntaxTableWidget->setRowCount (origSyntaxColors_.size());
-    index = 0;
-    QHash<QString, QColor>::const_iterator sIter = origSyntaxColors_.constBegin();
-    while (sIter != origSyntaxColors_.constEnd())
-    {
-        QTableWidgetItem *item = new QTableWidgetItem (syntaxNames.value (sIter.key()));
-        item->setData (Qt::UserRole, sIter.key());
-        item->setFlags (item->flags() & ~Qt::ItemIsEditable & ~Qt::ItemIsSelectable);
-        ui->syntaxTableWidget->setItem (index, 0, item);
-
-        QWidget *container = new QWidget();
-        QHBoxLayout *layout = new QHBoxLayout (container);
-        layout->setAlignment (Qt::AlignCenter);
-        layout->setContentsMargins (3, 3, 3, 3);
-        QLabel *label = new QLabel();
-        label->setMinimumWidth (100);
-        label->setSizePolicy (QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-        QColor col = sIter.value();
-        label->setStyleSheet (QString ("QLabel {background-color: rgb(%1, %2, %3);}")
-                              .arg (col.red()).arg (col.green()).arg (col.blue()));
-        layout->addWidget (label);
-        container->setLayout (layout);
-        ui->syntaxTableWidget->setCellWidget(index, 1, container);
-        ++ sIter;
-        ++ index;
-    }
-    ui->syntaxTableWidget->setSortingEnabled (true);
-    ui->syntaxTableWidget->setCurrentCell (0, 1);
-    connect (ui->syntaxTableWidget, &QTableWidget::cellDoubleClicked, this, &PrefDialog::changeSyntaxColor);
-    ui->whiteSpaceSpin->setMinimum (config.getMinWhiteSpaceValue());
-    ui->whiteSpaceSpin->setMaximum (config.getMaxWhiteSpaceValue());
-    ui->whiteSpaceSpin->setValue (whiteSpaceValue_);
-    connect (ui->whiteSpaceSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::changeWhitespaceValue);
-    connect (ui->defaultSyntaxButton, &QAbstractButton::clicked, this, &PrefDialog::restoreDefaultSyntaxColors);
-    ui->defaultSyntaxButton->setDisabled (config.customSyntaxColors().isEmpty()
-                                          && whiteSpaceValue_ == config.getDefaultWhiteSpaceValue()
-                                          && curLineHighlight_ == -1);
-    ui->syntaxTableWidget->setContextMenuPolicy (Qt::CustomContextMenu);
-    connect (ui->syntaxTableWidget, &QWidget::customContextMenuRequested, [this] (const QPoint& p) {
-        QModelIndex index = ui->syntaxTableWidget->indexAt (p);
-        if (!index.isValid() || index.column() != 1) return;
-        QMenu menu;
-        QAction *action = menu.addAction (tr ("Select Syntax Color"));
-        connect (action, &QAction::triggered, this, [this, index] {
-            changeSyntaxColor (index.row(), 1);
-        });
-        menu.exec (ui->syntaxTableWidget->viewport()->mapToGlobal (p));
-    });
-    ui->curLineSpin->setMinimum (config.getMinCurLineHighlight() - 1); // for the special text
-    ui->curLineSpin->setMaximum (config.getMaxCurLineHighlight());
-    ui->curLineSpin->setValue (curLineHighlight_);
-    connect (ui->curLineSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::changeCurLineHighlight);
-
-    /*************
-     *** Other ***
-     *************/
-
     connect (ui->closeButton, &QAbstractButton::clicked, this, &QDialog::close);
     connect (ui->helpButton, &QAbstractButton::clicked, this, &PrefDialog::showWhatsThis);
     connect (this, &QDialog::rejected, this, &PrefDialog::onClosing);
-
-    /* set tooltip as "whatsthis" */
     const auto widgets = findChildren<QWidget*>();
     for (QWidget *w : widgets)
     {
@@ -407,7 +280,6 @@ PrefDialog::PrefDialog (QWidget *parent)
         if (!tip.isEmpty())
         {
             w->setWhatsThis (tip.replace ('\n', ' ').replace ("  ", "\n\n"));
-            /* for the tooltip mess in Qt 5.12 */
             w->setToolTip ("<p style='white-space:pre'>" + w->toolTip() + "</p>");
         }
     }
@@ -442,12 +314,10 @@ void PrefDialog::onClosing()
     prefTabPosition();
     prefRecentFilesKind();
     prefApplyAutoSave();
-    prefApplySyntax();
     prefApplyDateFormat();
     prefTextTab();
     prefSaveUnmodified();
     prefThickCursor();
-    prefSelHighlight();
     prefPastePaths();
 
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -458,9 +328,9 @@ void PrefDialog::showPrompt (const QString& str, bool temporary)
 {
     Config config = static_cast<FPsingleton*>(qApp)->getConfig();
     if (!str.isEmpty())
-    { // show the provided message
+    {
         ui->promptLabel->setText ("<b>" + str + "</b>");
-        if (temporary) // show it temporarily
+        if (temporary)
         {
             if (!promptTimer_)
             {
@@ -468,8 +338,8 @@ void PrefDialog::showPrompt (const QString& str, bool temporary)
                 promptTimer_->setSingleShot (true);
                 connect (promptTimer_, &QTimer::timeout, [this] {
                     if (!prevtMsg_.isEmpty()
-                        && ui->tabWidget->currentIndex() == 3) // Shortcuts page
-                    { // show the previous message if it exists
+                        && ui->tabWidget->currentIndex() == 3)
+                    {
                         ui->promptLabel->setText (prevtMsg_);
                     }
                     else showPrompt();
@@ -485,33 +355,15 @@ void PrefDialog::showPrompt (const QString& str, bool temporary)
     {
         ui->promptLabel->setText ("<b>" + tr ("Application restart is needed for changes to take effect.") + "</b>");
     }
-    else if (darkBg_ != config.getDarkColScheme()
-             || (darkBg_ && darkColValue_ != config.getDarkBgColorValue())
-             || (!darkBg_ && lightColValue_ != config.getLightBgColorValue())
-             || showWhiteSpace_ != config.getShowWhiteSpace()
-             || showEndings_ != config.getShowEndings()
-             || textTabSize_ != config.getTextTabSize()
-             || (vLineDistance_ * config.getVLineDistance() < 0
-                 || (vLineDistance_ > 0 && vLineDistance_ != config.getVLineDistance()))
-             || whiteSpaceValue_ != config.getWhiteSpaceValue()
-             || curLineHighlight_ != config.getCurLineHighlight()
-             || origSyntaxColors_ != (!config.customSyntaxColors().isEmpty()
-                                          ? config.customSyntaxColors()
-                                          : config.getDarkColScheme()
-                                                ? config.darkSyntaxColors()
-                                                : config.lightSyntaxColors()))
-    {
-        ui->promptLabel->setText ("<b>" + tr ("Window reopening is needed for changes to take effect.") + "</b>");
-    }
     else
     {
-        if (prevtMsg_.isEmpty()) // clear prompt
+        if (prevtMsg_.isEmpty())
         {
             ui->promptLabel->clear();
             ui->promptLabel->hide();
             return;
         }
-        else // show the previous message
+        else
             ui->promptLabel->setText (prevtMsg_);
     }
     ui->promptLabel->show();
@@ -627,12 +479,9 @@ void PrefDialog::prefStatusbar (int checked)
                 if (TabPage *tabPage = qobject_cast<TabPage*>(win->ui->tabWidget->currentWidget()))
                 {
                     TextEdit *textEdit = tabPage->textEdit();
-                    win->statusMsgWithLineCount (textEdit->document()->blockCount());
                     for (int j = 0; j < win->ui->tabWidget->count(); ++j)
                     {
                         TextEdit *thisTextEdit = qobject_cast< TabPage *>(win->ui->tabWidget->widget (j))->textEdit();
-                        connect (thisTextEdit, &QPlainTextEdit::blockCountChanged, win, &FPwin::statusMsgWithLineCount);
-                        connect (thisTextEdit, &QPlainTextEdit::selectionChanged, win, &FPwin::statusMsg);
                         if (showCurPos)
                             connect (thisTextEdit, &QPlainTextEdit::cursorPositionChanged, win, &FPwin::showCursorPos);
                     }
@@ -804,31 +653,6 @@ void PrefDialog::prefLine (int checked)
         config.setLineByDefault (false);
     }
 }
-void PrefDialog::prefSyntax (int checked)
-{
-    if (checked == Qt::Checked)
-        ui->enforceSyntaxBox->setEnabled (true);
-    else if (checked == Qt::Unchecked)
-        ui->enforceSyntaxBox->setEnabled (false);
-}
-void PrefDialog::prefApplySyntax()
-{
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-
-    bool langBtnExists (config.getShowLangSelector() && config.getSyntaxByDefault());
-    bool addLnagBtn (!langBtnExists && ui->enforceSyntaxBox->isChecked() && ui->syntaxBox->isChecked());
-    bool removeLangBtn (langBtnExists && (!ui->enforceSyntaxBox->isChecked() || ! ui->syntaxBox->isChecked()));
-
-    config.setSyntaxByDefault (ui->syntaxBox->isChecked());
-    config.setShowLangSelector (ui->enforceSyntaxBox->isChecked());
-
-    if (addLnagBtn || removeLangBtn)
-    {
-        for (int i = 0; i < singleton->Wins.count(); ++i)
-            singleton->Wins.at (i)->addRemoveLangBtn (addLnagBtn);
-    }
-}
 void PrefDialog::prefApplyDateFormat()
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -848,16 +672,6 @@ void PrefDialog::prefApplyDateFormat()
                 ->textEdit()->setDateFormat (format);
         }
     }
-}
-void PrefDialog::prefWhiteSpace (int checked)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    if (checked == Qt::Checked)
-        config.setShowWhiteSpace (true);
-    else if (checked == Qt::Unchecked)
-        config.setShowWhiteSpace (false);
-
-    showPrompt();
 }
 void PrefDialog::prefVLine (int checked)
 {
@@ -896,9 +710,6 @@ void PrefDialog::prefEndings (int checked)
 void PrefDialog::prefDarkColScheme (int checked)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-
-    prefCustomSyntaxColors_.clear(); // forget customized syntax colors
-
     disconnect (ui->colorValueSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefColValue);
     if (checked == Qt::Checked)
     {
@@ -915,66 +726,7 @@ void PrefDialog::prefDarkColScheme (int checked)
         ui->colorValueSpin->setValue (config.getLightBgColorValue());
     }
     connect (ui->colorValueSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefColValue);
-
-    /* There are different syntax color settings for light and dark color schemes.
-       So, the syntax colors should be read again. */
-    config.readSyntaxColors();
-
-    /* these values should be reset before the prompt is shown */
-    whiteSpaceValue_ = config.getWhiteSpaceValue();
-    curLineHighlight_ = config.getCurLineHighlight();
-    origSyntaxColors_ = !config.customSyntaxColors().isEmpty()
-                            ? config.customSyntaxColors()
-                            : config.getDarkColScheme() ? config.darkSyntaxColors()
-                                                        : config.lightSyntaxColors();
     showPrompt();
-
-    /* update the state of default button */
-    ui->defaultSyntaxButton->setEnabled (!config.customSyntaxColors().isEmpty()
-                                         || config.getWhiteSpaceValue() != config.getDefaultWhiteSpaceValue()
-                                         || config.getCurLineHighlight() != -1);
-    /* update row colors */
-    for (int i = 0; i < ui->syntaxTableWidget->rowCount(); ++i)
-    {
-        if (QTableWidgetItem *item = ui->syntaxTableWidget->item (i, 0))
-        {
-            QString syntax = item->data (Qt::UserRole).toString();
-            QColor col;
-            if (!config.customSyntaxColors().isEmpty()) // customization was done before
-                col = config.customSyntaxColors().value (syntax);
-            else // no custom syntax color
-            {
-                if (config.getDarkColScheme())
-                    col = config.darkSyntaxColors().value (syntax);
-                else
-                    col = config.lightSyntaxColors().value (syntax);
-            }
-            if (const auto cw = ui->syntaxTableWidget->cellWidget (i, 1))
-            {
-                if (cw->layout())
-                {
-                    if (const auto label = qobject_cast<QLabel*>(cw->layout()->itemAt (0)->widget()))
-                    {
-                        label->setStyleSheet (QString ("QLabel {background-color: rgb(%1, %2, %3);}")
-                                              .arg (col.red()).arg (col.green()).arg (col.blue()));
-                    }
-                }
-            }
-        }
-    }
-    /* update whiteSpace spin box */
-    disconnect (ui->whiteSpaceSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::changeWhitespaceValue);
-    ui->whiteSpaceSpin->setMinimum (config.getMinWhiteSpaceValue());
-    ui->whiteSpaceSpin->setMaximum (config.getMaxWhiteSpaceValue());
-    ui->whiteSpaceSpin->setValue (config.getWhiteSpaceValue());
-    connect (ui->whiteSpaceSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::changeWhitespaceValue);
-
-    /* also, update current line spin box */
-    disconnect (ui->curLineSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::changeCurLineHighlight);
-    ui->curLineSpin->setMinimum (config.getMinCurLineHighlight() - 1);
-    ui->curLineSpin->setMaximum (config.getMaxCurLineHighlight());
-    ui->curLineSpin->setValue (config.getCurLineHighlight());
-    connect (ui->curLineSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::changeCurLineHighlight);
 }
 void PrefDialog::prefColValue (int value)
 {
@@ -1002,24 +754,6 @@ void PrefDialog::prefThickCursor()
             if (j == 0 && textedit->getThickCursor() == thick)
                 return;
             textedit->setThickCursor (thick);
-        }
-    }
-}
-void PrefDialog::prefSelHighlight()
-{
-    bool selHighlighting = ui->selHighlightBox->isChecked();
-    if (selHighlighting == selHighlighting_)
-        return;
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    config.setSelectionHighlighting (selHighlighting);
-    for (int i = 0; i < singleton->Wins.count(); ++i)
-    {
-        int count = singleton->Wins.at (i)->ui->tabWidget->count();
-        for (int j = 0; j < count; ++j)
-        {
-            qobject_cast< TabPage *>(singleton->Wins.at (i)->ui->tabWidget->widget (j))
-                ->textEdit()->setSelectionHighlighting (selHighlighting);
         }
     }
 }
@@ -1156,7 +890,7 @@ void PrefDialog::prefCommand (const QString& command)
 void PrefDialog::prefRecentFilesNumber (int value)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    config.setRecentFilesNumber (value); // doesn't take effect until the next session
+    config.setRecentFilesNumber (value);
     ui->recentSpin->setSuffix(" " + (value > 1 ? tr ("files") : tr ("file")));
 
     showPrompt();
@@ -1226,14 +960,11 @@ void PrefDialog::onShortcutChange (QTableWidgetItem *item)
     QString txt = item->text();
     if (!txt.isEmpty())
     {
-        /* the QKeySequenceEdit text is in the NativeText format but it
-           should be converted into the PortableText format for saving */
         QKeySequence keySeq (txt);
         txt = keySeq.toString();
     }
 
     if (!txt.isEmpty() && config.reservedShortcuts().contains (txt)
-        /* unless its (hard-coded) default shortcut is typed */
         && DEFAULT_SHORTCUTS.value (OBJECT_NAMES.value (desc)) != txt)
     {
         showPrompt (tr ("The typed shortcut was reserved."), true);
@@ -1245,8 +976,6 @@ void PrefDialog::onShortcutChange (QTableWidgetItem *item)
     {
         shortcuts_.insert (desc, txt);
         newShortcuts_.insert (OBJECT_NAMES.value (desc), txt);
-
-        /* check for ambiguous shortcuts */
         bool ambiguous = false;
         QList<QString> val = shortcuts_.values();
         for (int i = 0; i < val.size(); ++i)
@@ -1263,8 +992,6 @@ void PrefDialog::onShortcutChange (QTableWidgetItem *item)
             prevtMsg_ = QString();
             showPrompt();
         }
-
-        /* also set the state of the Default button */
         QHash<QString, QString>::const_iterator it = shortcuts_.constBegin();
         while (it != shortcuts_.constEnd())
         {
@@ -1282,7 +1009,7 @@ void PrefDialog::restoreDefaultShortcuts()
 {
     if (newShortcuts_.isEmpty()
         && static_cast<FPsingleton*>(qApp)->getConfig().customShortcutActions().isEmpty())
-    { // do nothing if there's no custom shortcut
+    {
         return;
     }
 
@@ -1338,7 +1065,6 @@ void PrefDialog::prefShortcuts()
 }
 void PrefDialog::prefAutoSave (int checked)
 {
-    /* don't do anything other than enabling/disabling the spinbox */
     if (checked == Qt::Checked)
         ui->autoSaveSpin->setEnabled (true);
     else if (checked == Qt::Unchecked)
@@ -1349,7 +1075,7 @@ void PrefDialog::prefSaveUnmodified()
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
     Config& config = singleton->getConfig();
     if (ui->unmodifiedSaveBox->isChecked() == saveUnmodified_)
-        return; // do nothing when it isn't changed
+        return;
     config.setSaveUnmodified (!saveUnmodified_);
     for (int i = 0; i < singleton->Wins.count(); ++i)
     {
@@ -1357,7 +1083,7 @@ void PrefDialog::prefSaveUnmodified()
         if (TabPage *tabPage = qobject_cast<TabPage*>(win->ui->tabWidget->currentWidget()))
         {
             TextEdit *textEdit = tabPage->textEdit();
-            if (!saveUnmodified_) // meaans that unmodified docs can be saved now
+            if (!saveUnmodified_)
             {
                 if (!textEdit->isReadOnly() && !textEdit->isUneditable())
                     win->ui->actionSave->setEnabled (true);
@@ -1409,131 +1135,6 @@ void PrefDialog::prefCloseWithLastTab (int checked)
         config.setCloseWithLastTab (true);
     else if (checked == Qt::Unchecked)
         config.setCloseWithLastTab (false);
-}
-void PrefDialog::restoreDefaultSyntaxColors()
-{
-    prefCustomSyntaxColors_.clear();
-    ui->defaultSyntaxButton->setDisabled (true);
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    config.setCustomSyntaxColors (prefCustomSyntaxColors_);
-    config.setWhiteSpaceValue (config.getDefaultWhiteSpaceValue());
-    config.setCurLineHighlight (-1);
-    /* update row colors */
-    for (int i = 0; i < ui->syntaxTableWidget->rowCount(); ++i)
-    {
-        if (QTableWidgetItem *item = ui->syntaxTableWidget->item (i, 0))
-        {
-            QString syntax = item->data (Qt::UserRole).toString();
-            QColor col;
-            if (config.getDarkColScheme())
-                col = config.darkSyntaxColors().value (syntax);
-            else
-                col = config.lightSyntaxColors().value (syntax);
-            if (const auto cw = ui->syntaxTableWidget->cellWidget (i, 1))
-            {
-                if (cw->layout())
-                {
-                    if (const auto label = qobject_cast<QLabel*>(cw->layout()->itemAt (0)->widget()))
-                    {
-                        label->setStyleSheet (QString ("QLabel {background-color: rgb(%1, %2, %3);}")
-                                              .arg (col.red()).arg (col.green()).arg (col.blue()));
-                    }
-                }
-            }
-        }
-    }
-    disconnect (ui->whiteSpaceSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::changeWhitespaceValue);
-    ui->whiteSpaceSpin->setValue (config.getWhiteSpaceValue());
-    connect (ui->whiteSpaceSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::changeWhitespaceValue);
-    disconnect (ui->curLineSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::changeCurLineHighlight);
-    ui->curLineSpin->setValue (config.getMinCurLineHighlight() - 1);
-    connect (ui->curLineSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::changeCurLineHighlight);
-
-    showPrompt();
-}
-void PrefDialog::changeSyntaxColor (int row, int column)
-{
-    if (column != 1) return;
-    if (const auto cw = ui->syntaxTableWidget->cellWidget (row, column))
-    {
-        if (cw->layout())
-        {
-            if (const auto label = qobject_cast<QLabel*>(cw->layout()->itemAt (0)->widget()))
-            {
-                QColor prevColor = label->palette().color (QPalette::Window);
-                QColor color = QColorDialog::getColor (prevColor,
-                                                       this,
-                                                       tr ("Select Syntax Color"));
-                if (color.isValid() && color != prevColor)
-                {
-                    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-                    if (QTableWidgetItem *item = ui->syntaxTableWidget->item (row, 0))
-                    {
-                        QString syntax = item->data (Qt::UserRole).toString();
-
-                        if (prefCustomSyntaxColors_.isEmpty()) // first customization in Preferences
-                        {
-                            if (!config.customSyntaxColors().isEmpty())
-                                prefCustomSyntaxColors_ = config.customSyntaxColors();
-                            else if (config.getDarkColScheme())
-                                prefCustomSyntaxColors_ = config.darkSyntaxColors();
-                            else
-                                prefCustomSyntaxColors_ = config.lightSyntaxColors();
-                        }
-                        prefCustomSyntaxColors_.remove (syntax); // will be added correctly below
-                        auto colors = prefCustomSyntaxColors_.values();
-                        int ws = config.getWhiteSpaceValue();
-                        colors << QColor (ws, ws, ws);
-                        colors << (config.getDarkColScheme() ? QColor (Qt::white) : QColor (Qt::black));
-                        /* modify the color if it already exists */
-                        int r = color.red(); int g = color.green(); int b = color.blue();
-                        while (colors.contains (color))
-                        {
-                            color = QColor (r > 127 ? color.red() - 1 : color.red() + 1,
-                                            g > 127 ? color.green() - 1 : color.green() + 1,
-                                            b > 127 ? color.blue() - 1 : color.blue() + 1);
-                        }
-                        prefCustomSyntaxColors_.insert (syntax, color);
-                        /* also, set the row color */
-                        label->setStyleSheet (QString ("QLabel {background-color: rgb(%1, %2, %3);}")
-                                              .arg (color.red()).arg (color.green()).arg (color.blue()));
-                    }
-
-                    /* apply customization immediately for the user to be able to check it in a new window */
-                    if (prefCustomSyntaxColors_ ==
-                        (config.getDarkColScheme() ? config.darkSyntaxColors()
-                                                   : config.lightSyntaxColors())) // no customization
-                    {
-                        prefCustomSyntaxColors_.clear();
-                        ui->defaultSyntaxButton->setEnabled (config.getWhiteSpaceValue() != config.getDefaultWhiteSpaceValue()
-                                                             || config.getCurLineHighlight() != -1);
-                    }
-                    else
-                        ui->defaultSyntaxButton->setEnabled (true);
-                    config.setCustomSyntaxColors (prefCustomSyntaxColors_);
-                    showPrompt();
-                }
-            }
-        }
-    }
-}
-void PrefDialog::changeWhitespaceValue (int value)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    config.setWhiteSpaceValue (value); // takes care of repeated colors
-    ui->defaultSyntaxButton->setEnabled (!config.customSyntaxColors().isEmpty()
-                                         || config.getWhiteSpaceValue() != config.getDefaultWhiteSpaceValue()
-                                         || config.getCurLineHighlight() != -1);
-    showPrompt();
-}
-void PrefDialog::changeCurLineHighlight (int value)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    config.setCurLineHighlight (value);
-    ui->defaultSyntaxButton->setEnabled (!config.customSyntaxColors().isEmpty()
-                                         || config.getWhiteSpaceValue() != config.getDefaultWhiteSpaceValue()
-                                         || config.getCurLineHighlight() != -1);
-    showPrompt();
 }
 
 }

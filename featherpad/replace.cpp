@@ -131,11 +131,10 @@ void FPwin::replace()
         start.setPosition (found.anchor());
         pos = found.anchor();
         start.setPosition (found.position(), QTextCursor::KeepAnchor);
-        textEdit->skipSelectionHighlighting();
         textEdit->setTextCursor (start);
         textEdit->insertPlainText (txtReplace_);
 
-        start = textEdit->textCursor(); // at the end of txtReplace_
+        start = textEdit->textCursor();
         tmp.setPosition (pos);
         tmp.setPosition (start.position(), QTextCursor::KeepAnchor);
         QTextEdit::ExtraSelection extra;

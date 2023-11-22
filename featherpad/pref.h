@@ -82,8 +82,6 @@ private slots:
     void prefIndent (int checked);
     void prefAutoReplace (int checked);
     void prefLine (int checked);
-    void prefSyntax (int checked);
-    void prefWhiteSpace (int checked);
     void prefVLine (int checked);
     void prefVLineDistance (int value);
     void prefEndings (int checked);
@@ -112,32 +110,24 @@ private slots:
     void prefTextTabSize (int value);
     void prefTextTab();
     void prefCloseWithLastTab (int checked);
-    void changeSyntaxColor (int row, int column);
-    void changeWhitespaceValue (int value);
-    void restoreDefaultSyntaxColors();
-    void changeCurLineHighlight (int value);
 
 private:
     void closeEvent (QCloseEvent *event);
     void prefTabPosition();
     void prefRecentFilesKind();
     void prefApplyAutoSave();
-    void prefApplySyntax();
     void prefApplyDateFormat();
     void prefThickCursor();
-    void prefSelHighlight();
     void prefPastePaths();
     void showPrompt (const QString& str = QString(), bool temporary = false);
 
     Ui::PrefDialog *ui;
     QWidget * parent_;
-    bool darkBg_, showWhiteSpace_, showEndings_, saveUnmodified_, sharedSearchHistory_, selHighlighting_, pastePaths_;
-    int vLineDistance_, darkColValue_, lightColValue_, recentNumber_, textTabSize_, whiteSpaceValue_, curLineHighlight_;
+    bool darkBg_, showEndings_, saveUnmodified_, sharedSearchHistory_, pastePaths_;
+    int vLineDistance_, darkColValue_, lightColValue_, recentNumber_, textTabSize_;
     QHash<QString, QString> shortcuts_, newShortcuts_;
     QString prevtMsg_;
     QTimer *promptTimer_;
-    QHash<QString, QColor> prefCustomSyntaxColors_; // customization in Preferences
-    QHash<QString, QColor> origSyntaxColors_; // to know if a syntax color is really changed
 };
 
 }

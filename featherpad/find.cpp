@@ -75,7 +75,6 @@ void FPwin::find (bool forward)
         start.setPosition (found.anchor());
         if (newSrch) textEdit->setTextCursor (start);
         start.setPosition (found.position(), QTextCursor::KeepAnchor);
-        textEdit->skipSelectionHighlighting();
         textEdit->setTextCursor (start);
     }
     hlight();
@@ -94,16 +93,13 @@ void FPwin::hlight() const
     QList<QTextEdit::ExtraSelection> es = textEdit->getGreenSel();
     
     QTextCursor found;
-    /* first put a start cursor at the top left edge... */
     QPoint Point (0, 0);
     QTextCursor start = textEdit->cursorForPosition (Point);
-    /* ... then move it backward by the search text length */
     int startPos = start.position() - (!tabPage->matchRegex() ? txt.length() : 0);
     if (startPos >= 0)
         start.setPosition (startPos);
     else
         start.setPosition (0);
-    /* get the visible text to check if the search string is inside it */
     Point = QPoint (textEdit->geometry().width(), textEdit->geometry().height());
     QTextCursor end = textEdit->cursorForPosition (Point);
     int endLimit = end.anchor();

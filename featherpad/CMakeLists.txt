@@ -63,18 +63,10 @@ set(featherpad_SRCS
     lineedit.cpp
     textedit.cpp
     tabbar.cpp
-    highlighter.cpp
     find.cpp
     replace.cpp
     pref.cpp
     config.cpp
-    syntax.cpp
-    highlighter-sh.cpp
-    highlighter-css.cpp
-    highlighter-html.cpp
-    highlighter-patterns.cpp
-    highlighter-regex.cpp
-    highlighter-perl-regex.cpp
     vscrollbar.cpp
     loading.cpp
     tabpage.cpp

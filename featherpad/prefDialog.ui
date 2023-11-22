@@ -473,24 +473,6 @@ under proper circumstances.</string>
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="selHighlightBox">
-                <property name="toolTip">
-                 <string>Highlight case-sensitive and whole matches
-of the selected text.</string>
-                </property>
-                <property name="text">
-                 <string>Selection highlighting</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="syntaxBox">
-                <property name="text">
-                 <string>Highlight s&amp;yntax by default</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <layout class="QHBoxLayout" name="horizontalLayout_4">
                 <item>
                  <spacer name="horizontalSpacer_4">
@@ -507,17 +489,6 @@ of the selected text.</string>
                    </size>
                   </property>
                  </spacer>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="enforceSyntaxBox">
-                  <property name="toolTip">
-                   <string>This creates a menu button on the
-status bar for changing the syntax.</string>
-                  </property>
-                  <property name="text">
-                   <string>Support syntax override</string>
-                  </property>
-                 </widget>
                 </item>
                </layout>
               </item>
@@ -540,26 +511,6 @@ status bar for changing the syntax.</string>
                  </spacer>
                 </item>
                 <item>
-                 <widget class="QLabel" name="label">
-                  <property name="text">
-                   <string>Never highlight syntax for files &gt; </string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QSpinBox" name="spinBox">
-                  <property name="suffix">
-                   <string> MiB</string>
-                  </property>
-                  <property name="minimum">
-                   <number>1</number>
-                  </property>
-                  <property name="maximum">
-                   <number>10</number>
-                  </property>
-                 </widget>
-                </item>
-                <item>
                  <spacer name="horizontalSpacer_6">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
@@ -576,17 +527,6 @@ status bar for changing the syntax.</string>
                  </spacer>
                 </item>
                </layout>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="whiteSpaceBox">
-                <property name="toolTip">
-                 <string>Show spaces, tabs and tab lines
-when the syntax is highlighted.</string>
-                </property>
-                <property name="text">
-                 <string>Show whitespaces</string>
-                </property>
-               </widget>
               </item>
               <item>
                <widget class="QCheckBox" name="endingsBox">
@@ -1206,116 +1146,6 @@ be opened if they are pasted into FeatherPad.</string>
          </property>
          <property name="autoDefault">
           <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tab_5">
-      <attribute name="title">
-       <string>Syntax Colors</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0">
-        <widget class="QTableWidget" name="syntaxTableWidget">
-         <property name="alternatingRowColors">
-          <bool>true</bool>
-         </property>
-         <property name="selectionMode">
-          <enum>QAbstractItemView::SingleSelection</enum>
-         </property>
-         <attribute name="verticalHeaderVisible">
-          <bool>false</bool>
-         </attribute>
-         <column>
-          <property name="text">
-           <string>Element</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Text Color</string>
-          </property>
-         </column>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout_16">
-         <property name="spacing">
-          <number>5</number>
-         </property>
-         <item>
-          <widget class="QLabel" name="whiteSpaceLabel">
-           <property name="text">
-            <string>Whitespace color value:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="whiteSpaceSpin"/>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_16">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>5</width>
-             <height>5</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="2" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout_17">
-         <property name="spacing">
-          <number>5</number>
-         </property>
-         <item>
-          <widget class="QLabel" name="curLineLabel">
-           <property name="toolTip">
-            <string>Has effect only if line numbers are shown.</string>
-           </property>
-           <property name="text">
-            <string>Current line highlight value:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="curLineSpin">
-           <property name="toolTip">
-            <string>Has effect only if line numbers are shown.</string>
-           </property>
-           <property name="specialValueText">
-            <string>Default</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_17">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>5</width>
-             <height>5</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="3" column="0" alignment="Qt::AlignRight">
-        <widget class="QPushButton" name="defaultSyntaxButton">
-         <property name="toolTip">
-          <string>Restore default syntax colors.</string>
-         </property>
-         <property name="text">
-          <string>Default</string>
          </property>
         </widget>
        </item>

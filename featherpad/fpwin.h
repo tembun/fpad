@@ -28,7 +28,6 @@
 #include <QMainWindow>
 #include <QActionGroup>
 #include <QElapsedTimer>
-#include "highlighter.h"
 #include "textedit.h"
 #include "tabpage.h"
 #include "config.h"
@@ -68,9 +67,7 @@ class FPwin : public QMainWindow
 public:
     explicit FPwin (QWidget *parent = nullptr, bool standalone = false);
     ~FPwin();
-
-    bool isScriptLang (const QString& lang) const;
-
+    
     bool isLoading() const {
         return (loadingProcesses_ > 0);
     }
@@ -83,7 +80,6 @@ public:
         return false;
     }
     void addCursorPosLabel();
-    void addRemoveLangBtn (bool add);
     void showCrashWarning();
     void showRootWarning();
     void updateCustomizableShortcuts (bool disable = false);
@@ -107,8 +103,6 @@ public slots:
                          int posInLine, // If restoreCursor > 1, this is the cursor position in the line.
                          bool multiple = false);
     void newTab();
-    void statusMsg();
-    void statusMsgWithLineCount (const int lines);
     void showCursorPos();
     void updateWordInfo (int position = -1, int charsRemoved = 0, int charsAdded = 0);
     void enableSaving (bool modified);
@@ -135,10 +129,6 @@ private slots:
     void hlight() const;
     void searchFlagChanged();
     void showHideSearch();
-    void toggleSyntaxHighlighting();
-    void formatOnBlockChange (int) const;
-    void formatOnTextChange (int, int charsRemoved, int charsAdded) const;
-    void formatTextRect() const;
     void toggleWrapping();
     void toggleIndent();
     void replace();
@@ -150,7 +140,6 @@ private slots:
     void setMax (const int max);
     void goTo();
     void asterisk (bool modified);
-    void reformat (TextEdit *textEdit);
     void defaultSize();
     void focus_view_soft();
     void focus_view_hard();
@@ -173,7 +162,6 @@ private slots:
     void onOpeningNonexistent();
     void autoSave();
     void pauseAutoSaving (bool pause);
-    void enforceLang (QAction *action);
 
 public:
     QWidget *dummyWidget;
@@ -186,7 +174,7 @@ private:
       DISCARDED
     };
 
-    TabPage *createEmptyTab(bool setCurrent, bool allowNormalHighlighter = true);
+    TabPage *createEmptyTab(bool setCurrent);
     bool hasAnotherDialog();
     void deleteTabPage (int tabIndex, bool saveToList = false, bool closeWithLastTab = true);
     void loadText (const QString& fileName, bool enforceEncod, bool reload,
@@ -195,7 +183,7 @@ private:
     bool alreadyOpen (TabPage *tabPage) const;
     void setTitle (const QString& fileName, int tabIndex = -1);
     DOCSTATE savePrompt (int tabIndex, bool noToAll);
-    bool saveFile (bool keepSyntax);
+    bool saveFile ();
     void saveAllFiles (bool showWarning);
     void closeEvent (QCloseEvent *event);
     bool closeTabs (int first, int last, bool saveFilesList = false);
@@ -207,8 +195,6 @@ private:
     QTextDocument::FindFlags getSearchFlags() const;
     void enableWidgets (bool enable) const;
     void updateShortcuts (bool disable, bool page = true);
-    void setProgLang (TextEdit *textEdit);
-    void syntaxHighlighting (TextEdit *textEdit, bool highlight = true, const QString& lang = QString());
     void encodingToCheck (const QString& encoding);
     const QString checkToEncoding() const;
     void applyConfigOnStarting();
@@ -223,7 +209,6 @@ private:
     void showWarningBar (const QString& message, bool startupBar = false);
     void closeWarningBar (bool keepOnStartup = false);
     void disconnectLambda();
-    void updateLangBtn (TextEdit *textEdit);
     void stealFocus();
 
     QActionGroup *aGroup_;

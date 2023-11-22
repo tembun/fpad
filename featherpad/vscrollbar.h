@@ -27,8 +27,6 @@
 
 namespace FeatherPad {
 
-/* We want faster mouse wheel scrolling
-   when the mouse cursor is on the scrollbar. */
 class VScrollBar : public QScrollBar
 {
     Q_OBJECT

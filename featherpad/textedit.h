@@ -25,7 +25,6 @@
 #include <QMimeData>
 #include <QDateTime>
 #include <QElapsedTimer>
-#include <QSyntaxHighlighter>
 
 namespace FeatherPad {
 class TextEdit : public QPlainTextEdit
@@ -129,20 +128,7 @@ public:
     void setFileName (const QString &name) {
         fileName_ = name;
     }
-    QString getProg() const {
-        return prog_.isEmpty() ? "url"
-                               : prog_;
-    }
-    void setProg (const QString &prog) {
-        prog_ = prog;
-    }
 
-    QString getLang() const {
-        return lang_;
-    }
-    void setLang (const QString &lang) {
-        lang_ = lang;
-    }
     QString getEncoding() const {
         return encoding_;
     }
@@ -174,13 +160,6 @@ public:
         uneditable_ = readOnly;
     }
 
-    QSyntaxHighlighter *getHighlighter() const {
-        return highlighter_;
-    }
-    void setHighlighter (QSyntaxHighlighter *h) {
-        highlighter_ = h;
-    }
-
     bool getInertialScrolling() const {
         return inertialScrolling_;
     }
@@ -194,7 +173,6 @@ public:
     void setSaveCursor (bool save) {
         saveCursor_ = save;
     }
-
     bool getThickCursor() const {
         return (cursorWidth() > 1);
     }
@@ -205,16 +183,6 @@ public:
         keepTxtCurHPos_ = false;
         txtCurHPos_ = -1;
     }
-
-    bool getSelectionHighlighting() const {
-        return selectionHighlighting_;
-    }
-    void setSelectionHighlighting (bool enable);
-
-    void skipSelectionHighlighting() {
-        highlightThisSelection_ = false;
-    }
-
     void setPastePaths (bool pastePaths) {
         pastePaths_ = pastePaths;
     }
@@ -236,8 +204,6 @@ public slots:
     void paste();
     void selectAll();
     void insertPlainText (const QString &text);
-    void selectionHlight();
-    void onContentsChange (int position, int charsRemoved, int charsAdded);
     QTextCursor finding (const QString& str, const QTextCursor& start,
                          QTextDocument::FindFlags flags = QTextDocument::FindFlags(),
                          bool isRegex = false, const int end = 0) const;
@@ -316,17 +282,11 @@ private:
     QString searchedText_;
     QString replaceTitle_;
     QString fileName_;
-    QString prog_;
-    QString lang_;
     QString encoding_;
     QList<QTextEdit::ExtraSelection> greenSel_;
     QList<QTextEdit::ExtraSelection> blueSel_;
     QList<QTextEdit::ExtraSelection> redSel_;
-    bool selectionHighlighting_;
-    bool highlightThisSelection_;
-    bool removeSelectionHighlights_;
     bool uneditable_;
-    QSyntaxHighlighter *highlighter_;
     bool saveCursor_;
     bool pastePaths_;
     bool inertialScrolling_;

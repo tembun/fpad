@@ -106,7 +106,6 @@ SearchBar::SearchBar(QWidget *parent,
         wholeShortcut = shortcuts.at (3);
         regexShortcut = shortcuts.at (4);
     }
-
     toolButton_nxt_ = new QToolButton (this);
     toolButton_prv_ = new QToolButton (this);
     toolButton_nxt_->setIcon (symbolicIcon::icon (":icons/go-down.svg"));
@@ -117,32 +116,26 @@ SearchBar::SearchBar(QWidget *parent,
     toolButton_prv_->setShortcut (prevShortcut);
     toolButton_nxt_->setToolTip (tr ("Next") + " (" + nxtShortcut.toString (QKeySequence::NativeText) + ")");
     toolButton_prv_->setToolTip (tr ("Previous") + " (" + prevShortcut.toString (QKeySequence::NativeText) + ")");
-
     button_case_ = new QToolButton (this);
     button_case_->setIcon (symbolicIcon::icon (":icons/case.svg"));
     button_case_->setToolTip (tr ("Match Case") + " (" + csShortcut.toString (QKeySequence::NativeText) + ")");
     button_case_->setShortcut (csShortcut);
     button_case_->setCheckable (true);
     button_case_->setFocusPolicy (Qt::NoFocus);
-
     button_whole_ = new QToolButton (this);
     button_whole_->setIcon (symbolicIcon::icon (":icons/whole.svg"));
     button_whole_->setToolTip (tr ("Whole Word") + " (" + wholeShortcut.toString (QKeySequence::NativeText) + ")");
     button_whole_->setShortcut (wholeShortcut);
     button_whole_->setCheckable (true);
     button_whole_->setFocusPolicy (Qt::NoFocus);
-
     button_regex_ = new QToolButton (this);
     button_regex_->setIcon (symbolicIcon::icon (":icons/regex.svg"));
     button_regex_->setToolTip (tr ("Regular Expression") + " (" + regexShortcut.toString (QKeySequence::NativeText) + ")");
     button_regex_->setShortcut (regexShortcut);
     button_regex_->setCheckable (true);
     button_regex_->setFocusPolicy (Qt::NoFocus);
-
-    /* there are shortcuts for forward/backward search */
     toolButton_nxt_->setFocusPolicy (Qt::NoFocus);
     toolButton_prv_->setFocusPolicy (Qt::NoFocus);
-
     QGridLayout *mainGrid = new QGridLayout;
     mainGrid->setHorizontalSpacing (3);
     mainGrid->setContentsMargins (2, 0, 2, 0);
@@ -154,7 +147,6 @@ SearchBar::SearchBar(QWidget *parent,
     mainGrid->addWidget (button_whole_, 0, 5);
     mainGrid->addWidget (button_regex_, 0, 6);
     setLayout (mainGrid);
-
     connect (lineEdit_, &QLineEdit::returnPressed, this, &SearchBar::findForward);
     connect (lineEdit_, &FeatherPad::LineEdit::shift_enter_pressed, this, &SearchBar::findBackward);
     connect (toolButton_nxt_, &QAbstractButton::clicked, this, &SearchBar::findForward);
@@ -172,12 +164,9 @@ SearchBar::SearchBar(QWidget *parent,
             lineEdit_->setPlaceholderText (tr ("Search..."));
         emit searchFlagChanged();
     });
-
-    /* show the popup with Ctrl+Down/Up (because Alt+Down/Up is reserved) */
     connect (lineEdit_, &LineEdit::showComboPopup, [this] {
         combo_->showPopup();
     });
-    /* the default behavior of up/down arrow key isn't good enough */
     connect (combo_, &ComboBox::moveInHistory, lineEdit_, [this] (bool up) {
         int count = combo_->count();
         if (count == 0) return;
@@ -196,19 +185,12 @@ SearchBar::SearchBar(QWidget *parent,
         }
     });
 }
-/*************************/
 void SearchBar::setSearchModel (QStandardItemModel *model)
 {
     if (model != nullptr)
     {
         combo_->setModel (model);
-
-        /* Qt puts the first item of the new model's history into the line-edit but
-           that can be confusing (we don't use clear() because we don't want undoing). */
         lineEdit_->setText (QString());
-
-        /* If the history is changed elsewhere, the line-edit's text might change but that
-           could be confusing. So, we restore the text (unfortunately, undo/redo will be reset). */
         connect (combo_->model(), &QAbstractItemModel::rowsAboutToBeRemoved, lineEdit_, [this] (const QModelIndex&, int, int) {
             if (!searchStarted_)
                 searchText_ = lineEdit_->text();
