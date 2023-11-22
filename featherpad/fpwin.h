@@ -176,7 +176,7 @@ private:
 
     TabPage *createEmptyTab(bool setCurrent);
     bool hasAnotherDialog();
-    void deleteTabPage (int tabIndex, bool saveToList = false, bool closeWithLastTab = true);
+    void deleteTabPage (int tabIndex, bool saveToList = false);
     void loadText (const QString& fileName, bool enforceEncod, bool reload,
                    int restoreCursor = 0, int posInLine = 0,
                    bool enforceUneditable = false, bool multiple = false);

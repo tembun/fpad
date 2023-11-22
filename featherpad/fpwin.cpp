@@ -370,7 +370,7 @@ bool FPwin::hasAnotherDialog()
     }
     return res;
 }
-void FPwin::deleteTabPage (int tabIndex, bool saveToList, bool closeWithLastTab)
+void FPwin::deleteTabPage (int tabIndex, bool saveToList)
 {
     TabPage *tabPage = qobject_cast<TabPage *>(ui->tabWidget->widget (tabIndex));
     if (tabPage == nullptr) return;
@@ -387,8 +387,6 @@ void FPwin::deleteTabPage (int tabIndex, bool saveToList, bool closeWithLastTab)
     disconnect (textEdit->document(), &QTextDocument::contentsChange, this, &FPwin::updateWordInfo);
     ui->tabWidget->removeTab (tabIndex);
     delete tabPage; tabPage = nullptr;
-    if (closeWithLastTab && config.getCloseWithLastTab() && ui->tabWidget->count() == 0)
-        close();
 }
 bool FPwin::closeTabs (int first, int last, bool saveFilesList)
 {
@@ -401,7 +399,6 @@ bool FPwin::closeTabs (int first, int last, bool saveFilesList)
     bool keep = false;
     int index, count;
     DOCSTATE state = SAVED;
-    bool closing (saveFilesList);
     while (state == SAVED && ui->tabWidget->count() > 0)
     {
         waitToMakeBusy();
@@ -424,7 +421,7 @@ bool FPwin::closeTabs (int first, int last, bool saveFilesList)
             keep = false;
             if (lastWinFilesCur_.size() >= 50)
                 saveFilesList = false;
-            deleteTabPage (tabIndex, saveFilesList, !closing);
+            deleteTabPage (tabIndex, saveFilesList);
 
             if (last > -1)
                 --last;
@@ -448,7 +445,7 @@ bool FPwin::closeTabs (int first, int last, bool saveFilesList)
                 if (last == 0) break;
                 if (lastWinFilesCur_.size() >= 50)
                     saveFilesList = false;
-                deleteTabPage (tabIndex, saveFilesList, !closing);
+                deleteTabPage (tabIndex, saveFilesList);
 
                 if (last < 0)
                     index = ui->tabWidget->count() - 1;
@@ -1502,7 +1499,7 @@ void FPwin::enforceEncoding (QAction*)
             return;
         }
         if (!QFile::exists (fname))
-            deleteTabPage (index, false, false);
+            deleteTabPage (index, false);
         loadText (fname, true, true,
                   0, 0,
                   textEdit->isUneditable(), false);
@@ -1537,7 +1534,7 @@ void FPwin::reload()
     TextEdit *textEdit = tabPage->textEdit();
     QString fname = textEdit->getFileName();
     if (!QFile::exists (fname))
-        deleteTabPage (index, false, false);
+        deleteTabPage (index, false);
     if (!fname.isEmpty())
     {
         loadText (fname, false, true,

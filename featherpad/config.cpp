@@ -49,7 +49,6 @@ Config::Config():
     skipNonText_ (true),
     saveUnmodified_ (false),
     pastePaths_ (false),
-    closeWithLastTab_ (false),
     sharedSearchHistory_ (false),
     vLineDistance_ (-80),
     tabPosition_ (0),
@@ -138,9 +137,6 @@ void Config::readConfig()
     v = settings.value ("nativeDialog");
     if (v.isValid()) // true by default
         nativeDialog_ = v.toBool();
-
-    if (settings.value ("closeWithLastTab").toBool())
-        closeWithLastTab_ = true; // false by default
 
     if (settings.value ("sharedSearchHistory").toBool())
         sharedSearchHistory_ = true; // false by default
@@ -307,7 +303,6 @@ void Config::writeConfig()
     settings.setValue ("tabWrapAround", tabWrapAround_);
     settings.setValue ("openInWindows", openInWindows_);
     settings.setValue ("nativeDialog", nativeDialog_);
-    settings.setValue ("closeWithLastTab", closeWithLastTab_);
     settings.setValue ("sharedSearchHistory", sharedSearchHistory_);
     settings.endGroup();
     settings.beginGroup ("text");

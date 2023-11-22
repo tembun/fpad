@@ -142,8 +142,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     connect (ui->windowBox, &QCheckBox::stateChanged, this, &PrefDialog::prefOpenInWindows);
     ui->nativeDialogBox->setChecked (config.getNativeDialog());
     connect (ui->nativeDialogBox, &QCheckBox::stateChanged, this, &PrefDialog::prefNativeDialog);
-    ui->lastTabBox->setChecked (config.getCloseWithLastTab());
-    connect (ui->lastTabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefCloseWithLastTab);
     ui->fontBox->setChecked (config.getRemFont());
     connect (ui->fontBox, &QCheckBox::stateChanged, this, &PrefDialog::prefFont);
     ui->wrapBox->setChecked (config.getWrapByDefault());
@@ -981,14 +979,6 @@ void PrefDialog::prefTextTab()
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
     config.setTextTabSize (textTabSize_);
-}
-void PrefDialog::prefCloseWithLastTab (int checked)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    if (checked == Qt::Checked)
-        config.setCloseWithLastTab (true);
-    else if (checked == Qt::Unchecked)
-        config.setCloseWithLastTab (false);
 }
 
 }

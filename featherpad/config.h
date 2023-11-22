@@ -387,13 +387,6 @@ public:
     void setPastePaths (bool pastPaths) {
         pastePaths_ = pastPaths;
     }
-    bool getCloseWithLastTab() const {
-        return closeWithLastTab_;
-    }
-    void setCloseWithLastTab (bool close) {
-        closeWithLastTab_ = close;
-    }
-
     bool getSharedSearchHistory() const {
         return sharedSearchHistory_;
     }
@@ -423,7 +416,6 @@ private:
          skipNonText_,
          saveUnmodified_,
          pastePaths_,
-         closeWithLastTab_,
          sharedSearchHistory_;
     int vLineDistance_,
         tabPosition_,

@@ -314,13 +314,6 @@ Tab navigation with mouse wheel is not affected.</string>
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="lastTabBox">
-                <property name="text">
-                 <string>Close window on closing its last tab</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="windowBox">
                 <property name="toolTip">
                  <string>By default, if a FeatherPad window exists on the

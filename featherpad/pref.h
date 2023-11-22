@@ -103,7 +103,6 @@ private slots:
     void prefSaveUnmodified();
     void prefTextTabSize (int value);
     void prefTextTab();
-    void prefCloseWithLastTab (int checked);
 
 private:
     void closeEvent (QCloseEvent *event);
