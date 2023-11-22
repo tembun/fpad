@@ -537,33 +537,6 @@ trailing spaces of a text file.</string>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QCheckBox" name="pastePathsBox">
-            <property name="toolTip">
-             <string>By default, when files are copied, they will
-be opened if they are pasted into FeatherPad.</string>
-            </property>
-            <property name="text">
-             <string>Paste paths instead of files</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::MinimumExpanding</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>5</width>
-              <height>1</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
          </layout>
         </widget>
        </item>

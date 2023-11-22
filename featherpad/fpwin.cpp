@@ -650,7 +650,6 @@ TabPage* FPwin::createEmptyTab (bool setCurrent)
     tabPage->setSearchModel (singleton->searchModel());
     TextEdit *textEdit = tabPage->textEdit();
     connect (textEdit, &QWidget::customContextMenuRequested, this, &FPwin::editorContextMenu);
-    textEdit->setPastePaths (config.getPastePaths());
     textEdit->setTtextTab (config.getTextTabSize());
     textEdit->setEditorFont (config.getFont());
     int index = ui->tabWidget->currentIndex();

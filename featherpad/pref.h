@@ -93,13 +93,12 @@ private:
     void closeEvent (QCloseEvent *event);
     void prefTabPosition();
     void prefRecentFilesKind();
-    void prefPastePaths();
     void showPrompt (const QString& str = QString(), bool temporary = false);
 
     Ui::PrefDialog *ui;
     QWidget * parent_;
     bool showEndings_, saveUnmodified_, sharedSearchHistory_, pastePaths_;
-    int vLineDistance_, lightColValue_, recentNumber_, textTabSize_;
+    int lightColValue_, recentNumber_, textTabSize_;
     QHash<QString, QString> shortcuts_, newShortcuts_;
     QString prevtMsg_;
     QTimer *promptTimer_;

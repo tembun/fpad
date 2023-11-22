@@ -93,7 +93,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     textTabSize_ = config.getTextTabSize();
     saveUnmodified_ = config.getSaveUnmodified();
     sharedSearchHistory_ = config.getSharedSearchHistory();
-    pastePaths_ = config.getPastePaths();
     ui->winSizeBox->setChecked (config.getRemSize());
     connect (ui->winSizeBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSize);
     if (ui->winSizeBox->isChecked())
@@ -136,7 +135,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->tabCombo->setCurrentIndex (config.getTabPosition());
     ui->tabBox->setChecked (config.getTabWrapAround());
     connect (ui->tabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefTabWrapAround);
-    ui->pastePathsBox->setChecked (pastePaths_);
     ui->textTabSpin->setValue (textTabSize_);
     connect (ui->textTabSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefTextTabSize);
     ui->recentSpin->setValue (config.getRecentFilesNumber());
@@ -246,7 +244,6 @@ void PrefDialog::onClosing()
     prefRecentFilesKind();
     prefTextTab();
     prefSaveUnmodified();
-    prefPastePaths();
 
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
     config.setPrefSize (size());
@@ -495,24 +492,6 @@ void PrefDialog::prefTabPosition()
     {
         for (int i = 0; i < singleton->Wins.count(); ++i)
             singleton->Wins.at (i)->ui->tabWidget->setTabPosition (static_cast<QTabWidget::TabPosition>(index));
-    }
-}
-void PrefDialog::prefPastePaths()
-{
-    bool pastePaths = ui->pastePathsBox->isChecked();
-    if (pastePaths == pastePaths_)
-        return;
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    config.setPastePaths (pastePaths);
-    for (int i = 0; i < singleton->Wins.count(); ++i)
-    {
-        int count = singleton->Wins.at (i)->ui->tabWidget->count();
-        for (int j = 0; j < count; ++j)
-        {
-            qobject_cast< TabPage *>(singleton->Wins.at (i)->ui->tabWidget->widget (j))
-                ->textEdit()->setPastePaths (pastePaths);
-        }
     }
 }
 void PrefDialog::prefTabWrapAround (int checked)

@@ -35,7 +35,6 @@ Config::Config():
     isFull_ (false),
     tabWrapAround_ (false),
     saveUnmodified_ (false),
-    pastePaths_ (false),
     sharedSearchHistory_ (false),
     tabPosition_ (0),
     maxSHSize_ (2),
@@ -136,9 +135,6 @@ void Config::readConfig()
     }
     if (settings.value ("saveUnmodified").toBool())
         saveUnmodified_ = true; // false by default
-
-    if (settings.value ("pastePaths").toBool())
-        pastePaths_ = true; // false by default
     maxSHSize_ = qBound (1, settings.value ("maxSHSize", 2).toInt(), 10);
     lightBgColorValue_ = qBound (230, settings.value ("lightBgColorValue", 255).toInt(), 255);
     v = settings.value ("appendEmptyLine");
@@ -235,7 +231,6 @@ void Config::writeConfig()
     settings.beginGroup ("text");
     settings.setValue ("font", font_.toString());
     settings.setValue ("saveUnmodified", saveUnmodified_);
-    settings.setValue ("pastePaths", pastePaths_);
     settings.setValue ("maxSHSize", maxSHSize_);
     settings.setValue ("lightBgColorValue", lightBgColorValue_);
     settings.setValue ("recentFilesNumber", recentFilesNumber_);

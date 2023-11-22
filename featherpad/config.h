@@ -269,12 +269,6 @@ public:
     void setSaveUnmodified (bool save) {
         saveUnmodified_ = save;
     }
-    bool getPastePaths() const {
-        return pastePaths_;
-    }
-    void setPastePaths (bool pastPaths) {
-        pastePaths_ = pastPaths;
-    }
     bool getSharedSearchHistory() const {
         return sharedSearchHistory_;
     }
@@ -294,7 +288,6 @@ private:
          isMaxed_, isFull_,
          tabWrapAround_,
          saveUnmodified_,
-         pastePaths_,
          sharedSearchHistory_;
     int tabPosition_,
         maxSHSize_,

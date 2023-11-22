@@ -67,25 +67,6 @@ public:
     bool getAutoIndentation() const {
         return autoIndentation_;
     }
-
-    void setAutoReplace (bool replace) {
-        autoReplace_ = replace;
-    }
-    bool getAutoReplace() const {
-        return autoReplace_;
-    }
-
-    void setDrawIndetLines (bool draw) {
-        drawIndetLines_ = draw;
-    }
-
-    void setVLineDistance (int distance) {
-        vLineDistance_ = distance;
-    }
-
-    void setDateFormat (const QString &format) {
-        dateFormat_ = format;
-    }
     qint64 getSize() const {
         return size_;
     }
@@ -163,9 +144,6 @@ public:
         keepTxtCurHPos_ = false;
         txtCurHPos_ = -1;
     }
-    void setPastePaths (bool pastePaths) {
-        pastePaths_ = pastePaths;
-    }
 
 signals:
     void fileDropped (const QString& localFile,
@@ -241,11 +219,7 @@ private:
     QRect lastCurrentLine_;
     int widestDigit_;
     bool autoIndentation_;
-    bool autoReplace_;
-    bool drawIndetLines_;
     QColor separatorColor_;
-    int vLineDistance_;
-    QString dateFormat_;
     QColor lineHColor_;
     int resizeTimerId_, selectionTimerId_;
     QPoint pressPoint_;
@@ -267,7 +241,6 @@ private:
     QList<QTextEdit::ExtraSelection> redSel_;
     bool uneditable_;
     bool saveCursor_;
-    bool pastePaths_;
     struct scrollData {
       int delta;
       int leftSteps;
