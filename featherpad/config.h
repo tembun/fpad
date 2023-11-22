@@ -210,21 +210,12 @@ public:
     void setRemFont (bool rem) {
         remFont_ = rem;
     }
-
-    bool getWrapByDefault() const {
-        return wrapByDefault_;
-    }
-    void setWrapByDefault (bool wrap) {
-        wrapByDefault_ = wrap;
-    }
-
     bool getIndentByDefault() const {
         return indentByDefault_;
     }
     void setIndentByDefault (bool indent) {
         indentByDefault_ = indent;
     }
-
     bool getAutoReplace() const {
         return autoReplace_;
     }
@@ -237,14 +228,12 @@ public:
     void setShowEndings (bool show) {
         showEndings_ = show;
     }
-
     int getVLineDistance() const {
         return vLineDistance_;
     }
     void setVLineDistance (int distance) {
         vLineDistance_ = distance;
     }
-
     int getMaxSHSize() const {
         return maxSHSize_;
     }
@@ -390,7 +379,7 @@ private:
          noToolbar_, noMenubar_,
          hideSearchbar_,
          showStatusbar_, showCursorPos_,
-         remFont_, wrapByDefault_, indentByDefault_, autoReplace_, lineByDefault_,showEndings_,
+         remFont_, indentByDefault_, autoReplace_, lineByDefault_,showEndings_,
          isMaxed_, isFull_,
          thickCursor_,
          tabWrapAround_,

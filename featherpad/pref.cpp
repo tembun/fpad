@@ -140,8 +140,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     connect (ui->tabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefTabWrapAround);
     ui->fontBox->setChecked (config.getRemFont());
     connect (ui->fontBox, &QCheckBox::stateChanged, this, &PrefDialog::prefFont);
-    ui->wrapBox->setChecked (config.getWrapByDefault());
-    connect (ui->wrapBox, &QCheckBox::stateChanged, this, &PrefDialog::prefWrap);
     ui->indentBox->setChecked (config.getIndentByDefault());
     connect (ui->indentBox, &QCheckBox::stateChanged, this, &PrefDialog::prefIndent);
     ui->autoReplaceBox->setChecked (config.getAutoReplace());
@@ -548,14 +546,6 @@ void PrefDialog::prefFont (int checked)
         config.setRemFont (false);
         config.resetFont();
     }
-}
-void PrefDialog::prefWrap (int checked)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    if (checked == Qt::Checked)
-        config.setWrapByDefault (true);
-    else if (checked == Qt::Unchecked)
-        config.setWrapByDefault (false);
 }
 void PrefDialog::prefIndent (int checked)
 {

@@ -78,7 +78,6 @@ private slots:
     void prefStatusbar (int checked);
     void prefStatusCursor (int checked);
     void prefFont (int checked);
-    void prefWrap (int checked);
     void prefIndent (int checked);
     void prefAutoReplace (int checked);
     void prefVLine (int checked);

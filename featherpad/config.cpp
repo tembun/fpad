@@ -32,7 +32,6 @@ Config::Config():
     showStatusbar_ (true),
     showCursorPos_ (false),
     remFont_ (true),
-    wrapByDefault_ (true),
     indentByDefault_ (true),
     autoReplace_ (false),
     showEndings_ (false),
@@ -150,9 +149,6 @@ void Config::readConfig()
             font_.setPointSize (qMax (QFont().pointSize(), 9));
     }
 
-    if (settings.value ("noWrap").toBool())
-        wrapByDefault_ = false; // true by default
-
     if (settings.value ("noIndent").toBool())
         indentByDefault_ = false; // true by default
 
@@ -184,16 +180,13 @@ void Config::readConfig()
 
     if (settings.value ("pastePaths").toBool())
         pastePaths_ = true; // false by default
-
     maxSHSize_ = qBound (1, settings.value ("maxSHSize", 2).toInt(), 10);
     lightBgColorValue_ = qBound (230, settings.value ("lightBgColorValue", 255).toInt(), 255);
     v = settings.value ("appendEmptyLine");
     if (v.isValid()) // true by default
         appendEmptyLine_ = v.toBool();
-
     if (settings.value ("removeTrailingSpaces").toBool())
         removeTrailingSpaces_ = true; // false by default
-
     recentFilesNumber_ = qBound (0, settings.value ("recentFilesNumber", 10).toInt(), 20);
     curRecentFilesNumber_ = recentFilesNumber_; // fixed
     recentFiles_ = settings.value ("recentFiles").toStringList();
@@ -206,11 +199,8 @@ void Config::readConfig()
 
     if (settings.value ("saveLastFilesList").toBool())
         saveLastFilesList_ = true; // false by default
-
     autoSaveInterval_ = qBound (1, settings.value ("autoSaveInterval", 1).toInt(), 60);
-
     textTabSize_ = qBound (2, settings.value ("textTabSize", 4).toInt(), 10);
-    
     settings.endGroup();
 }
 void Config::resetFont()
@@ -299,7 +289,6 @@ void Config::writeConfig()
         settings.setValue ("font", font_.toString());
     else
         settings.setValue ("font", "none");
-    settings.setValue ("noWrap", !wrapByDefault_);
     settings.setValue ("noIndent", !indentByDefault_);
     settings.setValue ("autoReplace", autoReplace_);
     settings.setValue ("showEndings", showEndings_);

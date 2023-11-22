@@ -393,13 +393,6 @@ Tab navigation with mouse wheel is not affected.</string>
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="wrapBox">
-                <property name="text">
-                 <string>&amp;Wrap lines by default</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="indentBox">
                 <property name="text">
                  <string>Auto-&amp;indent by default</string>

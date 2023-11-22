@@ -268,7 +268,7 @@ void FPwin::applyConfigOnStarting()
     ui->menuBar->actions().at( 3 )->setVisible( false );
     ui->actionMenu->setVisible (config.getNoMenubar());
     ui->actionDoc->setVisible (!config.getShowStatusbar());
-    ui->actionWrap->setChecked (config.getWrapByDefault());
+    ui->actionWrap->setChecked( false );
     ui->actionIndent->setChecked (config.getIndentByDefault());
     if (!config.getShowStatusbar())
         ui->statusBar->hide();
