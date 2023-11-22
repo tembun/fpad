@@ -81,7 +81,6 @@ private slots:
     void prefTabWrapAround (int checked);
     void prefMaxSHSize (int value);
     void prefRecentFilesNumber (int value);
-    void prefSaveLastFilesList (int checked);
     void prefSplitterPos (int checked);
     void showWhatsThis();
     void prefShortcuts();

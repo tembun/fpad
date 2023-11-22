@@ -380,7 +380,7 @@ void FPwin::deleteTabPage (int tabIndex, bool saveToList)
     {
         if (textEdit->getSaveCursor())
             config.saveCursorPos (fileName, textEdit->textCursor().position());
-        if (saveToList && config.getSaveLastFilesList() && QFile::exists (fileName))
+        if (saveToList && QFile::exists (fileName))
             lastWinFilesCur_.insert (fileName, textEdit->textCursor().position());
     }
     disconnect (textEdit->document(), &QTextDocument::contentsChange, this, &FPwin::updateWordInfo);

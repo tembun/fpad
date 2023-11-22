@@ -144,8 +144,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->recentSpin->setValue (config.getRecentFilesNumber());
     ui->recentSpin->setSuffix (" " + (ui->recentSpin->value() > 1 ? tr ("files") : tr ("file")));
     connect (ui->recentSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefRecentFilesNumber);
-    ui->lastFilesBox->setChecked (config.getSaveLastFilesList());
-    connect (ui->lastFilesBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSaveLastFilesList);
     ui->openedButton->setChecked (config.getRecentOpened());
     ui->autoSaveBox->setChecked (config.getAutoSave());
     ui->autoSaveSpin->setValue (config.getAutoSaveInterval());
@@ -552,14 +550,6 @@ void PrefDialog::prefRecentFilesNumber (int value)
     ui->recentSpin->setSuffix(" " + (value > 1 ? tr ("files") : tr ("file")));
 
     showPrompt();
-}
-void PrefDialog::prefSaveLastFilesList (int checked)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    if (checked == Qt::Checked)
-        config.setSaveLastFilesList (true);
-    else if (checked == Qt::Unchecked)
-        config.setSaveLastFilesList (false);
 }
 void PrefDialog::prefRecentFilesKind()
 {

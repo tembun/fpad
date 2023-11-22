@@ -523,36 +523,6 @@ Needs application restart to take effect.</string>
            </layout>
           </item>
           <item>
-           <widget class="QCheckBox" name="lastFilesBox">
-            <property name="toolTip">
-             <string>Only if their number is not greater than 50.</string>
-            </property>
-            <property name="text">
-             <string>Start with files of last window</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_13">
-            <item>
-             <spacer name="horizontalSpacer_14">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Fixed</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>22</width>
-                <height>5</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_14">
             <item>
              <widget class="QCheckBox" name="autoSaveBox">

@@ -52,7 +52,6 @@ Config::Config():
     splitterPos_ (20),
     font_ (QFont ("Monospace")),
     recentOpened_ (false),
-    saveLastFilesList_ (false),
     cursorPosRetrieved_ (false) {}
 
 Config::~Config() {}
@@ -163,9 +162,6 @@ void Config::readConfig()
         recentFiles_.removeLast();
     if (settings.value ("recentOpened").toBool())
         recentOpened_ = true; // false by default
-
-    if (settings.value ("saveLastFilesList").toBool())
-        saveLastFilesList_ = true; // false by default
     autoSaveInterval_ = qBound (1, settings.value ("autoSaveInterval", 1).toInt(), 60);
     textTabSize_ = qBound (2, settings.value ("textTabSize", 4).toInt(), 10);
     settings.endGroup();
@@ -196,9 +192,6 @@ void Config::readShortcuts()
 }
 QStringList Config::getLastFiles()
 {
-    if (!saveLastFilesList_)
-        return QStringList();
-
     Settings settingsLastCur ("featherpad", "fp_last_cursor_pos");
     lasFilesCursorPos_ = settingsLastCur.value ("cursorPositions").toHash();
 
@@ -267,13 +260,8 @@ void Config::writeConfig()
     else
         settings.setValue ("recentFiles", recentFiles_);
     settings.setValue ("recentOpened", recentOpened_);
-
-    settings.setValue ("saveLastFilesList", saveLastFilesList_);
-
     settings.setValue ("autoSaveInterval", autoSaveInterval_);
-
     settings.setValue ("textTabSize", textTabSize_);
-
     settings.endGroup();
     settings.beginGroup ("shortcuts");
 
@@ -312,10 +300,8 @@ void Config::writeCursorPos()
     Settings settingsLastCur ("featherpad", "fp_last_cursor_pos");
     if (settingsLastCur.isWritable())
     {
-        if (saveLastFilesList_ && !lasFilesCursorPos_.isEmpty())
+        if (!lasFilesCursorPos_.isEmpty())
             settingsLastCur.setValue ("cursorPositions", lasFilesCursorPos_);
-        else
-            settingsLastCur.remove ("cursorPositions");
     }
 }
 void Config::addRecentFile (const QString& file)

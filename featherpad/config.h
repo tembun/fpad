@@ -264,14 +264,6 @@ public:
         removedCursorPos_.append (cursorPos_.keys());
         cursorPos_.clear();
     }
-
-    bool getSaveLastFilesList() const {
-        return saveLastFilesList_;
-    }
-    void setSaveLastFilesList (bool saveList) {
-        saveLastFilesList_ = saveList;
-    }
-
     QStringList getLastFiles();
     QHash<QString, QVariant> getLastFilesCursorPos() const {
         return lasFilesCursorPos_;
@@ -341,7 +333,6 @@ private:
     QFont font_;
     bool recentOpened_;
     QStringList recentFiles_;
-    bool saveLastFilesList_;
     QHash<QString, QString> actions_;
     QStringList removedActions_, reservedShortcuts_;
     QHash<QString, QVariant> cursorPos_;
