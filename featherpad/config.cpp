@@ -31,7 +31,6 @@ Config::Config():
     hideSearchbar_ (false),
     showStatusbar_ (true),
     showCursorPos_ (false),
-    indentByDefault_ (true),
     autoReplace_ (false),
     showEndings_ (false),
     isMaxed_ (false),
@@ -146,9 +145,6 @@ void Config::readConfig()
         else
             font_.setPointSize (qMax (QFont().pointSize(), 9));
     }
-
-    if (settings.value ("noIndent").toBool())
-        indentByDefault_ = false; // true by default
 
     if (settings.value ("autoReplace").toBool())
         autoReplace_ = true; // false by default
@@ -284,7 +280,6 @@ void Config::writeConfig()
     settings.endGroup();
     settings.beginGroup ("text");
     settings.setValue ("font", font_.toString());
-    settings.setValue ("noIndent", !indentByDefault_);
     settings.setValue ("autoReplace", autoReplace_);
     settings.setValue ("showEndings", showEndings_);
     settings.setValue ("thickCursor", thickCursor_);

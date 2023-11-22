@@ -383,13 +383,6 @@ Tab navigation with mouse wheel is not affected.</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_3">
               <item>
-               <widget class="QCheckBox" name="indentBox">
-                <property name="text">
-                 <string>Auto-&amp;indent by default</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="autoReplaceBox">
                 <property name="toolTip">
                  <string>By default, a triple period is replaced with an ellipsis

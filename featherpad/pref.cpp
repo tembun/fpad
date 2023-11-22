@@ -138,8 +138,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->tabCombo->setCurrentIndex (config.getTabPosition());
     ui->tabBox->setChecked (config.getTabWrapAround());
     connect (ui->tabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefTabWrapAround);
-    ui->indentBox->setChecked (config.getIndentByDefault());
-    connect (ui->indentBox, &QCheckBox::stateChanged, this, &PrefDialog::prefIndent);
     ui->autoReplaceBox->setChecked (config.getAutoReplace());
     connect (ui->autoReplaceBox, &QCheckBox::stateChanged, this, &PrefDialog::prefAutoReplace);
     ui->vLineBox->setChecked (vLineDistance_ >= 10);
@@ -526,14 +524,6 @@ void PrefDialog::prefTabPosition()
         for (int i = 0; i < singleton->Wins.count(); ++i)
             singleton->Wins.at (i)->ui->tabWidget->setTabPosition (static_cast<QTabWidget::TabPosition>(index));
     }
-}
-void PrefDialog::prefIndent (int checked)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    if (checked == Qt::Checked)
-        config.setIndentByDefault (true);
-    else if (checked == Qt::Unchecked)
-        config.setIndentByDefault (false);
 }
 void PrefDialog::prefAutoReplace (int checked)
 {
