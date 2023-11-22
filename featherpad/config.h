@@ -101,20 +101,12 @@ public:
     void setLightBgColorValue (int lightness) {
         lightBgColorValue_ = lightness;
     }
-    QString getDateFormat() const {
-        return dateFormat_;
-    }
-    void setDateFormat (const QString &format) {
-        dateFormat_ = format;
-    }
-
     int getTextTabSize() const {
         return textTabSize_;
     }
     void setTextTabSize (int textTab) {
         textTabSize_ = textTab;
     }
-
     int getRecentFilesNumber() const {
         return recentFilesNumber_;
     }
@@ -452,7 +444,6 @@ private:
         curRecentFilesNumber_,
         autoSaveInterval_,
         textTabSize_;
-    QString dateFormat_;
     QSize winSize_, startSize_, prefSize_;
     QPoint winPos_;
     int splitterPos_;

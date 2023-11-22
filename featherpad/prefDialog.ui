@@ -610,43 +610,6 @@ the editor font has a fixed pitch (like Monospace).</string>
                </layout>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_8">
-                <item>
-                 <widget class="QLabel" name="dateLabel">
-                  <property name="toolTip">
-                   <string>Used for pasting the date and time.
-
-Takes effect after closing this dialog.
-
-Leave empty for:
-MMM dd, yyyy, hh:mm:ss</string>
-                  </property>
-                  <property name="text">
-                   <string>Date and time format:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="dateEdit">
-                  <property name="toolTip">
-                   <string>Used for pasting the date and time.
-
-Takes effect after closing this dialog.
-
-Leave empty for:
-MMM dd, yyyy, hh:mm:ss</string>
-                  </property>
-                  <property name="placeholderText">
-                   <string notr="true">MMM dd, yyyy, hh:mm:ss</string>
-                  </property>
-                  <property name="clearButtonEnabled">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
                <layout class="QHBoxLayout" name="horizontalLayout_9">
                 <item>
                  <widget class="QLabel" name="textTabLabel">

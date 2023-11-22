@@ -162,7 +162,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->endingsBox->setChecked (config.getShowEndings());
     connect (ui->endingsBox, &QCheckBox::stateChanged, this, &PrefDialog::prefEndings);
     ui->thickCursorBox->setChecked (config.getThickCursor());
-    ui->dateEdit->setText (config.getDateFormat());
     ui->lastLineBox->setChecked (config.getAppendEmptyLine());
     connect (ui->lastLineBox, &QCheckBox::stateChanged, this, &PrefDialog::prefAppendEmptyLine);
     ui->trailingSpacesBox->setChecked (config.getRemoveTrailingSpaces());
@@ -286,7 +285,6 @@ void PrefDialog::onClosing()
     prefTabPosition();
     prefRecentFilesKind();
     prefApplyAutoSave();
-    prefApplyDateFormat();
     prefTextTab();
     prefSaveUnmodified();
     prefThickCursor();
@@ -609,24 +607,6 @@ void PrefDialog::prefAutoReplace (int checked)
                         ->textEdit()->setAutoReplace (false);
                 }
             }
-        }
-    }
-}
-void PrefDialog::prefApplyDateFormat()
-{
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    QString format = ui->dateEdit->text();
-    if (!format.isEmpty())
-        format.replace ("\\n", "\n");
-    config.setDateFormat (format);
-    for (int i = 0; i < singleton->Wins.count(); ++i)
-    {
-        int count = singleton->Wins.at (i)->ui->tabWidget->count();
-        for (int j = 0; j < count; ++j)
-        {
-            qobject_cast< TabPage *>(singleton->Wins.at (i)->ui->tabWidget->widget (j))
-                ->textEdit()->setDateFormat (format);
         }
     }
 }

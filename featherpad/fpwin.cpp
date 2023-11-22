@@ -678,7 +678,6 @@ TabPage* FPwin::createEmptyTab (bool setCurrent)
     textEdit->setTtextTab (config.getTextTabSize());
     textEdit->setEditorFont (config.getFont());
     textEdit->setInertialScrolling (config.getInertialScrolling());
-    textEdit->setDateFormat (config.getDateFormat());
     if (config.getThickCursor())
         textEdit->setThickCursor (true);
 

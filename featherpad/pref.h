@@ -111,7 +111,6 @@ private:
     void prefTabPosition();
     void prefRecentFilesKind();
     void prefApplyAutoSave();
-    void prefApplyDateFormat();
     void prefThickCursor();
     void prefPastePaths();
     void showPrompt (const QString& str = QString(), bool temporary = false);

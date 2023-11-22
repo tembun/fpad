@@ -204,9 +204,6 @@ void Config::readConfig()
 
     maxSHSize_ = qBound (1, settings.value ("maxSHSize", 2).toInt(), 10);
     lightBgColorValue_ = qBound (230, settings.value ("lightBgColorValue", 255).toInt(), 255);
-
-    dateFormat_ = settings.value ("dateFormat").toString();
-
     v = settings.value ("appendEmptyLine");
     if (v.isValid()) // true by default
         appendEmptyLine_ = v.toBool();
@@ -334,14 +331,10 @@ void Config::writeConfig()
     settings.setValue ("saveUnmodified", saveUnmodified_);
     settings.setValue ("pastePaths", pastePaths_);
     settings.setValue ("maxSHSize", maxSHSize_);
-
     settings.setValue ("lightBgColorValue", lightBgColorValue_);
-    settings.setValue ("dateFormat", dateFormat_);
     settings.setValue ("appendEmptyLine", appendEmptyLine_);
     settings.setValue ("removeTrailingSpaces", removeTrailingSpaces_);
-
     settings.setValue ("vLineDistance", vLineDistance_);
-
     settings.setValue ("recentFilesNumber", recentFilesNumber_);
     while (recentFiles_.count() > recentFilesNumber_)
         recentFiles_.removeLast();
