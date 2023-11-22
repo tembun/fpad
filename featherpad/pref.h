@@ -77,7 +77,6 @@ private slots:
     void prefSearchHistory (int checked);
     void prefStatusbar (int checked);
     void prefStatusCursor (int checked);
-    void prefFont (int checked);
     void prefIndent (int checked);
     void prefAutoReplace (int checked);
     void prefVLine (int checked);

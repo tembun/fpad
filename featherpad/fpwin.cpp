@@ -1874,8 +1874,6 @@ void FPwin::fontDialog()
     {
         QFont newFont = fd.selectedFont();
         Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-        if (config.getRemFont())
-        {
             config.setFont (newFont);
             config.writeConfig();
 
@@ -1889,9 +1887,6 @@ void FPwin::fontDialog()
                     thisTextEdit->setEditorFont (newFont);
                 }
             }
-        }
-        else
-            textEdit->setEditorFont (newFont);
         
         textEdit->adjustScrollbars();
     }

@@ -31,7 +31,6 @@ Config::Config():
     hideSearchbar_ (false),
     showStatusbar_ (true),
     showCursorPos_ (false),
-    remFont_ (true),
     indentByDefault_ (true),
     autoReplace_ (false),
     showEndings_ (false),
@@ -137,7 +136,6 @@ void Config::readConfig()
 
     if (settings.value ("font") == "none")
     {
-        remFont_ = false; // true by default
         font_.setPointSize (qMax (QFont().pointSize(), 9));
     }
     else
@@ -285,10 +283,7 @@ void Config::writeConfig()
     settings.setValue ("sharedSearchHistory", sharedSearchHistory_);
     settings.endGroup();
     settings.beginGroup ("text");
-    if (remFont_)
-        settings.setValue ("font", font_.toString());
-    else
-        settings.setValue ("font", "none");
+    settings.setValue ("font", font_.toString());
     settings.setValue ("noIndent", !indentByDefault_);
     settings.setValue ("autoReplace", autoReplace_);
     settings.setValue ("showEndings", showEndings_);

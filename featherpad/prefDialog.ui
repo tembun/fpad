@@ -383,16 +383,6 @@ Tab navigation with mouse wheel is not affected.</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_3">
               <item>
-               <widget class="QCheckBox" name="fontBox">
-                <property name="toolTip">
-                 <string>Uncheck for Monospace.</string>
-                </property>
-                <property name="text">
-                 <string>Remember &amp;font</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="indentBox">
                 <property name="text">
                  <string>Auto-&amp;indent by default</string>

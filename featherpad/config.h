@@ -203,13 +203,6 @@ public:
         font_ = font;
     }
     void resetFont();
-
-    bool getRemFont() const {
-        return remFont_;
-    }
-    void setRemFont (bool rem) {
-        remFont_ = rem;
-    }
     bool getIndentByDefault() const {
         return indentByDefault_;
     }
@@ -379,7 +372,7 @@ private:
          noToolbar_, noMenubar_,
          hideSearchbar_,
          showStatusbar_, showCursorPos_,
-         remFont_, indentByDefault_, autoReplace_, lineByDefault_,showEndings_,
+         indentByDefault_, autoReplace_, lineByDefault_,showEndings_,
          isMaxed_, isFull_,
          thickCursor_,
          tabWrapAround_,

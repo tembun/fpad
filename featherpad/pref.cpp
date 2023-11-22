@@ -138,8 +138,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->tabCombo->setCurrentIndex (config.getTabPosition());
     ui->tabBox->setChecked (config.getTabWrapAround());
     connect (ui->tabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefTabWrapAround);
-    ui->fontBox->setChecked (config.getRemFont());
-    connect (ui->fontBox, &QCheckBox::stateChanged, this, &PrefDialog::prefFont);
     ui->indentBox->setChecked (config.getIndentByDefault());
     connect (ui->indentBox, &QCheckBox::stateChanged, this, &PrefDialog::prefIndent);
     ui->autoReplaceBox->setChecked (config.getAutoReplace());
@@ -527,24 +525,6 @@ void PrefDialog::prefTabPosition()
     {
         for (int i = 0; i < singleton->Wins.count(); ++i)
             singleton->Wins.at (i)->ui->tabWidget->setTabPosition (static_cast<QTabWidget::TabPosition>(index));
-    }
-}
-void PrefDialog::prefFont (int checked)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    if (checked == Qt::Checked)
-    {
-        config.setRemFont (true);
-        if (FPwin *win = static_cast<FPwin *>(parent_))
-        {
-            if (TabPage *tabPage = qobject_cast<TabPage*>(win->ui->tabWidget->currentWidget()))
-                config.setFont (tabPage->textEdit()->getDefaultFont());
-        }
-    }
-    else if (checked == Qt::Unchecked)
-    {
-        config.setRemFont (false);
-        config.resetFont();
     }
 }
 void PrefDialog::prefIndent (int checked)
