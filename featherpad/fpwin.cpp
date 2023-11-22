@@ -281,7 +281,6 @@ void FPwin::applyConfigOnStarting()
     {
         ui->tabWidget->setTabPosition (static_cast<QTabWidget::TabPosition>(config.getTabPosition()));
     }
-        ui->tabWidget->tabBar()->hideSingle (config.getHideSingleTab());
     int recentNumber = config.getCurRecentFilesNumber();
     {
         QAction* recentAction = nullptr;

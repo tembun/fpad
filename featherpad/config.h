@@ -27,8 +27,6 @@
 #include <QColor>
 
 namespace FeatherPad {
-
-// Prevent redundant writings! (Why does QSettings write to the config file when no setting is changed?)
 class Settings : public QSettings
 {
     Q_OBJECT
@@ -44,7 +42,6 @@ public:
         QSettings::setValue (key, v);
     }
 };
-
 class Config {
 public:
     Config();
@@ -123,14 +120,6 @@ public:
     void setTabWrapAround (bool wrap) {
         tabWrapAround_ = wrap;
     }
-
-    bool getHideSingleTab() const {
-        return hideSingleTab_;
-    }
-    void setHideSingleTab (bool hide) {
-        hideSingleTab_ = hide;
-    }
-
     QSize getWinSize() const {
         return winSize_;
     }
@@ -365,8 +354,8 @@ public:
         saveLastFilesList_ = saveList;
     }
 
-    QStringList getLastFiles(); // may be called only at session start and sets lasFilesCursorPos_
-    QHash<QString, QVariant> getLastFilesCursorPos() const { // is called only after getLastFiles()
+    QStringList getLastFiles();
+    QHash<QString, QVariant> getLastFilesCursorPos() const {
         return lasFilesCursorPos_;
     }
     void setLastFileCursorPos (const QHash<QString, QVariant>& curPos) {
@@ -424,7 +413,7 @@ private:
          remFont_, wrapByDefault_, indentByDefault_, autoReplace_, lineByDefault_,showEndings_,
          isMaxed_, isFull_,
          thickCursor_,
-         tabWrapAround_, hideSingleTab_,
+         tabWrapAround_,
          appendEmptyLine_,
          removeTrailingSpaces_,
          openInWindows_,

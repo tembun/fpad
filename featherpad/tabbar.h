@@ -54,7 +54,6 @@ signals:
     void hideTabBar();
 
 protected:
-    /* from qtabbar.cpp */
     void mousePressEvent (QMouseEvent *event) override;
     void mouseReleaseEvent (QMouseEvent *event) override;
     void mouseMoveEvent (QMouseEvent *event) override;
@@ -62,8 +61,6 @@ protected:
     void wheelEvent (QWheelEvent *event) override;
     QSize tabSizeHint (int index) const override;
     QSize minimumTabSizeHint (int index) const override;
-    void tabRemoved (int index) override;
-    void tabInserted (int index) override;
 
 private:
     QPoint dragStartPosition_;

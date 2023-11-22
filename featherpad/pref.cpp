@@ -138,8 +138,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->tabCombo->setCurrentIndex (config.getTabPosition());
     ui->tabBox->setChecked (config.getTabWrapAround());
     connect (ui->tabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefTabWrapAround);
-    ui->singleTabBox->setChecked (config.getHideSingleTab());
-    connect (ui->singleTabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefHideSingleTab);
     ui->windowBox->setChecked (config.getOpenInWindows());
     connect (ui->windowBox, &QCheckBox::stateChanged, this, &PrefDialog::prefOpenInWindows);
     ui->nativeDialogBox->setChecked (config.getNativeDialog());
@@ -714,32 +712,6 @@ void PrefDialog::prefTabWrapAround (int checked)
         config.setTabWrapAround (true);
     else if (checked == Qt::Unchecked)
         config.setTabWrapAround (false);
-}
-void PrefDialog::prefHideSingleTab (int checked)
-{
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    if (checked == Qt::Checked)
-    {
-        config.setHideSingleTab (true);
-        for (int i = 0; i < singleton->Wins.count(); ++i)
-        {
-            FPwin *win = singleton->Wins.at (i);
-            TabBar *tabBar = win->ui->tabWidget->tabBar();
-            if (win->ui->tabWidget->count() == 1)
-                tabBar->hide();
-        }
-    }
-    else if (checked == Qt::Unchecked)
-    {
-        config.setHideSingleTab (false);
-        for (int i = 0; i < singleton->Wins.count(); ++i)
-        {
-            FPwin *win = singleton->Wins.at (i);
-            TabBar *tabBar = win->ui->tabWidget->tabBar();
-            tabBar->hideSingle (false);
-        }
-    }
 }
 void PrefDialog::prefMaxSHSize (int value)
 {

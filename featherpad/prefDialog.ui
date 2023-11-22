@@ -314,19 +314,6 @@ Tab navigation with mouse wheel is not affected.</string>
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="singleTabBox">
-                <property name="toolTip">
-                 <string>If this is checked, not only you will lose the informative
-tooltip and context menu of a single tab but you could not
-merge a single tabbed window into another one by tab drag-
-and-drop either.</string>
-                </property>
-                <property name="text">
-                 <string>&amp;Do not show a single tab</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="lastTabBox">
                 <property name="text">
                  <string>Close window on closing its last tab</string>

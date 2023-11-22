@@ -33,7 +33,6 @@ TabBar::TabBar (QWidget *parent)
 {
     setMouseTracking (true);
     setElideMode (Qt::ElideMiddle);
-    hideSingle_ = false;
     lock_ = false;
     dragStarted_ = false;
     noTabDND_ = false;
@@ -136,21 +135,6 @@ void TabBar::wheelEvent (QWheelEvent *event)
         QTabBar::wheelEvent (event);
     else
         event->ignore();
-}
-void TabBar::tabRemoved (int/* index*/)
-{
-    if (hideSingle_ && count() == 1)
-        hide();
-}
-void TabBar::tabInserted (int/* index*/)
-{
-    if (hideSingle_)
-    {
-        if (count() == 1)
-            hide();
-        else if (count() == 2)
-            show();
-    }
 }
 void TabBar::finishMouseMoveEvent()
 {

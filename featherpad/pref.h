@@ -88,7 +88,6 @@ private slots:
     void prefRemoveTrailingSpaces (int checked);
     void prefSkipNontext (int checked);
     void prefTabWrapAround (int checked);
-    void prefHideSingleTab (int checked);
     void prefMaxSHSize (int value);
     void prefRecentFilesNumber (int value);
     void prefSaveLastFilesList (int checked);

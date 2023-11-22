@@ -40,7 +40,6 @@ Config::Config():
     isFull_ (false),
     thickCursor_ (false),
     tabWrapAround_ (false),
-    hideSingleTab_ (false),
     appendEmptyLine_ (true),
     removeTrailingSpaces_ (false),
     openInWindows_ (false),
@@ -132,9 +131,6 @@ void Config::readConfig()
 
     if (settings.value ("tabWrapAround").toBool())
         tabWrapAround_ = true; // false by default
-
-    if (settings.value ("hideSingleTab").toBool())
-        hideSingleTab_ = true; // false by default
 
     if (settings.value ("openInWindows").toBool())
         openInWindows_ = true; // false by default
@@ -309,7 +305,6 @@ void Config::writeConfig()
     settings.setValue ("showCursorPos", showCursorPos_);
     settings.setValue ("tabPosition", tabPosition_);
     settings.setValue ("tabWrapAround", tabWrapAround_);
-    settings.setValue ("hideSingleTab", hideSingleTab_);
     settings.setValue ("openInWindows", openInWindows_);
     settings.setValue ("nativeDialog", nativeDialog_);
     settings.setValue ("closeWithLastTab", closeWithLastTab_);
