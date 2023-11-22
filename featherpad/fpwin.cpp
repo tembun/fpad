@@ -824,7 +824,6 @@ TabPage* FPwin::createEmptyTab (bool setCurrent, bool allowNormalHighlighter)
     textEdit->setSelectionHighlighting (config.getSelectionHighlighting());
     textEdit->setPastePaths (config.getPastePaths());
     textEdit->setAutoReplace (config.getAutoReplace());
-    textEdit->setAutoBracket (config.getAutoBracket());
     textEdit->setTtextTab (config.getTextTabSize());
     textEdit->setEditorFont (config.getFont());
     textEdit->setInertialScrolling (config.getInertialScrolling());
@@ -2702,7 +2701,6 @@ void FPwin::dropTab (const QString& str)
     }
     disconnect (textEdit, &QWidget::customContextMenuRequested, dragSource, &FPwin::editorContextMenu);
     disconnect (textEdit, &TextEdit::fileDropped, dragSource, &FPwin::newTabFromName);
-    disconnect (textEdit, &TextEdit::updateBracketMatching, dragSource, &FPwin::matchBrackets);
     disconnect (textEdit, &QPlainTextEdit::blockCountChanged, dragSource, &FPwin::formatOnBlockChange);
     disconnect (textEdit, &TextEdit::updateRect, dragSource, &FPwin::formatTextRect);
     disconnect (textEdit, &TextEdit::resized, dragSource, &FPwin::formatTextRect);

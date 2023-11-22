@@ -64,12 +64,10 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
     widestDigit_ = 0;
     autoIndentation_ = true;
     autoReplace_ = true;
-    autoBracket_ = false;
     drawIndetLines_ = false;
     saveCursor_ = false;
     pastePaths_ = false;
     vLineDistance_ = 0;
-    matchedBrackets_ = false;
     inertialScrolling_ = false;
     scrollTimer_ = nullptr;
     keepTxtCurHPos_ = false;
@@ -82,7 +80,7 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
                            "selection-color: black;}");
     QPalette p = palette();
     bgColorValue = qBound (0, bgColorValue, 255);
-    if (bgColorValue < 230 && bgColorValue > 50) // not good for a text editor
+    if (bgColorValue < 230 && bgColorValue > 50)
         bgColorValue = 230;
     if (bgColorValue < 230)
     {
@@ -154,13 +152,10 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
     uneditable_ = false;
     highlighter_ = nullptr;
     setFrameShape (QFrame::NoFrame);
-    /* first we replace the widget's vertical scrollbar with ours because
-       we want faster wheel scrolling when the mouse cursor is on the scrollbar */
     VScrollBar *vScrollBar = new VScrollBar;
     setVerticalScrollBar (vScrollBar);
 
 #if (QT_VERSION == QT_VERSION_CHECK(5,14,0))
-    /* a (temporary) workaround for Qt's horizontal scrollbar bug */
     HScrollBar *hScrollBar = new HScrollBar;
     setHorizontalScrollBar (hScrollBar);
 #endif
@@ -176,8 +171,7 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
     connect (this, &QPlainTextEdit::updateRequest, this, &TextEdit::onUpdateRequesting);
     connect (this, &QPlainTextEdit::cursorPositionChanged, [this] {
         if (!keepTxtCurHPos_)
-            txtCurHPos_ = -1; // forget the last cursor position if it shouldn't be remembered
-        emit updateBracketMatching();
+            txtCurHPos_ = -1;
     });
     connect (this, &QPlainTextEdit::selectionChanged, this, &TextEdit::onSelectionChanged);
 
@@ -355,12 +349,12 @@ QString TextEdit::remainingSpaces (const QString& spaceTab, const QTextCursor& c
 #endif
     int n = 0, i = 0;
     while ((i = txt.indexOf("\t", i)) != -1)
-    { // find tab widths in terms of spaces
+    {
         tmp.setPosition (tmp.block().position() + i);
         qreal x = static_cast<qreal>(cursorRect (tmp).right());
         tmp.setPosition (tmp.position() + 1);
         x = static_cast<qreal>(cursorRect (tmp).right()) - x;
-        n += qMax (qRound (qAbs (x) / spaceL) - 1, 0); // x is negative for RTL
+        n += qMax (qRound (qAbs (x) / spaceL) - 1, 0);
         ++i;
     }
     n += txt.count();
@@ -370,9 +364,6 @@ QString TextEdit::remainingSpaces (const QString& spaceTab, const QTextCursor& c
         res += " ";
     return res;
 }
-
-// Returns a cursor that selects the spaces to be removed by a backtab.
-// If "twoSpace" is true, a 2-space backtab will be applied as far as possible.
 QTextCursor TextEdit::backTabCursor (const QTextCursor& cursor, bool twoSpace) const
 {
     QTextCursor tmp = cursor;
@@ -626,8 +617,6 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
                 cur = textCursor(); // reset the current cursor
             }
         }
-
-        bool isBracketed (false);
         QString prefix, indent;
         bool withShift (event->modifiers() & Qt::ShiftModifier);
         
@@ -639,138 +628,18 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
         
         if (autoIndentation_)
             indent = computeIndentation (cur);
-        /* check whether a bracketed text is selected
-           so that the cursor position is at its start */
         QTextCursor anchorCur = cur;
         anchorCur.setPosition (cur.anchor());
-        if (autoBracket_
-            && cur.position() == cur.selectionStart()
-            && !cur.atBlockStart() && !anchorCur.atBlockEnd())
-        {
-            cur.setPosition (cur.position());
-            cur.movePosition (QTextCursor::PreviousCharacter);
-            cur.movePosition (QTextCursor::NextCharacter,
-                              QTextCursor::KeepAnchor,
-                              selTxt.size() + 2);
-            QString selTxt1 = cur.selectedText();
-            if (selTxt1 == "{" + selTxt + "}" || selTxt1 == "(" + selTxt + ")")
-                isBracketed = true;
-            cur = textCursor(); // reset the current cursor
-        }
 
-        if (withShift || autoIndentation_ || isBracketed)
+        if (withShift || autoIndentation_)
         {
             cur.beginEditBlock();
-            /* first press Enter normally... */
             cur.insertText (QChar (QChar::ParagraphSeparator));
-            /* ... then, insert indentation... */
             cur.insertText (indent);
-            if ( ! withShift && isBracketed )
-            {
-                cur.movePosition (QTextCursor::PreviousBlock);
-                cur.movePosition (QTextCursor::EndOfBlock);
-                int start = -1;
-                QStringList lines = selTxt.split (QChar (QChar::ParagraphSeparator));
-                if (lines.size() == 1)
-                {
-                    cur.insertText (QChar (QChar::ParagraphSeparator));
-                    cur.insertText (indent);
-                    start = cur.position();
-                    if (!isOnlySpaces (lines. at (0)))
-                        cur.insertText (lines. at (0));
-                }
-                else // multi-line
-                {
-                    for (int i = 0; i < lines.size(); ++i)
-                    {
-                        if (i == 0 && isOnlySpaces (lines. at (0)))
-                            continue;
-                        cur.insertText (QChar (QChar::ParagraphSeparator));
-                        if (i == 0)
-                        {
-                            cur.insertText (indent);
-                            start = cur.position();
-                        }
-                        else if (i == 1 && start == -1)
-                            start = cur.position(); // the first line was only spaces
-                        cur.insertText (lines. at (i));
-                    }
-                }
-                cur.setPosition (start, start >= cur.block().position()
-                                            ? QTextCursor::MoveAnchor
-                                            : QTextCursor::KeepAnchor);
-                setTextCursor (cur);
-            }
             cur.endEditBlock();
             ensureCursorVisible();
             event->accept();
             return;
-        }
-    }
-    else if (event->key() == Qt::Key_ParenLeft
-             || event->key() == Qt::Key_BraceLeft
-             || event->key() == Qt::Key_BracketLeft
-             || event->key() == Qt::Key_QuoteDbl)
-    {
-        if (autoBracket_)
-        {
-            QTextCursor cursor = textCursor();
-            bool autoB (false);
-            if (!cursor.hasSelection())
-            {
-                if (cursor.atBlockEnd())
-                    autoB = true;
-                else
-                {
-                    QTextCursor tmp = cursor;
-                    tmp.movePosition (QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
-                    if (!tmp.selectedText().at (0).isLetterOrNumber())
-                        autoB = true;
-                }
-            }
-            else if (cursor.position() == cursor.selectionStart())
-                autoB = true;
-            if (autoB)
-            {
-                int pos = cursor.position();
-                int anch = cursor.anchor();
-                cursor.beginEditBlock();
-                cursor.setPosition (anch);
-                if (event->key() == Qt::Key_ParenLeft)
-                {
-                    cursor.insertText (")");
-                    cursor.setPosition (pos);
-                    cursor.insertText ("(");
-                }
-                else if (event->key() == Qt::Key_BraceLeft)
-                {
-                    cursor.insertText ("}");
-                    cursor.setPosition (pos);
-                    cursor.insertText ("{");
-                }
-                else if (event->key() == Qt::Key_BracketLeft)
-                {
-                    cursor.insertText ("]");
-                    cursor.setPosition (pos);
-                    cursor.insertText ("[");
-                }
-                else// if (event->key() == Qt::Key_QuoteDbl)
-                {
-                    cursor.insertText ("\"");
-                    cursor.setPosition (pos);
-                    cursor.insertText ("\"");
-                }
-                /* select the text and set the cursor at its start */
-                cursor.setPosition (anch + 1, QTextCursor::MoveAnchor);
-                cursor.setPosition (pos + 1, QTextCursor::KeepAnchor);
-                cursor.endEditBlock();
-                highlightThisSelection_ = false;
-                /* WARNING: Why does putting "setTextCursor()" before "endEditBlock()"
-                            cause a crash with huge lines? Most probably, a Qt bug. */
-                setTextCursor (cursor);
-                event->accept();
-                return;
-            }
         }
     }
     else if (event->key() == Qt::Key_Left || event->key() == Qt::Key_Right)
@@ -1787,8 +1656,6 @@ void TextEdit::onUpdateRequesting (const QRect& /*rect*/, int dy)
 {
     if (dy == 0) return;
     emit updateRect();
-    if (!matchedBrackets_ && isVisible())
-        emit updateBracketMatching();
 }
 
 void TextEdit::onSelectionChanged()
@@ -1796,8 +1663,6 @@ void TextEdit::onSelectionChanged()
     QTextCursor cur = textCursor();
     if (!cur.hasSelection())
     {
-        if (cur.position() == prevPos_ && cur.position() < prevAnchor_)
-            emit updateBracketMatching();
         prevAnchor_ = prevPos_ = -1;
     }
     else
@@ -1824,8 +1689,6 @@ void TextEdit::showEvent (QShowEvent *event)
 {
     QPlainTextEdit::showEvent (event);
     emit updateRect();
-    if (!matchedBrackets_)
-        emit updateBracketMatching();
 }
 QString TextEdit::getUrl (const int pos) const
 {
@@ -2365,8 +2228,6 @@ void TextEdit::setSelectionHighlighting (bool enable)
         }
     }
 }
-
-// Set the blue selection highlights (before the red bracket highlights).
 void TextEdit::selectionHlight()
 {
     if (!selectionHighlighting_) return;
@@ -2374,9 +2235,7 @@ void TextEdit::selectionHlight()
     QList<QTextEdit::ExtraSelection> es = extraSelections();
     QTextCursor selCursor = textCursor();
     const QString selTxt = selCursor.selection().toPlainText();
-    int nRed = redSel_.count(); // bracket highlights (come last)
-
-    /* remove all blue highlights */
+    int nRed = redSel_.count();
     int n = blueSel_.count();
     while (n > 0 && es.size() - nRed > 0)
     {

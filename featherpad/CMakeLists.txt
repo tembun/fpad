@@ -68,7 +68,6 @@ set(featherpad_SRCS
     replace.cpp
     pref.cpp
     config.cpp
-    brackets.cpp
     syntax.cpp
     highlighter-sh.cpp
     highlighter-css.cpp

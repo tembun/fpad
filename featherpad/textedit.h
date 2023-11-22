@@ -87,11 +87,6 @@ public:
     void setDateFormat (const QString &format) {
         dateFormat_ = format;
     }
-
-    void setAutoBracket (bool autoB) {
-        autoBracket_ = autoB;
-    }
-
     bool hasDarkScheme() const {
         return (darkValue_ > -1);
     }
@@ -184,7 +179,6 @@ public:
     }
     void setHighlighter (QSyntaxHighlighter *h) {
         highlighter_ = h;
-        matchedBrackets_ = false;
     }
 
     bool getInertialScrolling() const {
@@ -207,11 +201,6 @@ public:
     void setThickCursor (bool thick) {
         setCursorWidth (thick ? 4 : 1);
     }
-
-    void matchedBrackets() {
-        matchedBrackets_ = true;
-    }
-
     void forgetTxtCurHPos() {
         keepTxtCurHPos_ = false;
         txtCurHPos_ = -1;
@@ -231,7 +220,6 @@ public:
     }
 
 signals:
-    /* inform the main widget */
     void fileDropped (const QString& localFile,
                       int restoreCursor,
                       int posInLine,
@@ -239,7 +227,6 @@ signals:
     void resized();
     void updateRect();
     void zoomedOut (TextEdit *textEdit);
-    void updateBracketMatching();
 
 public slots:
     void copy();
@@ -310,7 +297,6 @@ private:
     bool autoIndentation_;
     bool autoReplace_;
     bool drawIndetLines_;
-    bool autoBracket_;
     int darkValue_;
     QColor separatorColor_;
     int vLineDistance_;
@@ -339,7 +325,6 @@ private:
     bool selectionHighlighting_;
     bool highlightThisSelection_;
     bool removeSelectionHighlights_;
-    bool matchedBrackets_;
     bool uneditable_;
     QSyntaxHighlighter *highlighter_;
     bool saveCursor_;

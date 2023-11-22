@@ -22,10 +22,6 @@
 #include <QTextDocumentFragment>
 
 namespace FeatherPad {
-
-/* This order is preserved everywhere for selections:
-   current line -> replacement -> found matches -> selection highlights -> bracket matches */
-
 void FPwin::find (bool forward)
 {
     if (!isReady()) return;
@@ -82,8 +78,6 @@ void FPwin::find (bool forward)
         textEdit->skipSelectionHighlighting();
         textEdit->setTextCursor (start);
     }
-    /* matches highlights should come here, after the text area is
-       scrolled and even when no match is found (it may be added later) */
     hlight();
     connect (textEdit, &QPlainTextEdit::textChanged, this, &FPwin::hlight);
     connect (textEdit, &TextEdit::updateRect, this, &FPwin::hlight);
@@ -91,20 +85,12 @@ void FPwin::find (bool forward)
 }
 void FPwin::hlight() const
 {
-    /* When FeatherPad's window is being closed, it's possible that, in a moment,
-       the current index is positive but the current widget is null. So, the latter
-       should be checked, not the former. */
     TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget());
     if (tabPage == nullptr) return;
-
     TextEdit *textEdit = tabPage->textEdit();
-
     const QString txt = textEdit->getSearchedText();
     if (txt.isEmpty()) return;
-
     QTextDocument::FindFlags searchFlags = getSearchFlags();
-
-    /* prepend green highlights */
     QList<QTextEdit::ExtraSelection> es = textEdit->getGreenSel();
     
     QTextCursor found;

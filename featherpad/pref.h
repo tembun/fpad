@@ -80,7 +80,6 @@ private slots:
     void prefFont (int checked);
     void prefWrap (int checked);
     void prefIndent (int checked);
-    void prefAutoBracket (int checked);
     void prefAutoReplace (int checked);
     void prefLine (int checked);
     void prefSyntax (int checked);

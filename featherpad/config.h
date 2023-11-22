@@ -274,14 +274,6 @@ public:
     void setAutoReplace (bool autoR) {
         autoReplace_ = autoR;
     }
-
-    bool getAutoBracket() const {
-        return autoBracket_;
-    }
-    void setAutoBracket (bool autoB) {
-        autoBracket_ = autoB;
-    }
-
     bool getLineByDefault() const {
         return lineByDefault_;
     }
@@ -552,7 +544,7 @@ private:
          noToolbar_, noMenubar_,
          hideSearchbar_,
          showStatusbar_, showCursorPos_, showLangSelector_,
-         remFont_, wrapByDefault_, indentByDefault_, autoReplace_, autoBracket_, lineByDefault_,
+         remFont_, wrapByDefault_, indentByDefault_, autoReplace_, lineByDefault_,
          syntaxByDefault_, showWhiteSpace_, showEndings_,
          isMaxed_, isFull_,
          darkColScheme_,

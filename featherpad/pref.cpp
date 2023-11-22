@@ -176,8 +176,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     connect (ui->wrapBox, &QCheckBox::stateChanged, this, &PrefDialog::prefWrap);
     ui->indentBox->setChecked (config.getIndentByDefault());
     connect (ui->indentBox, &QCheckBox::stateChanged, this, &PrefDialog::prefIndent);
-    ui->autoBracketBox->setChecked (config.getAutoBracket());
-    connect (ui->autoBracketBox, &QCheckBox::stateChanged, this, &PrefDialog::prefAutoBracket);
     ui->autoReplaceBox->setChecked (config.getAutoReplace());
     connect (ui->autoReplaceBox, &QCheckBox::stateChanged, this, &PrefDialog::prefAutoReplace);
     ui->lineBox->setChecked (config.getLineByDefault());
@@ -755,43 +753,6 @@ void PrefDialog::prefIndent (int checked)
         config.setIndentByDefault (true);
     else if (checked == Qt::Unchecked)
         config.setIndentByDefault (false);
-}
-void PrefDialog::prefAutoBracket (int checked)
-{
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    if (checked == Qt::Checked)
-    {
-        if (!config.getAutoBracket())
-        {
-            config.setAutoBracket (true);
-            for (int i = 0; i < singleton->Wins.count(); ++i)
-            {
-                int count = singleton->Wins.at (i)->ui->tabWidget->count();
-                for (int j = 0; j < count; ++j)
-                {
-                    qobject_cast< TabPage *>(singleton->Wins.at (i)->ui->tabWidget->widget (j))
-                        ->textEdit()->setAutoBracket (true);
-                }
-            }
-        }
-    }
-    else if (checked == Qt::Unchecked)
-    {
-        if (config.getAutoBracket())
-        {
-            config.setAutoBracket (false);
-            for (int i = 0; i < singleton->Wins.count(); ++i)
-            {
-                int count = singleton->Wins.at (i)->ui->tabWidget->count();
-                for (int j = 0; j < count; ++j)
-                {
-                    qobject_cast< TabPage *>(singleton->Wins.at (i)->ui->tabWidget->widget (j))
-                        ->textEdit()->setAutoBracket (false);
-                }
-            }
-        }
-    }
 }
 void PrefDialog::prefAutoReplace (int checked)
 {

@@ -161,7 +161,6 @@ private slots:
     void editorContextMenu (const QPoint& p);
     void changeTab (QListWidgetItem *current, QListWidgetItem*);
     void prefDialog();
-    void matchBrackets();
     void addText (const QString& text, const QString& fileName, const QString& charset,
                   bool enforceEncod, bool reload,
                   int restoreCursor, int posInLine,
@@ -217,8 +216,6 @@ private:
     bool matchRightParenthesis (QTextBlock currentBlock, int index, int numLeftParentheses);
     bool matchLeftBrace (QTextBlock currentBlock, int index, int numRightBraces);
     bool matchRightBrace (QTextBlock currentBlock, int index, int numLeftBraces);
-    bool matchLeftBracket (QTextBlock currentBlock, int index, int numRightBrackets);
-    bool matchRightBracket (QTextBlock currentBlock, int index, int numLeftBrackets);
     void createSelection (int pos);
     void removeGreenSel();
     void waitToMakeBusy();

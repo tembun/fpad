@@ -289,20 +289,14 @@ void FPwin::syntaxHighlighting (TextEdit *textEdit, bool highlight, const QStrin
                                                             : config.customSyntaxColors());
             textEdit->setHighlighter (highlighter);
         }
-        /* if the highlighter is created just now, it's necessary
-           to wait until the text is completely loaded */
         QTimer::singleShot (0, textEdit, [this, textEdit]() {
             if (textEdit->isVisible())
             {
-                formatTextRect(); // the text may be scrolled immediately after syntax highlighting (when reloading)
-                matchBrackets(); // in case the cursor is beside a bracket when the text is loaded
+                formatTextRect();
             }
-            connect (textEdit, &TextEdit::updateBracketMatching, this, &FPwin::matchBrackets);
-            /* visible text may change on block removal */
             connect (textEdit, &QPlainTextEdit::blockCountChanged, this, &FPwin::formatOnBlockChange);
             connect (textEdit, &TextEdit::updateRect, this, &FPwin::formatTextRect);
             connect (textEdit, &TextEdit::resized, this, &FPwin::formatTextRect);
-            /* this is needed when the whole visible text is pasted */
             connect (textEdit->document(), &QTextDocument::contentsChange, this, &FPwin::formatOnTextChange);
         });
     }
@@ -312,9 +306,6 @@ void FPwin::syntaxHighlighting (TextEdit *textEdit, bool highlight, const QStrin
         disconnect (textEdit, &TextEdit::resized, this, &FPwin::formatTextRect);
         disconnect (textEdit, &TextEdit::updateRect, this, &FPwin::formatTextRect);
         disconnect (textEdit, &QPlainTextEdit::blockCountChanged, this, &FPwin::formatOnBlockChange);
-        disconnect (textEdit, &TextEdit::updateBracketMatching, this, &FPwin::matchBrackets);
-
-        /* remove bracket highlights */
         QList<QTextEdit::ExtraSelection> es = textEdit->extraSelections();
         int n = textEdit->getRedSel().count();
         while (n > 0 && !es.isEmpty())

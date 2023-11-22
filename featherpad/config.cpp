@@ -36,7 +36,6 @@ Config::Config():
     wrapByDefault_ (true),
     indentByDefault_ (true),
     autoReplace_ (false),
-    autoBracket_ (false),
     lineByDefault_ (false),
     syntaxByDefault_ (true),
     showWhiteSpace_ (false),
@@ -199,9 +198,6 @@ void Config::readConfig()
 
     if (settings.value ("autoReplace").toBool())
         autoReplace_ = true; // false by default
-
-    if (settings.value ("autoBracket").toBool())
-        autoBracket_ = true; // false by default
 
     if (settings.value ("lineNumbers").toBool())
         lineByDefault_ = true; // false by default
@@ -447,7 +443,6 @@ void Config::writeConfig()
     settings.setValue ("noWrap", !wrapByDefault_);
     settings.setValue ("noIndent", !indentByDefault_);
     settings.setValue ("autoReplace", autoReplace_);
-    settings.setValue ("autoBracket", autoBracket_);
     settings.setValue ("lineNumbers", lineByDefault_);
     settings.setValue ("noSyntaxHighlighting", !syntaxByDefault_);
     settings.setValue ("showWhiteSpace", showWhiteSpace_);
