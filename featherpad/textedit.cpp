@@ -79,24 +79,6 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
                            "selection-color: black;}");
     QPalette p = palette();
     bgColorValue = qBound (0, bgColorValue, 255);
-    if (bgColorValue < 230 && bgColorValue > 50)
-        bgColorValue = 230;
-    if (bgColorValue < 230)
-    {
-        darkValue_ = bgColorValue;
-        viewport()->setStyleSheet (QString (".QWidget {"
-                                            "color: white;"
-                                            "background-color: rgb(%1, %1, %1);}")
-                                   .arg (bgColorValue));
-      setStyleSheet ("QPlainTextEdit {"
-            "selection-background-color: rgb(180, 180, 180);"
-            "selection-color: black;}");
-        separatorColor_ = Qt::white;
-        separatorColor_.setAlpha (90 - qRound (3 * static_cast<qreal>(darkValue_) / 5));
-    }
-    else
-    {
-        darkValue_ = -1;
         viewport()->setStyleSheet (QString (".QWidget {"
                                             "color: black;"
                                             "background-color: rgb(%1, %1, %1);}")
@@ -120,7 +102,6 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
         }
         separatorColor_ = Qt::black;
         separatorColor_.setAlpha (2 * qRound (static_cast<qreal>(bgColorValue) / 5) - 32);
-    }
 
 #if (QT_VERSION == QT_VERSION_CHECK(5,14,0))
     separatorColor_ = overlayColor (QColor (bgColorValue, bgColorValue, bgColorValue), separatorColor_);
@@ -1302,16 +1283,8 @@ void TextEdit::paintEvent (QPaintEvent *event)
                     QTextLayout::FormatRange o;
                     o.start = context.cursorPosition - blpos;
                     o.length = 1;
-                    if (darkValue_ > -1)
-                    {
-                        o.format.setForeground (Qt::black);
-                        o.format.setBackground (Qt::white);
-                    }
-                    else
-                    {
-                        o.format.setForeground (Qt::white);
-                        o.format.setBackground (Qt::black);
-                    }
+                    o.format.setForeground (Qt::black);
+                    o.format.setBackground (Qt::white);
                     selections.append (o);
                 }
             }
@@ -1400,16 +1373,8 @@ void TextEdit::paintEvent (QPaintEvent *event)
             {
                 painter.save();
                 QColor col;
-                if (darkValue_ > -1)
-                {
-                    col = QColor (65, 154, 255);
-                    col.setAlpha (90);
-                }
-                else
-                {
-                    col = Qt::blue;
-                    col.setAlpha (70);
-                }
+                col = Qt::blue;
+                col.setAlpha (70);
                 painter.setPen (col);
                 QTextCursor cur = textCursor();
                 cur.setPosition (block.position());
@@ -1452,27 +1417,14 @@ void TextEdit::lineNumberAreaPaintEvent (QPaintEvent *event)
 {
     QPainter painter (lineNumberArea_);
     QColor currentBlockFg, currentLineBg, currentLineFg;
-    if (darkValue_ > -1)
-    {
-        painter.fillRect (event->rect(), QColor (200, 200 , 200));
-        painter.setPen (Qt::black);
-        currentBlockFg = QColor (150, 0 , 0);
-        currentLineBg = QColor (140, 0 , 0);
-        currentLineFg = Qt::white;
-    }
-    else
-    {
-        painter.fillRect (event->rect(), QColor ( 255 , 255 , 255 ));
-        painter.setPen (Qt::black);
-        currentBlockFg = QColor ( 0 , 0 , 0 );
-        currentLineBg = QColor ( 0 , 0 , 0 , 0 );
-        currentLineFg = QColor ( 0 , 0 , 0 );
-    }
-
+    painter.fillRect (event->rect(), QColor ( 255 , 255 , 255 ));
+    painter.setPen (Qt::black);
+    currentBlockFg = QColor ( 0 , 0 , 0 );
+    currentLineBg = QColor ( 0 , 0 , 0 , 0 );
+    currentLineFg = QColor ( 0 , 0 , 0 );
     bool rtl (QApplication::layoutDirection() == Qt::RightToLeft);
     int w = lineNumberArea_->width();
     int left = rtl ? 3 : 0;
-
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();
     int top = static_cast<int>(blockBoundingGeometry (block).translated (contentOffset()).top());
@@ -1481,7 +1433,6 @@ void TextEdit::lineNumberAreaPaintEvent (QPaintEvent *event)
     int h = fontMetrics().height();
     QFont bf = font();
     bf.setBold (true);
-
     while (block.isValid() && top <= event->rect().bottom())
     {
         if (block.isVisible() && bottom >= event->rect().top())
@@ -1694,16 +1645,10 @@ static bool findBackwardInBlock (const QTextBlock &block, const QString &str, in
 {
     Qt::CaseSensitivity cs = !(flags & QTextDocument::FindCaseSensitively)
                              ? Qt::CaseInsensitive : Qt::CaseSensitive;
-
     QString text = block.text();
     text.replace (QChar::Nbsp, QLatin1Char (' '));
-
-    /* WARNING: QString::lastIndexOf() returns -1 if the position, from which the
-                backward search is done, is the position of the block's last cursor.
-                The following workaround compensates for this illogical behavior. */
     if (offset > 0 && offset == text.length())
         -- offset;
-
     int idx = -1;
     while (offset >= 0 && offset <= text.length())
     {

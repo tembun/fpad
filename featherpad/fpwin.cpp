@@ -301,7 +301,6 @@ void FPwin::applyConfigOnStarting()
     if (!config.hasReservedShortcuts())
     {
         QStringList reserved;
-                    /* QPLainTextEdit */
         reserved << QKeySequence (Qt::CTRL + Qt::SHIFT + Qt::Key_Z).toString() << QKeySequence (Qt::CTRL + Qt::Key_Z).toString() << QKeySequence (Qt::CTRL + Qt::Key_X).toString() << QKeySequence (Qt::CTRL + Qt::Key_C).toString() << QKeySequence (Qt::CTRL + Qt::Key_V).toString() << QKeySequence (Qt::CTRL + Qt::Key_A).toString()
                  << QKeySequence (Qt::SHIFT + Qt::Key_Insert).toString() << QKeySequence (Qt::SHIFT + Qt::Key_Delete).toString() << QKeySequence (Qt::CTRL + Qt::Key_Insert).toString()
                  << QKeySequence (Qt::CTRL + Qt::Key_Left).toString() << QKeySequence (Qt::CTRL + Qt::Key_Right).toString() << QKeySequence (Qt::CTRL + Qt::Key_Up).toString() << QKeySequence (Qt::CTRL + Qt::Key_Down).toString()
@@ -309,7 +308,6 @@ void FPwin::applyConfigOnStarting()
                  << QKeySequence (Qt::CTRL + Qt::SHIFT + Qt::Key_Up).toString() << QKeySequence (Qt::CTRL + Qt::SHIFT + Qt::Key_Down).toString()
                  << QKeySequence (Qt::META + Qt::Key_Up).toString() << QKeySequence (Qt::META + Qt::Key_Down).toString() << QKeySequence (Qt::META + Qt::SHIFT + Qt::Key_Up).toString() << QKeySequence (Qt::META + Qt::SHIFT + Qt::Key_Down).toString()
 
-                    /* search and replacement */
                  << QKeySequence (Qt::Key_F3).toString() << QKeySequence (Qt::Key_F4).toString() << QKeySequence (Qt::Key_F5).toString() << QKeySequence (Qt::Key_F6).toString() << QKeySequence (Qt::Key_F7).toString()
                  << QKeySequence (Qt::Key_F8).toString() << QKeySequence (Qt::Key_F9).toString() << QKeySequence (Qt::Key_F10).toString()
                  << QKeySequence (Qt::Key_F11).toString() << QKeySequence (Qt::CTRL + Qt::SHIFT + Qt::Key_W).toString()
@@ -669,8 +667,7 @@ TabPage* FPwin::createEmptyTab (bool setCurrent)
     Config config = singleton->getConfig();
 
     static const QList<QKeySequence> searchShortcuts = {QKeySequence (Qt::Key_F3), QKeySequence (Qt::Key_F4), QKeySequence (Qt::Key_F5), QKeySequence (Qt::Key_F6), QKeySequence (Qt::Key_F7)};
-    TabPage *tabPage = new TabPage (config.getDarkColScheme() ? config.getDarkBgColorValue()
-                                                              : config.getLightBgColorValue(),
+    TabPage *tabPage = new TabPage (config.getLightBgColorValue(),
                                     searchShortcuts,
                                     nullptr);
     tabPage->setSearchModel (singleton->searchModel());
@@ -1230,29 +1227,15 @@ void FPwin::addText (const QString& text, const QString& fileName, const QString
     if (uneditable || alreadyOpen (tabPage))
     {
         textEdit->setReadOnly (true);
-        if (!textEdit->hasDarkScheme())
-        {
-            if (uneditable)
-                textEdit->viewport()->setStyleSheet (".QWidget {"
-                                                     "color: black;"
-                                                     "background-color: rgb(225, 238, 255);}");
-            else
-                textEdit->viewport()->setStyleSheet (".QWidget {"
-                                                     "color: black;"
-                                                     "background-color: rgb(236, 236, 208);}");
-        }
-        else
-        {
-            if (uneditable)
-                textEdit->viewport()->setStyleSheet (".QWidget {"
-                                                     "color: white;"
-                                                     "background-color: rgb(0, 60, 110);}");
-            else
-                textEdit->viewport()->setStyleSheet (".QWidget {"
-                                                     "color: white;"
-                                                     "background-color: rgb(60, 0, 0);}");
-        }
-        if (!multiple || openInCurrentTab)
+      if (uneditable)
+            textEdit->viewport()->setStyleSheet (".QWidget {"
+                                          	"color: black;"
+                                                "background-color: rgb(225, 238, 255);}");
+      else
+            textEdit->viewport()->setStyleSheet (".QWidget {"
+                                                "color: black;"
+                                                "background-color: rgb(236, 236, 208);}");
+       if (!multiple || openInCurrentTab)
         {
             ui->actionSaveAs->setDisabled (true);
             if (config.getSaveUnmodified())
@@ -1616,8 +1599,6 @@ bool FPwin::saveFile ()
             }
             else if (!textEdit->getFileName().isEmpty())
                 restorable = true;
-
-            /* add the file name */
             if (!textEdit->getFileName().isEmpty())
                 fname = dir.filePath (QFileInfo (fname).fileName());
             else
@@ -2148,7 +2129,6 @@ void FPwin::docProp()
             TextEdit *thisTextEdit = qobject_cast< TabPage *>(ui->tabWidget->widget (i))->textEdit();
             if (showCurPos)
                 disconnect (thisTextEdit, &QPlainTextEdit::cursorPositionChanged, this, &FPwin::showCursorPos);
-            /* don't delete the cursor position label because the statusbar might be shown later */
         }
         ui->statusBar->setVisible (false);
         return;

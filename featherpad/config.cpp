@@ -38,7 +38,6 @@ Config::Config():
     showEndings_ (false),
     isMaxed_ (false),
     isFull_ (false),
-    darkColScheme_ (false),
     thickCursor_ (false),
     tabWrapAround_ (false),
     hideSingleTab_ (false),
@@ -57,7 +56,6 @@ Config::Config():
     tabPosition_ (0),
     maxSHSize_ (2),
     lightBgColorValue_ (255),
-    darkBgColorValue_ (15),
     recentFilesNumber_ (10),
     curRecentFilesNumber_ (10),
     autoSaveInterval_ (1),
@@ -181,9 +179,6 @@ void Config::readConfig()
     if (settings.value ("showEndings").toBool())
         showEndings_ = true; // false by default
 
-    if (settings.value ("darkColorScheme").toBool())
-        darkColScheme_ = true; // false by default
-
     if (settings.value ("thickCursor").toBool())
         thickCursor_ = true; // false by default
 
@@ -209,7 +204,6 @@ void Config::readConfig()
 
     maxSHSize_ = qBound (1, settings.value ("maxSHSize", 2).toInt(), 10);
     lightBgColorValue_ = qBound (230, settings.value ("lightBgColorValue", 255).toInt(), 255);
-    darkBgColorValue_ = qBound (0, settings.value ("darkBgColorValue", 15).toInt(), 50);
 
     dateFormat_ = settings.value ("dateFormat").toString();
 
@@ -333,7 +327,6 @@ void Config::writeConfig()
     settings.setValue ("noIndent", !indentByDefault_);
     settings.setValue ("autoReplace", autoReplace_);
     settings.setValue ("showEndings", showEndings_);
-    settings.setValue ("darkColorScheme", darkColScheme_);
     settings.setValue ("thickCursor", thickCursor_);
     settings.setValue ("inertialScrolling", inertialScrolling_);
     settings.setValue ("autoSave", autoSave_);
@@ -344,7 +337,6 @@ void Config::writeConfig()
 
     settings.setValue ("lightBgColorValue", lightBgColorValue_);
     settings.setValue ("dateFormat", dateFormat_);
-    settings.setValue ("darkBgColorValue", darkBgColorValue_);
     settings.setValue ("appendEmptyLine", appendEmptyLine_);
     settings.setValue ("removeTrailingSpaces", removeTrailingSpaces_);
 

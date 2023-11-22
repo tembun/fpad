@@ -123,7 +123,7 @@ void FPwin::replace()
         found = textEdit->finding (txtFind, start, searchFlags, tabPage->matchRegex());
     else
         found = textEdit->finding (txtFind, start, searchFlags | QTextDocument::FindBackward, tabPage->matchRegex());
-    QColor color = QColor (textEdit->hasDarkScheme() ? Qt::darkGreen : Qt::green);
+    QColor color = QColor (Qt::black);
     int pos;
     QList<QTextEdit::ExtraSelection> es = textEdit->getGreenSel();
     if (!found.isNull())
@@ -175,7 +175,7 @@ void FPwin::replaceAll()
     QTextCursor orig = textEdit->textCursor();
     orig.setPosition (orig.anchor());
     textEdit->setTextCursor (orig);
-    QColor color = QColor (textEdit->hasDarkScheme() ? Qt::darkGreen : Qt::green);
+    QColor color = QColor (Qt::black);
     int pos; QTextCursor found;
     QTextCursor start = orig;
     start.beginEditBlock();

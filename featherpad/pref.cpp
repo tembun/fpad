@@ -88,8 +88,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->tableWidget->sortByColumn (0, Qt::AscendingOrder);
     ui->tableWidget->setToolTip (tr ("Press a modifier key to clear a shortcut\nin the editing mode."));
     Config config = static_cast<FPsingleton*>(qApp)->getConfig();
-    darkBg_ = config.getDarkColScheme();
-    darkColValue_ = config.getDarkBgColorValue();
     lightColValue_ = config.getLightBgColorValue();
     recentNumber_ = config.getRecentFilesNumber();
     showEndings_ = config.getShowEndings();
@@ -163,21 +161,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     connect (ui->vLineSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefVLineDistance);
     ui->endingsBox->setChecked (config.getShowEndings());
     connect (ui->endingsBox, &QCheckBox::stateChanged, this, &PrefDialog::prefEndings);
-    ui->colBox->setChecked (config.getDarkColScheme());
-    connect (ui->colBox, &QCheckBox::stateChanged, this, &PrefDialog::prefDarkColScheme);
-    if (!ui->colBox->isChecked())
-    {
-        ui->colorValueSpin->setMinimum (230);
-        ui->colorValueSpin->setMaximum (255);
-        ui->colorValueSpin->setValue (config.getLightBgColorValue());
-    }
-    else
-    {
-        ui->colorValueSpin->setMinimum (0);
-        ui->colorValueSpin->setMaximum (50);
-        ui->colorValueSpin->setValue (config.getDarkBgColorValue());
-    }
-    connect (ui->colorValueSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefColValue);
     ui->thickCursorBox->setChecked (config.getThickCursor());
     ui->dateEdit->setText (config.getDateFormat());
     ui->lastLineBox->setChecked (config.getAppendEmptyLine());
@@ -678,37 +661,6 @@ void PrefDialog::prefEndings (int checked)
         config.setShowEndings (true);
     else if (checked == Qt::Unchecked)
         config.setShowEndings (false);
-
-    showPrompt();
-}
-void PrefDialog::prefDarkColScheme (int checked)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    disconnect (ui->colorValueSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefColValue);
-    if (checked == Qt::Checked)
-    {
-        config.setDarkColScheme (true);
-        ui->colorValueSpin->setMinimum (0);
-        ui->colorValueSpin->setMaximum (50);
-        ui->colorValueSpin->setValue (config.getDarkBgColorValue());
-    }
-    else if (checked == Qt::Unchecked)
-    {
-        config.setDarkColScheme (false);
-        ui->colorValueSpin->setMinimum (230);
-        ui->colorValueSpin->setMaximum (255);
-        ui->colorValueSpin->setValue (config.getLightBgColorValue());
-    }
-    connect (ui->colorValueSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefColValue);
-    showPrompt();
-}
-void PrefDialog::prefColValue (int value)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    if (!ui->colBox->isChecked())
-        config.setLightBgColorValue (value);
-    else
-        config.setDarkBgColorValue (value);
 
     showPrompt();
 }

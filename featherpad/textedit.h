@@ -86,12 +86,6 @@ public:
     void setDateFormat (const QString &format) {
         dateFormat_ = format;
     }
-    bool hasDarkScheme() const {
-        return (darkValue_ > -1);
-    }
-    int getDarkValue() const {
-        return darkValue_;
-    }
     qint64 getSize() const {
         return size_;
     }
@@ -263,7 +257,6 @@ private:
     bool autoIndentation_;
     bool autoReplace_;
     bool drawIndetLines_;
-    int darkValue_;
     QColor separatorColor_;
     int vLineDistance_;
     QString dateFormat_;

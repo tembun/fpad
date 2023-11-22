@@ -88,14 +88,6 @@ public:
     void setIsFull (bool isFull) {
         isFull_ = isFull;
     }
-
-    bool getDarkColScheme() const {
-        return darkColScheme_;
-    }
-    void setDarkColScheme (bool dark) {
-        darkColScheme_ = dark;
-    }
-
     bool getThickCursor() const {
         return thickCursor_;
     }
@@ -109,14 +101,6 @@ public:
     void setLightBgColorValue (int lightness) {
         lightBgColorValue_ = lightness;
     }
-
-    int getDarkBgColorValue() const {
-        return darkBgColorValue_;
-    }
-    void setDarkBgColorValue (int darkness) {
-        darkBgColorValue_ = darkness;
-    }
-
     QString getDateFormat() const {
         return dateFormat_;
     }
@@ -447,7 +431,6 @@ private:
          showStatusbar_, showCursorPos_,
          remFont_, wrapByDefault_, indentByDefault_, autoReplace_, lineByDefault_,showEndings_,
          isMaxed_, isFull_,
-         darkColScheme_,
          thickCursor_,
          tabWrapAround_, hideSingleTab_,
          appendEmptyLine_,
@@ -464,7 +447,7 @@ private:
     int vLineDistance_,
         tabPosition_,
         maxSHSize_,
-        lightBgColorValue_, darkBgColorValue_,
+        lightBgColorValue_,
         recentFilesNumber_,
         curRecentFilesNumber_,
         autoSaveInterval_,

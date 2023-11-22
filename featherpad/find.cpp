@@ -113,14 +113,7 @@ void FPwin::hlight() const
     Qt::CaseSensitivity cs = tabPage->matchCase() ? Qt::CaseSensitive : Qt::CaseInsensitive;
     
     QColor bg = QColor( 0 , 0 , 0 );
-    QColor fg = QColor( 255 , 255 , 255 );
-    
-    if( textEdit->hasDarkScheme() )
-    {
-	  bg = QColor( 255 , 255 , 255 );
-	  fg = QColor( 0 , 0 , 0 );
-    }
-    
+    QColor fg = QColor( 255 , 255 , 255 );    
     if (tabPage->matchRegex() || str.contains (txt, cs))
     {
         while (!(found = textEdit->finding (txt, start, searchFlags,  tabPage->matchRegex(), endLimit)).isNull())

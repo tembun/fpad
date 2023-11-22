@@ -574,16 +574,6 @@ the editor font has a fixed pitch (like Monospace).</string>
                </layout>
               </item>
               <item>
-               <widget class="QCheckBox" name="colBox">
-                <property name="toolTip">
-                 <string>Needs window reopening to take effect.</string>
-                </property>
-                <property name="text">
-                 <string>Dark c&amp;olor scheme</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <layout class="QHBoxLayout" name="horizontalLayout_7">
                 <item>
                  <spacer name="horizontalSpacer_8">
@@ -600,37 +590,6 @@ the editor font has a fixed pitch (like Monospace).</string>
                    </size>
                   </property>
                  </spacer>
-                </item>
-                <item>
-                 <widget class="QLabel" name="colorValueLabel">
-                  <property name="toolTip">
-                   <string>The color value of the background.
-255 means white while 0 means black.
-
-For the light background, it can be
-between 230 and 255; for the dark
-background, between 0 and 50.
-
-Needs window reopening to take effect.</string>
-                  </property>
-                  <property name="text">
-                   <string>Background color value: </string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QSpinBox" name="colorValueSpin">
-                  <property name="toolTip">
-                   <string>The color value of the background.
-255 means white while 0 means black.
-
-For the light background, it can be
-between 230 and 255; for the dark
-background, between 0 and 50.
-
-Needs window reopening to take effect.</string>
-                  </property>
-                 </widget>
                 </item>
                 <item>
                  <spacer name="horizontalSpacer_9">
