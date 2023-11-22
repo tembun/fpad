@@ -992,7 +992,6 @@ void FPwin::loadText (const QString& fileName, bool enforceEncod, bool reload,
     Loading *thread = new Loading (fileName, charset, reload,
                                    restoreCursor, posInLine,
                                    enforceUneditable, multiple);
-    thread->setSkipNonText (static_cast<FPsingleton*>(qApp)->getConfig().getSkipNonText());
     connect (thread, &Loading::completed, this, &FPwin::addText);
     connect (thread, &Loading::finished, thread, &QObject::deleteLater);
     thread->start();

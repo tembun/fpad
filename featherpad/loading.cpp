@@ -33,12 +33,11 @@ Loading::Loading (const QString& fname, const QString& charset, bool reload,
     restoreCursor_ (restoreCursor),
     posInLine_ (posInLine),
     forceUneditable_ (forceUneditable),
-    multiple_ (multiple),
-    skipNonText_ (true)
+    multiple_ (multiple)
 {}
-/*************************/
+
 Loading::~Loading() {}
-/*************************/
+
 void Loading::run()
 {
     if (!QFile::exists (fname_))
@@ -126,12 +125,6 @@ void Loading::run()
                     {
                         if (!hasNull)
                         {
-                            if (skipNonText_)
-                            {
-                                file.close();
-                                emit completed (QString(), QString(), "UTF-8"); // shows that a non-text file is skipped
-                                return;
-                            }
                             hasNull = true;
                         }
                     }
@@ -148,19 +141,13 @@ void Loading::run()
                 }
             }
             else
-            { // the meaning of null characters was determined before
-                if (skipNonText_ && hasNull && charset_.isEmpty())
-                {
-                    file.close();
-                    emit completed (QString(), QString(), "UTF-8");
-                    return;
-                }
+            {
                 num = 0;
                 while (file.read (&c, charSize) > 0)
                 {
                     if (c == '\n' || c == '\r')
                         num = 0;
-                    if (num < 500004) // a multiple of 4 (for UTF-16/32)
+                    if (num < 500004)
                         data.append (c);
                     else
                         forceUneditable_ = true;
@@ -170,25 +157,19 @@ void Loading::run()
         }
     }
     file.close();
-    if (skipNonText_ && hasNull && charset_.isEmpty())
-    {
-        emit completed (QString(), QString(), "UTF-8");
-        return;
-    }
-
     if (charset_.isEmpty())
     {
         if (hasNull)
         {
             forceUneditable_ = true;
-            charset_ = "UTF-8"; // always open non-text files as UTF-8
+            charset_ = "UTF-8";
         }
         else
             charset_ = detectCharset (data);
     }
 
-    QTextCodec *codec = QTextCodec::codecForName (charset_.toUtf8()); // or charset_.toStdString().c_str()
-    if (!codec) // prevent any chance of crash if there's a bug
+    QTextCodec *codec = QTextCodec::codecForName (charset_.toUtf8());
+    if (!codec)
     {
         charset_ = "UTF-8";
         codec = QTextCodec::codecForName ("UTF-8");

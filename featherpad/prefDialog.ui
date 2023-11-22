@@ -538,16 +538,6 @@ trailing spaces of a text file.</string>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="skipNonTextBox">
-            <property name="toolTip">
-             <string>Show a warning instead.</string>
-            </property>
-            <property name="text">
-             <string>Do not permit opening of non-text files</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QCheckBox" name="pastePathsBox">
             <property name="toolTip">
              <string>By default, when files are copied, they will

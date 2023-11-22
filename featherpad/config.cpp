@@ -34,7 +34,6 @@ Config::Config():
     isMaxed_ (false),
     isFull_ (false),
     tabWrapAround_ (false),
-    skipNonText_ (true),
     saveUnmodified_ (false),
     pastePaths_ (false),
     sharedSearchHistory_ (false),
@@ -135,10 +134,6 @@ void Config::readConfig()
         else
             font_.setPointSize (qMax (QFont().pointSize(), 9));
     }
-    v = settings.value ("skipNonText");
-    if (v.isValid()) // true by default
-        skipNonText_ = v.toBool();
-
     if (settings.value ("saveUnmodified").toBool())
         saveUnmodified_ = true; // false by default
 
@@ -239,7 +234,6 @@ void Config::writeConfig()
     settings.endGroup();
     settings.beginGroup ("text");
     settings.setValue ("font", font_.toString());
-    settings.setValue ("skipNonText", skipNonText_);
     settings.setValue ("saveUnmodified", saveUnmodified_);
     settings.setValue ("pastePaths", pastePaths_);
     settings.setValue ("maxSHSize", maxSHSize_);

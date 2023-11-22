@@ -202,19 +202,12 @@ public:
     void setMaxSHSize (int max) {
         maxSHSize_ = max;
     }
-    bool getSkipNonText() const {
-        return skipNonText_;
-    }
-    void setSkipNonText (bool skip) {
-        skipNonText_ = skip;
-    }
     bool getRecentOpened() const {
         return recentOpened_;
     }
     void setRecentOpened (bool opened) {
         recentOpened_ = opened;
     }
-
     QStringList getRecentFiles() const {
         return recentFiles_;
     }
@@ -233,7 +226,6 @@ public:
         actions_.remove (action);
         removedActions_ << action;
     }
-
     bool hasReservedShortcuts() const {
         return (!reservedShortcuts_.isEmpty());
     }
@@ -301,7 +293,6 @@ private:
          showStatusbar_, showCursorPos_,
          isMaxed_, isFull_,
          tabWrapAround_,
-         skipNonText_,
          saveUnmodified_,
          pastePaths_,
          sharedSearchHistory_;

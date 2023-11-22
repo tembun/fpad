@@ -136,8 +136,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->tabCombo->setCurrentIndex (config.getTabPosition());
     ui->tabBox->setChecked (config.getTabWrapAround());
     connect (ui->tabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefTabWrapAround);
-    ui->skipNonTextBox->setChecked (config.getSkipNonText());
-    connect (ui->skipNonTextBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSkipNontext);
     ui->pastePathsBox->setChecked (pastePaths_);
     ui->textTabSpin->setValue (textTabSize_);
     connect (ui->textTabSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefTextTabSize);
@@ -516,14 +514,6 @@ void PrefDialog::prefPastePaths()
                 ->textEdit()->setPastePaths (pastePaths);
         }
     }
-}
-void PrefDialog::prefSkipNontext (int checked)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    if (checked == Qt::Checked)
-        config.setSkipNonText (true);
-    else if (checked == Qt::Unchecked)
-        config.setSkipNonText (false);
 }
 void PrefDialog::prefTabWrapAround (int checked)
 {
