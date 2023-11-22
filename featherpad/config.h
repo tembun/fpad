@@ -269,12 +269,6 @@ public:
     void setRemoveTrailingSpaces (bool remove) {
         removeTrailingSpaces_ = remove;
     }
-    bool getOpenInWindows() const {
-        return openInWindows_;
-    }
-    void setOpenInWindows (bool windows) {
-        openInWindows_ = windows;
-    }
     bool getNativeDialog() const {
         return nativeDialog_;
     }
@@ -409,7 +403,6 @@ private:
          tabWrapAround_,
          appendEmptyLine_,
          removeTrailingSpaces_,
-         openInWindows_,
          nativeDialog_,
          inertialScrolling_,
          autoSave_,

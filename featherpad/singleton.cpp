@@ -100,7 +100,7 @@ FPsingleton::FPsingleton (int &argc, char **argv, bool standalone) : QApplicatio
         localServer_ = nullptr;
     }
 }
-/*************************/
+
 FPsingleton::~FPsingleton()
 {
     if (lockFile_)
@@ -109,14 +109,14 @@ FPsingleton::~FPsingleton()
         delete lockFile_;
     }
 }
-/*************************/
+
 void FPsingleton::quitting()
 {
     if (searchModel_)
         delete searchModel_;
     config_.writeConfig();
 }
-/*************************/
+
 void FPsingleton::receiveMessage()
 {
     QLocalSocket *localSocket = localServer_->nextPendingConnection();
@@ -137,8 +137,8 @@ void FPsingleton::receiveMessage()
 }
 bool FPsingleton::sendMessage (const QString& message)
 {
-    if (standalone_ // it's standalone or...
-        || localServer_ != nullptr) // ... no other instance was running
+    if (standalone_
+        || localServer_ != nullptr)
     {
         return false;
     }
@@ -169,26 +169,26 @@ bool FPsingleton::sendMessage (const QString& message)
     localSocket.disconnectFromServer();
     return true;
 }
-/*************************/
+
 bool FPsingleton::cursorInfo (const QString& commndOpt, int& lineNum, int& posInLine)
 {
     if (commndOpt.isEmpty()) return false;
-    lineNum = 0; // no cursor placing
+    lineNum = 0;
     posInLine = 0;
     if (commndOpt == "+")
     {
-        lineNum = -2; // means the end (-> FPwin::newTabFromName)
-        posInLine = 0; // useless
+        lineNum = -2;
+        posInLine = 0;
         return true;
     }
     else if (commndOpt.startsWith ("+"))
     {
         bool ok;
-        lineNum = commndOpt.toInt (&ok); // "+" is included
+        lineNum = commndOpt.toInt (&ok);
         if (ok)
         {
-            if (lineNum > 0) // otherwise, the cursor will be ignored (-> FPwin::newTabFromName)
-                lineNum += 1; // 1 is reserved for session files (-> FPwin::newTabFromName)
+            if (lineNum > 0)
+                lineNum += 1;
             return true;
         }
         else
@@ -212,7 +212,7 @@ bool FPsingleton::cursorInfo (const QString& commndOpt, int& lineNum, int& posIn
     }
     return false;
 }
-/*************************/
+
 QStringList FPsingleton::processInfo (const QString& message,
                                       long &desktop, int& lineNum, int& posInLine,
                                       bool *newWindow)
@@ -221,7 +221,7 @@ QStringList FPsingleton::processInfo (const QString& message,
     lineNum = 0; // no cursor placing
     posInLine = 0;
     QStringList sl = message.split ("\n\r"); // "\n\r" was used as the splitter
-    if (sl.count() < 3) // impossible because "\n\r" is appended to desktop number plus current directory
+    if (sl.count() < 3)
     {
         *newWindow = true;
         return QStringList();
@@ -233,7 +233,7 @@ QStringList FPsingleton::processInfo (const QString& message,
     if (standalone_)
     {
         *newWindow = true;
-        sl.removeFirst(); // "--standalone" is always the first optionn
+        sl.removeFirst();
         if (sl.isEmpty())
             return QStringList();
     }
@@ -244,7 +244,7 @@ QStringList FPsingleton::processInfo (const QString& message,
     {
         sl.removeFirst();
         if (!sl.isEmpty())
-        { // check if the second option is --win/-w
+        {
             if (sl.at (0) == "--win" || sl.at (0) == "-w")
             {
                 *newWindow = true;
@@ -252,7 +252,6 @@ QStringList FPsingleton::processInfo (const QString& message,
             }
         }
     }
-    // check if the first option is --win/-w
     else if (sl.at (0) == "--win" || sl.at (0) == "-w")
     {
         *newWindow = true;
@@ -262,8 +261,6 @@ QStringList FPsingleton::processInfo (const QString& message,
         if (hasCurInfo)
             sl.removeFirst();
     }
-
-    /* always return absolute clean paths (works around KDE's double slash bug too) */
     QStringList filesList;
     for (const auto &path : qAsConst (sl))
     {
@@ -280,23 +277,17 @@ QStringList FPsingleton::processInfo (const QString& message,
         qDebug ("FeatherPad: File path/name is missing.");
     return filesList;
 }
-/*************************/
+
 void FPsingleton::firstWin (const QString& message)
 {
     int lineNum = 0, posInLine = 0;
     long d = -1;
     bool openNewWin;
     const QStringList filesList = processInfo (message, d, lineNum, posInLine, &openNewWin);
-    if (config_.getOpenInWindows() && !filesList.isEmpty())
-    {
-        for (auto file : filesList)
-          newWin (QStringList() << file, lineNum, posInLine);
-    }
-    else
-        newWin (filesList, lineNum, posInLine);
-    lastFiles_ = QStringList(); // they should be called only with the session start
+    newWin (filesList, lineNum, posInLine);
+    lastFiles_ = QStringList();
 }
-/*************************/
+
 FPwin* FPsingleton::newWin (const QStringList& filesList,
                             int lineNum, int posInLine)
 {
@@ -325,27 +316,25 @@ FPwin* FPsingleton::newWin (const QStringList& filesList,
 
     return fp;
 }
-/*************************/
+
 void FPsingleton::removeWin (FPwin *win)
 {
     Wins.removeOne (win);
     win->deleteLater();
 }
-/*************************/
+
 void FPsingleton::handleMessage (const QString& message)
 {
     int lineNum = 0, posInLine = 0;
     long d = -1;
     bool openNewWin;
     const QStringList filesList = processInfo (message, d, lineNum, posInLine, &openNewWin);
-    if (openNewWin && !config_.getOpenInWindows())
+    if (openNewWin)
     {
         newWin (filesList, lineNum, posInLine);
         return;
     }
     bool found = false;
-    if (!config_.getOpenInWindows())
-    {
         QRect sr;
         if (QScreen *pScreen = QApplication::primaryScreen())
             sr = pScreen->virtualGeometry();
@@ -357,14 +346,9 @@ void FPsingleton::handleMessage (const QString& message)
             if (isX11_)
                 whichDesktop = onWhichDesktop (id);
 #endif
-            /* if the command is issued from where a FeatherPad
-               window exists and if that window isn't minimized
-               and doesn't have a modal dialog... */
-            if (!isX11_ // always open a new tab on wayland
+            if (!isX11_
 #ifdef HAS_X11
                 || ((whichDesktop == d
-                     /* if a window is created a moment ago, it should be
-                        on the current desktop but may not report that yet */
                      || whichDesktop == -1)
                     && (!Wins.at (i)->isMinimized() || isWindowShaded (id)))
 #endif
@@ -381,19 +365,14 @@ void FPsingleton::handleMessage (const QString& message)
                     }
                 }
                 if (hasDialog) continue;
-                /* consider viewports too, so that if more than half of the width as well as the height
-                   of the window is inside the current viewport (of the current desktop), open a new tab */
                 if (sr.contains (Wins.at (i)->geometry().center()))
                 {
                     if (d >= 0) // it may be -1 for some DEs that don't support _NET_CURRENT_DESKTOP
                     {
-                        /* first, pretend to KDE that a new window is created
-                           (without this, the next new window would open on a wrong desktop) */
                         Wins.at (i)->dummyWidget->showMinimized();
                         QTimer::singleShot (0, Wins.at (i)->dummyWidget, &QWidget::close);
                     }
 
-                    /* and then, open tab(s) in the current FeatherPad window... */
                     if (filesList.isEmpty())
                         Wins.at (i)->newTab();
                     else
@@ -407,17 +386,9 @@ void FPsingleton::handleMessage (const QString& message)
                 }
             }
         }
-    }
     if (!found)
     {
-        /* ... otherwise, open a new window */
-        if (config_.getOpenInWindows() && !filesList.isEmpty())
-        {
-            for (auto file : filesList)
-              newWin (QStringList() << file, lineNum, posInLine);
-        }
-        else
-            newWin (filesList, lineNum, posInLine);
+        newWin (filesList, lineNum, posInLine);
     }
 }
 

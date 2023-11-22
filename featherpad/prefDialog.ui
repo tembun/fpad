@@ -314,20 +314,6 @@ Tab navigation with mouse wheel is not affected.</string>
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="windowBox">
-                <property name="toolTip">
-                 <string>By default, if a FeatherPad window exists on the
-current desktop, files will be opened in its tabs.
-
-However, some desktop environments may not
-report that they have multiple desktops.</string>
-                </property>
-                <property name="text">
-                 <string>Always open in separate windows</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="nativeDialogBox">
                 <property name="toolTip">
                  <string>If this is checked, the file dialog provided by the current

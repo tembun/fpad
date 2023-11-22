@@ -42,7 +42,6 @@ Config::Config():
     tabWrapAround_ (false),
     appendEmptyLine_ (true),
     removeTrailingSpaces_ (false),
-    openInWindows_ (false),
     nativeDialog_ (true),
     inertialScrolling_ (false),
     autoSave_ (false),
@@ -130,9 +129,6 @@ void Config::readConfig()
 
     if (settings.value ("tabWrapAround").toBool())
         tabWrapAround_ = true; // false by default
-
-    if (settings.value ("openInWindows").toBool())
-        openInWindows_ = true; // false by default
 
     v = settings.value ("nativeDialog");
     if (v.isValid()) // true by default
@@ -301,7 +297,6 @@ void Config::writeConfig()
     settings.setValue ("showCursorPos", showCursorPos_);
     settings.setValue ("tabPosition", tabPosition_);
     settings.setValue ("tabWrapAround", tabWrapAround_);
-    settings.setValue ("openInWindows", openInWindows_);
     settings.setValue ("nativeDialog", nativeDialog_);
     settings.setValue ("sharedSearchHistory", sharedSearchHistory_);
     settings.endGroup();

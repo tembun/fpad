@@ -91,7 +91,6 @@ private slots:
     void prefMaxSHSize (int value);
     void prefRecentFilesNumber (int value);
     void prefSaveLastFilesList (int checked);
-    void prefOpenInWindows (int checked);
     void prefNativeDialog (int checked);
     void prefSplitterPos (int checked);
     void prefInertialScrolling (int checked);
