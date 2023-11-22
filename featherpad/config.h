@@ -97,16 +97,6 @@ public:
     void setTextTabSize (int textTab) {
         textTabSize_ = textTab;
     }
-    int getRecentFilesNumber() const {
-        return recentFilesNumber_;
-    }
-    void setRecentFilesNumber (int number) {
-        recentFilesNumber_ = number;
-    }
-    int getCurRecentFilesNumber() const {
-        return curRecentFilesNumber_;
-    }
-
     bool getTabWrapAround() const {
         return tabWrapAround_;
     }
@@ -119,21 +109,18 @@ public:
     void setWinSize (const QSize &s) {
         winSize_ = s;
     }
-
     QSize getPrefSize() const {
         return prefSize_;
     }
     void setPrefSize (const QSize &s) {
         prefSize_ = s;
     }
-
     QSize getStartSize() const {
         return startSize_;
     }
     void setStartSize (const QSize &s) {
         startSize_ = s;
     }
-
     QPoint getWinPos() const {
         return winPos_;
     }
@@ -202,20 +189,6 @@ public:
     void setMaxSHSize (int max) {
         maxSHSize_ = max;
     }
-    bool getRecentOpened() const {
-        return recentOpened_;
-    }
-    void setRecentOpened (bool opened) {
-        recentOpened_ = opened;
-    }
-    QStringList getRecentFiles() const {
-        return recentFiles_;
-    }
-    void clearRecentFiles() {
-        recentFiles_ = QStringList();
-    }
-    void addRecentFile (const QString &file);
-
     QHash<QString, QString> customShortcutActions() const {
         return actions_;
     }
@@ -292,15 +265,11 @@ private:
     int tabPosition_,
         maxSHSize_,
         lightBgColorValue_,
-        recentFilesNumber_,
-        curRecentFilesNumber_,
         textTabSize_;
     QSize winSize_, startSize_, prefSize_;
     QPoint winPos_;
     int splitterPos_;
     QFont font_;
-    bool recentOpened_;
-    QStringList recentFiles_;
     QHash<QString, QString> actions_;
     QStringList removedActions_, reservedShortcuts_;
     QHash<QString, QVariant> cursorPos_;

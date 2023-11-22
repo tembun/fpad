@@ -89,7 +89,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->tableWidget->setToolTip (tr ("Press a modifier key to clear a shortcut\nin the editing mode."));
     Config config = static_cast<FPsingleton*>(qApp)->getConfig();
     lightColValue_ = config.getLightBgColorValue();
-    recentNumber_ = config.getRecentFilesNumber();
     textTabSize_ = config.getTextTabSize();
     saveUnmodified_ = config.getSaveUnmodified();
     sharedSearchHistory_ = config.getSharedSearchHistory();
@@ -137,10 +136,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     connect (ui->tabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefTabWrapAround);
     ui->textTabSpin->setValue (textTabSize_);
     connect (ui->textTabSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefTextTabSize);
-    ui->recentSpin->setValue (config.getRecentFilesNumber());
-    ui->recentSpin->setSuffix (" " + (ui->recentSpin->value() > 1 ? tr ("files") : tr ("file")));
-    connect (ui->recentSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefRecentFilesNumber);
-    ui->openedButton->setChecked (config.getRecentOpened());
     ui->unmodifiedSaveBox->setChecked (saveUnmodified_);
     if (FPwin *win = static_cast<FPwin *>(parent_))
     {
@@ -241,7 +236,6 @@ void PrefDialog::onClosing()
 {
     prefShortcuts();
     prefTabPosition();
-    prefRecentFilesKind();
     prefTextTab();
     prefSaveUnmodified();
 
@@ -274,11 +268,6 @@ void PrefDialog::showPrompt (const QString& str, bool temporary)
         }
         else
             prevtMsg_ = "<b>" + str + "</b>";
-    }
-    else if (recentNumber_ != config.getRecentFilesNumber()
-             || sharedSearchHistory_ != config.getSharedSearchHistory())
-    {
-        ui->promptLabel->setText ("<b>" + tr ("Application restart is needed for changes to take effect.") + "</b>");
     }
     else
     {
@@ -506,25 +495,6 @@ void PrefDialog::prefMaxSHSize (int value)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
     config.setMaxSHSize (value);
-}
-void PrefDialog::prefRecentFilesNumber (int value)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    config.setRecentFilesNumber (value);
-    ui->recentSpin->setSuffix(" " + (value > 1 ? tr ("files") : tr ("file")));
-
-    showPrompt();
-}
-void PrefDialog::prefRecentFilesKind()
-{
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    bool openedKind = ui->openedButton->isChecked();
-    if (config.getRecentOpened() != openedKind)
-    {
-        config.setRecentOpened (openedKind);
-        config.clearRecentFiles();
-    }
 }
 void PrefDialog::prefStartSize (int value)
 {

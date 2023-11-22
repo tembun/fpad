@@ -106,7 +106,6 @@ public slots:
     void enableSaving (bool modified);
 
 private slots:
-    void newTabFromRecent();
     void closeTab();
     void closeTabAtIndex (int index);
     void closeOtherTabs();

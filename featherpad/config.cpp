@@ -39,15 +39,12 @@ Config::Config():
     tabPosition_ (0),
     maxSHSize_ (2),
     lightBgColorValue_ (255),
-    recentFilesNumber_ (10),
-    curRecentFilesNumber_ (10),
     textTabSize_ (6),
     winSize_ (QSize (700, 500)),
     startSize_ (QSize (700, 500)),
     winPos_ (QPoint (0, 0)),
     splitterPos_ (20),
     font_ (QFont ("Monospace")),
-    recentOpened_ (false),
     cursorPosRetrieved_ (false) {}
 
 Config::~Config() {}
@@ -138,15 +135,6 @@ void Config::readConfig()
     maxSHSize_ = qBound (1, settings.value ("maxSHSize", 2).toInt(), 10);
     lightBgColorValue_ = qBound (230, settings.value ("lightBgColorValue", 255).toInt(), 255);
     v = settings.value ("appendEmptyLine");
-    recentFilesNumber_ = qBound (0, settings.value ("recentFilesNumber", 10).toInt(), 20);
-    curRecentFilesNumber_ = recentFilesNumber_; // fixed
-    recentFiles_ = settings.value ("recentFiles").toStringList();
-    recentFiles_.removeAll ("");
-    recentFiles_.removeDuplicates();
-    while (recentFiles_.count() > recentFilesNumber_)
-        recentFiles_.removeLast();
-    if (settings.value ("recentOpened").toBool())
-        recentOpened_ = true; // false by default
     textTabSize_ = qBound (2, settings.value ("textTabSize", 4).toInt(), 10);
     settings.endGroup();
 }
@@ -233,14 +221,6 @@ void Config::writeConfig()
     settings.setValue ("saveUnmodified", saveUnmodified_);
     settings.setValue ("maxSHSize", maxSHSize_);
     settings.setValue ("lightBgColorValue", lightBgColorValue_);
-    settings.setValue ("recentFilesNumber", recentFilesNumber_);
-    while (recentFiles_.count() > recentFilesNumber_)
-        recentFiles_.removeLast();
-    if (recentFiles_.isEmpty())
-        settings.setValue ("recentFiles", "");
-    else
-        settings.setValue ("recentFiles", recentFiles_);
-    settings.setValue ("recentOpened", recentOpened_);
     settings.setValue ("textTabSize", textTabSize_);
     settings.endGroup();
     settings.beginGroup ("shortcuts");
@@ -284,16 +264,6 @@ void Config::writeCursorPos()
             settingsLastCur.setValue ("cursorPositions", lasFilesCursorPos_);
     }
 }
-void Config::addRecentFile (const QString& file)
-{
-    if (curRecentFilesNumber_ > 0)
-    {
-        recentFiles_.removeAll (file);
-        recentFiles_.prepend (file);
-        while (recentFiles_.count() > curRecentFilesNumber_)
-            recentFiles_.removeLast();
-    }
-}
 QString Config::validatedShortcut (const QVariant v, bool *isValid)
 {
     static QStringList added;
@@ -313,7 +283,6 @@ QString Config::validatedShortcut (const QVariant v, bool *isValid)
         if (!QKeySequence (str, QKeySequence::PortableText).toString().isEmpty())
         {
             if (!reservedShortcuts_.contains (str)
-                // prevent ambiguous shortcuts at startup as far as possible
                 && !added.contains (str))
             {
                 *isValid = true;

@@ -277,16 +277,6 @@ void FPwin::applyConfigOnStarting()
     {
         ui->tabWidget->setTabPosition (static_cast<QTabWidget::TabPosition>(config.getTabPosition()));
     }
-    int recentNumber = config.getCurRecentFilesNumber();
-    {
-        QAction* recentAction = nullptr;
-        for (int i = 0; i < recentNumber; ++i)
-        {
-            recentAction = new QAction (this);
-            recentAction->setVisible (false);
-            connect (recentAction, &QAction::triggered, this, &FPwin::newTabFromRecent);
-        }
-    }
     ui->actionSave->setEnabled (config.getSaveUnmodified());
     QIcon icn = QIcon::fromTheme ("featherpad");
     if (icn.isNull())
@@ -1152,8 +1142,6 @@ void FPwin::addText (const QString& text, const QString& fileName, const QString
     textEdit->setSize (fInfo.size());
     textEdit->setLastModified (fInfo.lastModified());
     lastFile_ = fileName;
-    if (config.getRecentOpened())
-        config.addRecentFile (lastFile_);
     textEdit->setEncoding (charset);
     textEdit->setWordNumber (-1);
     if (uneditable)
@@ -1337,12 +1325,6 @@ void FPwin::newTabFromName (const QString& fileName, int restoreCursor, int posI
                   restoreCursor, posInLine,
                   false, multiple);
 }
-void FPwin::newTabFromRecent()
-{
-    QAction *action = qobject_cast<QAction*>(QObject::sender());
-    if (!action) return;
-    loadText (action->data().toString(), false, false);
-}
 void FPwin::fileOpen()
 {
     if (isLoading()) return;
@@ -1516,11 +1498,9 @@ static inline int trailingSpaces (const QString &str)
 bool FPwin::saveFile ()
 {
     if (!isReady()) return false;
-
     int index = ui->tabWidget->currentIndex();
     TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->widget (index));
     if (tabPage == nullptr) return false;
-
     TextEdit *textEdit = tabPage->textEdit();
     QString fname = textEdit->getFileName();
     QString filter = tr ("All Files (*)");
@@ -1530,9 +1510,6 @@ bool FPwin::saveFile ()
     {
         filter = tr (".%1 Files (*.%1);;All Files (*)").arg (fname.section ('.', -1, -1));
     }
-
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-
     if (fname.isEmpty()
         || !QFile::exists (fname)
         || textEdit->getFileName().isEmpty())
@@ -1651,7 +1628,6 @@ bool FPwin::saveFile ()
                 wi->setToolTip (elidedTip);
         }
         lastFile_ = fname;
-        config.addRecentFile (lastFile_);
     }
     else
     {
@@ -2413,9 +2389,6 @@ void FPwin::saveAllFiles (bool showWarning)
 {
     int index = ui->tabWidget->currentIndex();
     if (index == -1) return;
-
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-
     bool error = false;
     for (int indx = 0; indx < ui->tabWidget->count(); ++indx)
     {
@@ -2435,7 +2408,6 @@ void FPwin::saveAllFiles (bool showWarning)
             thisTextEdit->setSize (fInfo.size());
             thisTextEdit->setLastModified (fInfo.lastModified());
             setTitle (fname, (!inactiveTabModified_ ? -1 : indx));
-            config.addRecentFile (fname);
             inactiveTabModified_ = false;
         }
         else error = true;

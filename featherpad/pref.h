@@ -79,7 +79,6 @@ private slots:
     void prefStatusCursor (int checked);
     void prefTabWrapAround (int checked);
     void prefMaxSHSize (int value);
-    void prefRecentFilesNumber (int value);
     void prefSplitterPos (int checked);
     void showWhatsThis();
     void prefShortcuts();
@@ -92,13 +91,12 @@ private slots:
 private:
     void closeEvent (QCloseEvent *event);
     void prefTabPosition();
-    void prefRecentFilesKind();
     void showPrompt (const QString& str = QString(), bool temporary = false);
 
     Ui::PrefDialog *ui;
     QWidget * parent_;
-    bool showEndings_, saveUnmodified_, sharedSearchHistory_, pastePaths_;
-    int lightColValue_, recentNumber_, textTabSize_;
+    bool saveUnmodified_, sharedSearchHistory_;
+    int lightColValue_, textTabSize_;
     QHash<QString, QString> shortcuts_, newShortcuts_;
     QString prevtMsg_;
     QTimer *promptTimer_;
