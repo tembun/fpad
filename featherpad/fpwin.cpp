@@ -669,7 +669,6 @@ TabPage* FPwin::createEmptyTab (bool setCurrent)
     TextEdit *textEdit = tabPage->textEdit();
     connect (textEdit, &QWidget::customContextMenuRequested, this, &FPwin::editorContextMenu);
     textEdit->setPastePaths (config.getPastePaths());
-    textEdit->setAutoReplace (config.getAutoReplace());
     textEdit->setTtextTab (config.getTextTabSize());
     textEdit->setEditorFont (config.getFont());
     textEdit->setInertialScrolling (config.getInertialScrolling());

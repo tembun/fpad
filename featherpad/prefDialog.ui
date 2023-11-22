@@ -383,18 +383,6 @@ Tab navigation with mouse wheel is not affected.</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_3">
               <item>
-               <widget class="QCheckBox" name="autoReplaceBox">
-                <property name="toolTip">
-                 <string>By default, a triple period is replaced with an ellipsis
-and a double hyphen with a long dash while typing,
-under proper circumstances.</string>
-                </property>
-                <property name="text">
-                 <string>Replace triple periods and double hyphens while typing</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <layout class="QHBoxLayout" name="horizontalLayout_4">
                 <item>
                  <spacer name="horizontalSpacer_4">

@@ -203,12 +203,6 @@ public:
         font_ = font;
     }
     void resetFont();
-    bool getAutoReplace() const {
-        return autoReplace_;
-    }
-    void setAutoReplace (bool autoR) {
-        autoReplace_ = autoR;
-    }
     bool getShowEndings() const {
         return showEndings_;
     }
@@ -366,7 +360,7 @@ private:
          noToolbar_, noMenubar_,
          hideSearchbar_,
          showStatusbar_, showCursorPos_,
-         autoReplace_, lineByDefault_,showEndings_,
+         showEndings_,
          isMaxed_, isFull_,
          thickCursor_,
          tabWrapAround_,

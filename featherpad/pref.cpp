@@ -138,8 +138,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->tabCombo->setCurrentIndex (config.getTabPosition());
     ui->tabBox->setChecked (config.getTabWrapAround());
     connect (ui->tabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefTabWrapAround);
-    ui->autoReplaceBox->setChecked (config.getAutoReplace());
-    connect (ui->autoReplaceBox, &QCheckBox::stateChanged, this, &PrefDialog::prefAutoReplace);
     ui->vLineBox->setChecked (vLineDistance_ >= 10);
     connect (ui->vLineBox, &QCheckBox::stateChanged, this, &PrefDialog::prefVLine);
     ui->vLineSpin->setEnabled (vLineDistance_ >= 10);
@@ -523,43 +521,6 @@ void PrefDialog::prefTabPosition()
     {
         for (int i = 0; i < singleton->Wins.count(); ++i)
             singleton->Wins.at (i)->ui->tabWidget->setTabPosition (static_cast<QTabWidget::TabPosition>(index));
-    }
-}
-void PrefDialog::prefAutoReplace (int checked)
-{
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    if (checked == Qt::Checked)
-    {
-        if (!config.getAutoReplace())
-        {
-            config.setAutoReplace (true);
-            for (int i = 0; i < singleton->Wins.count(); ++i)
-            {
-                int count = singleton->Wins.at (i)->ui->tabWidget->count();
-                for (int j = 0; j < count; ++j)
-                {
-                    qobject_cast< TabPage *>(singleton->Wins.at (i)->ui->tabWidget->widget (j))
-                        ->textEdit()->setAutoReplace (true);
-                }
-            }
-        }
-    }
-    else if (checked == Qt::Unchecked)
-    {
-        if (config.getAutoReplace())
-        {
-            config.setAutoReplace (false);
-            for (int i = 0; i < singleton->Wins.count(); ++i)
-            {
-                int count = singleton->Wins.at (i)->ui->tabWidget->count();
-                for (int j = 0; j < count; ++j)
-                {
-                    qobject_cast< TabPage *>(singleton->Wins.at (i)->ui->tabWidget->widget (j))
-                        ->textEdit()->setAutoReplace (false);
-                }
-            }
-        }
     }
 }
 void PrefDialog::prefVLine (int checked)
