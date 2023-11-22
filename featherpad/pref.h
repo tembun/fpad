@@ -77,7 +77,6 @@ private slots:
     void prefSearchHistory (int checked);
     void prefStatusbar (int checked);
     void prefStatusCursor (int checked);
-    void prefAppendEmptyLine (int checked);
     void prefRemoveTrailingSpaces (int checked);
     void prefSkipNontext (int checked);
     void prefTabWrapAround (int checked);

@@ -447,17 +447,6 @@ Tab navigation with mouse wheel is not affected.</string>
                </layout>
               </item>
               <item>
-               <widget class="QCheckBox" name="lastLineBox">
-                <property name="toolTip">
-                 <string>Some text editors cannot open a document
-whose last line is not empty.</string>
-                </property>
-                <property name="text">
-                 <string>Ensure an empty last line on saving</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="trailingSpacesBox">
                 <property name="text">
                  <string>Remove trailing spaces on saving</string>

@@ -1656,15 +1656,6 @@ bool FPwin::saveFile ()
         }
         updateShortcuts (false);
     }
-    if (config.getAppendEmptyLine()
-        && !textEdit->document()->lastBlock().text().isEmpty())
-    {
-        QTextCursor tmpCur = textEdit->textCursor();
-        tmpCur.beginEditBlock();
-        tmpCur.movePosition (QTextCursor::End);
-        tmpCur.insertBlock();
-        tmpCur.endEditBlock();
-    }
     QTextDocumentWriter writer (fname, "plaintext");
     bool success = false;
     if (!success)
@@ -2519,16 +2510,6 @@ void FPwin::saveAllFiles (bool showWarning)
         QString fname = thisTextEdit->getFileName();
         if (fname.isEmpty() || !QFile::exists (fname))
             continue;
-        if (config.getAppendEmptyLine()
-            && !thisTextEdit->document()->lastBlock().text().isEmpty())
-        {
-            QTextCursor tmpCur = thisTextEdit->textCursor();
-            tmpCur.beginEditBlock();
-            tmpCur.movePosition (QTextCursor::End);
-            tmpCur.insertBlock();
-            tmpCur.endEditBlock();
-        }
-
         QTextDocumentWriter writer (fname, "plaintext");
         if (writer.write (thisTextEdit->document()))
         {

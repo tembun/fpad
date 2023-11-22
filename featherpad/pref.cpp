@@ -137,8 +137,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->tabBox->setChecked (config.getTabWrapAround());
     connect (ui->tabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefTabWrapAround);
     ui->thickCursorBox->setChecked (config.getThickCursor());
-    ui->lastLineBox->setChecked (config.getAppendEmptyLine());
-    connect (ui->lastLineBox, &QCheckBox::stateChanged, this, &PrefDialog::prefAppendEmptyLine);
     ui->trailingSpacesBox->setChecked (config.getRemoveTrailingSpaces());
     connect (ui->trailingSpacesBox, &QCheckBox::stateChanged, this, &PrefDialog::prefRemoveTrailingSpaces);
     ui->skipNonTextBox->setChecked (config.getSkipNonText());
@@ -550,15 +548,6 @@ void PrefDialog::prefPastePaths()
                 ->textEdit()->setPastePaths (pastePaths);
         }
     }
-}
-void PrefDialog::prefAppendEmptyLine (int checked)
-{
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    if (checked == Qt::Checked)
-        config.setAppendEmptyLine (true);
-    else if (checked == Qt::Unchecked)
-        config.setAppendEmptyLine (false);
 }
 void PrefDialog::prefRemoveTrailingSpaces (int checked)
 {

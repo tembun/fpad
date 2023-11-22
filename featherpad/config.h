@@ -215,12 +215,6 @@ public:
     void setSkipNonText (bool skip) {
         skipNonText_ = skip;
     }
-    bool getAppendEmptyLine() const {
-        return appendEmptyLine_;
-    }
-    void setAppendEmptyLine (bool append) {
-        appendEmptyLine_ = append;
-    }
     bool getRemoveTrailingSpaces() const {
         return removeTrailingSpaces_;
     }
@@ -351,7 +345,6 @@ private:
          isMaxed_, isFull_,
          thickCursor_,
          tabWrapAround_,
-         appendEmptyLine_,
          removeTrailingSpaces_,
          inertialScrolling_,
          autoSave_,
