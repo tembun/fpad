@@ -292,48 +292,30 @@ public:
     void setMaxSHSize (int max) {
         maxSHSize_ = max;
     }
-
     bool getSkipNonText() const {
         return skipNonText_;
     }
     void setSkipNonText (bool skip) {
         skipNonText_ = skip;
     }
-
-    bool getExecuteScripts() const {
-        return executeScripts_;
-    }
-    void setExecuteScripts (bool execute) {
-        executeScripts_ = execute;
-    }
-    QString getExecuteCommand() const {
-        return executeCommand_;
-    }
-    void setExecuteCommand (const QString& command) {
-        executeCommand_ = command;
-    }
-
     bool getAppendEmptyLine() const {
         return appendEmptyLine_;
     }
     void setAppendEmptyLine (bool append) {
         appendEmptyLine_ = append;
     }
-
     bool getRemoveTrailingSpaces() const {
         return removeTrailingSpaces_;
     }
     void setRemoveTrailingSpaces (bool remove) {
         removeTrailingSpaces_ = remove;
     }
-
     bool getOpenInWindows() const {
         return openInWindows_;
     }
     void setOpenInWindows (bool windows) {
         openInWindows_ = windows;
     }
-
     bool getNativeDialog() const {
         return nativeDialog_;
     }
@@ -474,7 +456,6 @@ private:
          darkColScheme_,
          thickCursor_,
          tabWrapAround_, hideSingleTab_,
-         executeScripts_,
          appendEmptyLine_,
          removeTrailingSpaces_,
          openInWindows_,
@@ -499,7 +480,6 @@ private:
     QPoint winPos_;
     int splitterPos_;
     QFont font_;
-    QString executeCommand_;
     bool recentOpened_;
     QStringList recentFiles_;
     bool saveLastFilesList_;

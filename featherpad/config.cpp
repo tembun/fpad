@@ -43,7 +43,6 @@ Config::Config():
     thickCursor_ (false),
     tabWrapAround_ (false),
     hideSingleTab_ (false),
-    executeScripts_ (false),
     appendEmptyLine_ (true),
     removeTrailingSpaces_ (false),
     openInWindows_ (false),
@@ -218,10 +217,6 @@ void Config::readConfig()
 
     dateFormat_ = settings.value ("dateFormat").toString();
 
-    if (settings.value ("executeScripts").toBool())
-        executeScripts_ = true; // false by default
-    executeCommand_ = settings.value ("executeCommand").toString();
-
     v = settings.value ("appendEmptyLine");
     if (v.isValid()) // true by default
         appendEmptyLine_ = v.toBool();
@@ -355,14 +350,12 @@ void Config::writeConfig()
     settings.setValue ("lightBgColorValue", lightBgColorValue_);
     settings.setValue ("dateFormat", dateFormat_);
     settings.setValue ("darkBgColorValue", darkBgColorValue_);
-    settings.setValue ("executeScripts", executeScripts_);
     settings.setValue ("appendEmptyLine", appendEmptyLine_);
     settings.setValue ("removeTrailingSpaces", removeTrailingSpaces_);
 
     settings.setValue ("vLineDistance", vLineDistance_);
 
     settings.setValue ("recentFilesNumber", recentFilesNumber_);
-    settings.setValue ("executeCommand", executeCommand_);
     while (recentFiles_.count() > recentFilesNumber_)
         recentFiles_.removeLast();
     if (recentFiles_.isEmpty())

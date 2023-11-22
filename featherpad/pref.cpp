@@ -38,10 +38,8 @@ static QHash<QString, QString> DEFAULT_SHORTCUTS;
 FPKeySequenceEdit::FPKeySequenceEdit (QWidget *parent) : QKeySequenceEdit (parent) {}
 
 void FPKeySequenceEdit::keyPressEvent (QKeyEvent *event)
-{ // also a workaround for a Qt bug that makes Meta a non-modifier
-    clear(); // no multiple shortcuts
-    /* don't create a shortcut without modifier because
-       this is a text editor but make exceptions for Fx keys */
+{
+    clear();
     int k = event->key();
     if ((k < Qt::Key_F1 || k > Qt::Key_F35)
         && (event->modifiers() == Qt::NoModifier || event->modifiers() == Qt::KeypadModifier))
@@ -195,12 +193,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     connect (ui->inertiaBox, &QCheckBox::stateChanged, this, &PrefDialog::prefInertialScrolling);
     ui->textTabSpin->setValue (textTabSize_);
     connect (ui->textTabSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefTextTabSize);
-    ui->exeBox->setChecked (config.getExecuteScripts());
-    connect (ui->exeBox, &QCheckBox::stateChanged, this, &PrefDialog::prefExecute);
-    ui->commandEdit->setText (config.getExecuteCommand());
-    ui->commandEdit->setEnabled (config.getExecuteScripts());
-    ui->commandLabel->setEnabled (config.getExecuteScripts());
-    connect (ui->commandEdit, &QLineEdit::textEdited, this, &PrefDialog::prefCommand);
     ui->recentSpin->setValue (config.getRecentFilesNumber());
     ui->recentSpin->setSuffix (" " + (ui->recentSpin->value() > 1 ? tr ("files") : tr ("file")));
     connect (ui->recentSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefRecentFilesNumber);
@@ -212,7 +204,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->autoSaveSpin->setEnabled (ui->autoSaveBox->isChecked());
     connect (ui->autoSaveBox, &QCheckBox::stateChanged, this, &PrefDialog::prefAutoSave);
     ui->unmodifiedSaveBox->setChecked (saveUnmodified_);
-
     if (FPwin *win = static_cast<FPwin *>(parent_))
     {
         if (DEFAULT_SHORTCUTS.isEmpty())
@@ -658,8 +649,6 @@ void PrefDialog::prefApplyDateFormat()
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
     Config& config = singleton->getConfig();
     QString format = ui->dateEdit->text();
-    /* if "\n" is typed in the line-edit, interpret
-       it as a newline because we're on Linux */
     if (!format.isEmpty())
         format.replace ("\\n", "\n");
     config.setDateFormat (format);
@@ -865,28 +854,6 @@ void PrefDialog::prefInertialScrolling (int checked)
         }
     }
 }
-void PrefDialog::prefExecute (int checked)
-{
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    if (checked == Qt::Checked)
-    {
-        config.setExecuteScripts (true);
-        ui->commandEdit->setEnabled (true);
-        ui->commandLabel->setEnabled (true);
-    }
-    else if (checked == Qt::Unchecked)
-    {
-        config.setExecuteScripts (false);
-        ui->commandEdit->setEnabled (false);
-        ui->commandLabel->setEnabled (false);
-    }
-}
-void PrefDialog::prefCommand (const QString& command)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    config.setExecuteCommand (command);
-}
 void PrefDialog::prefRecentFilesNumber (int value)
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -1054,8 +1021,6 @@ void PrefDialog::prefShortcuts()
             config.setActionShortcut (it.key(), it.value());
         ++it;
     }
-    /* update the shortcuts for all windows
-       (the current window will update them on closing this dialog) */
     for (int i = 0; i < singleton->Wins.count(); ++i)
     {
         FPwin *win = singleton->Wins.at (i);

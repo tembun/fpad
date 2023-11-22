@@ -93,8 +93,6 @@ private slots:
     void prefTabWrapAround (int checked);
     void prefHideSingleTab (int checked);
     void prefMaxSHSize (int value);
-    void prefExecute (int checked);
-    void prefCommand (const QString& command);
     void prefRecentFilesNumber (int value);
     void prefSaveLastFilesList (int checked);
     void prefOpenInWindows (int checked);
