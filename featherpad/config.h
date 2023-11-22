@@ -266,12 +266,6 @@ public:
     void setAutoReplace (bool autoR) {
         autoReplace_ = autoR;
     }
-    bool getLineByDefault() const {
-        return lineByDefault_;
-    }
-    void setLineByDefault (bool line) {
-        lineByDefault_ = line;
-    }
     bool getShowEndings() const {
         return showEndings_;
     }

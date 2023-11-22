@@ -81,7 +81,6 @@ private slots:
     void prefWrap (int checked);
     void prefIndent (int checked);
     void prefAutoReplace (int checked);
-    void prefLine (int checked);
     void prefVLine (int checked);
     void prefVLineDistance (int value);
     void prefEndings (int checked);

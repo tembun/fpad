@@ -156,8 +156,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     connect (ui->indentBox, &QCheckBox::stateChanged, this, &PrefDialog::prefIndent);
     ui->autoReplaceBox->setChecked (config.getAutoReplace());
     connect (ui->autoReplaceBox, &QCheckBox::stateChanged, this, &PrefDialog::prefAutoReplace);
-    ui->lineBox->setChecked (config.getLineByDefault());
-    connect (ui->lineBox, &QCheckBox::stateChanged, this, &PrefDialog::prefLine);
     ui->vLineBox->setChecked (vLineDistance_ >= 10);
     connect (ui->vLineBox, &QCheckBox::stateChanged, this, &PrefDialog::prefVLine);
     ui->vLineSpin->setEnabled (vLineDistance_ >= 10);
@@ -629,19 +627,6 @@ void PrefDialog::prefAutoReplace (int checked)
                 }
             }
         }
-    }
-}
-void PrefDialog::prefLine (int checked)
-{
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    if (checked == Qt::Checked)
-    {
-        config.setLineByDefault (true);
-    }
-    else if (checked == Qt::Unchecked)
-    {
-        config.setLineByDefault (false);
     }
 }
 void PrefDialog::prefApplyDateFormat()

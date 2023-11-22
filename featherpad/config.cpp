@@ -35,7 +35,6 @@ Config::Config():
     wrapByDefault_ (true),
     indentByDefault_ (true),
     autoReplace_ (false),
-    lineByDefault_ (false),
     showEndings_ (false),
     isMaxed_ (false),
     isFull_ (false),
@@ -178,9 +177,6 @@ void Config::readConfig()
 
     if (settings.value ("autoReplace").toBool())
         autoReplace_ = true; // false by default
-
-    if (settings.value ("lineNumbers").toBool())
-        lineByDefault_ = true; // false by default
 
     if (settings.value ("showEndings").toBool())
         showEndings_ = true; // false by default
@@ -336,7 +332,6 @@ void Config::writeConfig()
     settings.setValue ("noWrap", !wrapByDefault_);
     settings.setValue ("noIndent", !indentByDefault_);
     settings.setValue ("autoReplace", autoReplace_);
-    settings.setValue ("lineNumbers", lineByDefault_);
     settings.setValue ("showEndings", showEndings_);
     settings.setValue ("darkColorScheme", darkColScheme_);
     settings.setValue ("thickCursor", thickCursor_);
