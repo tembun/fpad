@@ -27,46 +27,24 @@
 
 namespace FeatherPad {
 
-static bool showHidden = false; // remember
+static bool showHidden = false;
 
-/* We want to auto-scroll to selected file and
-   remember whether hidden files should be shown. */
 class FileDialog : public QFileDialog {
     Q_OBJECT
 public:
-    FileDialog (QWidget *parent, bool isNative = false) : QFileDialog (parent) {
+    FileDialog (QWidget *parent) : QFileDialog (parent) {
         tView = nullptr;
         p = parent;
-        native = isNative;
         setWindowModality (Qt::WindowModal);
         setViewMode (QFileDialog::Detail);
-        if (!native)
-        {
-            setOption (QFileDialog::DontUseNativeDialog);
-            if (showHidden)
-                setFilter (filter() | QDir::Hidden);
-            QShortcut *toggleHidden0 = new QShortcut (QKeySequence (tr ("Ctrl+H", "Toggle showing hidden files")), this);
-            QShortcut *toggleHidden1 = new QShortcut (QKeySequence (tr ("Alt+.", "Toggle showing hidden files")), this);
-            connect (toggleHidden0, &QShortcut::activated, this, &FileDialog::toggleHidden);
-            connect (toggleHidden1, &QShortcut::activated, this, &FileDialog::toggleHidden);
-        }
     }
 
     ~FileDialog() {
         showHidden = (filter() & QDir::Hidden);
     }
 
-    void autoScroll() {
-        if (native) return;
-        tView = findChild<QTreeView *>("treeView");
-        if (tView)
-            connect (tView->model(), &QAbstractItemModel::layoutChanged, this, &FileDialog::scrollToSelection);
-    }
-
 protected:
     void showEvent(QShowEvent * event) {
-        if (p && !native)
-            QTimer::singleShot (0, this, &FileDialog::center);
         QFileDialog::showEvent (event);
     }
 
@@ -96,7 +74,6 @@ private slots:
 private:
     QTreeView *tView;
     QWidget *p;
-    bool native;
 };
 
 }

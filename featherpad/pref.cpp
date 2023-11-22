@@ -138,8 +138,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->tabCombo->setCurrentIndex (config.getTabPosition());
     ui->tabBox->setChecked (config.getTabWrapAround());
     connect (ui->tabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefTabWrapAround);
-    ui->nativeDialogBox->setChecked (config.getNativeDialog());
-    connect (ui->nativeDialogBox, &QCheckBox::stateChanged, this, &PrefDialog::prefNativeDialog);
     ui->fontBox->setChecked (config.getRemFont());
     connect (ui->fontBox, &QCheckBox::stateChanged, this, &PrefDialog::prefFont);
     ui->wrapBox->setChecked (config.getWrapByDefault());
@@ -775,15 +773,6 @@ void PrefDialog::prefStartSize (int value)
     else if (QObject::sender() == ui->spinY)
         startSize.setHeight (value);
     config.setStartSize (startSize);
-}
-void PrefDialog::prefNativeDialog (int checked)
-{
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    if (checked == Qt::Checked)
-        config.setNativeDialog (true);
-    else if (checked == Qt::Unchecked)
-        config.setNativeDialog (false);
 }
 void PrefDialog::prefSplitterPos (int checked)
 {

@@ -314,19 +314,6 @@ Tab navigation with mouse wheel is not affected.</string>
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="nativeDialogBox">
-                <property name="toolTip">
-                 <string>If this is checked, the file dialog provided by the current
-desktop environment will be used instead of the Qt file dialog.
-
-Some desktop environments, like KDE and LXQt, provide files dialogs.</string>
-                </property>
-                <property name="text">
-                 <string>Native file dialog</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <spacer name="verticalSpacer">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>

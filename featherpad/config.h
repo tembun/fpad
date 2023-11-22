@@ -269,13 +269,6 @@ public:
     void setRemoveTrailingSpaces (bool remove) {
         removeTrailingSpaces_ = remove;
     }
-    bool getNativeDialog() const {
-        return nativeDialog_;
-    }
-    void setNativeDialog (bool native) {
-        nativeDialog_ = native;
-    }
-
     bool getRecentOpened() const {
         return recentOpened_;
     }
@@ -403,7 +396,6 @@ private:
          tabWrapAround_,
          appendEmptyLine_,
          removeTrailingSpaces_,
-         nativeDialog_,
          inertialScrolling_,
          autoSave_,
          skipNonText_,
