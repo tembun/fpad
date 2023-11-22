@@ -31,7 +31,6 @@ Config::Config():
     hideSearchbar_ (false),
     showStatusbar_ (true),
     showCursorPos_ (false),
-    showEndings_ (false),
     isMaxed_ (false),
     isFull_ (false),
     thickCursor_ (false),
@@ -144,9 +143,6 @@ void Config::readConfig()
         else
             font_.setPointSize (qMax (QFont().pointSize(), 9));
     }
-
-    if (settings.value ("showEndings").toBool())
-        showEndings_ = true; // false by default
 
     if (settings.value ("thickCursor").toBool())
         thickCursor_ = true; // false by default
@@ -276,7 +272,6 @@ void Config::writeConfig()
     settings.endGroup();
     settings.beginGroup ("text");
     settings.setValue ("font", font_.toString());
-    settings.setValue ("showEndings", showEndings_);
     settings.setValue ("thickCursor", thickCursor_);
     settings.setValue ("inertialScrolling", inertialScrolling_);
     settings.setValue ("autoSave", autoSave_);

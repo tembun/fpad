@@ -203,12 +203,6 @@ public:
         font_ = font;
     }
     void resetFont();
-    bool getShowEndings() const {
-        return showEndings_;
-    }
-    void setShowEndings (bool show) {
-        showEndings_ = show;
-    }
     int getVLineDistance() const {
         return vLineDistance_;
     }
@@ -360,7 +354,6 @@ private:
          noToolbar_, noMenubar_,
          hideSearchbar_,
          showStatusbar_, showCursorPos_,
-         showEndings_,
          isMaxed_, isFull_,
          thickCursor_,
          tabWrapAround_,

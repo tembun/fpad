@@ -79,7 +79,6 @@ private slots:
     void prefStatusCursor (int checked);
     void prefVLine (int checked);
     void prefVLineDistance (int value);
-    void prefEndings (int checked);
     void prefAppendEmptyLine (int checked);
     void prefRemoveTrailingSpaces (int checked);
     void prefSkipNontext (int checked);

@@ -361,47 +361,12 @@ Tab navigation with mouse wheel is not affected.</string>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
            <item>
             <widget class="QGroupBox" name="textGoupBox">
              <property name="title">
               <string>Text Editor</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_3">
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_4">
-                <item>
-                 <spacer name="horizontalSpacer_4">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeType">
-                   <enum>QSizePolicy::Fixed</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>22</width>
-                    <height>5</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_5">
                 <item>
@@ -437,13 +402,6 @@ Tab navigation with mouse wheel is not affected.</string>
                  </spacer>
                 </item>
                </layout>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="endingsBox">
-                <property name="text">
-                 <string>Also show line and document ends</string>
-                </property>
-               </widget>
               </item>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_6">
