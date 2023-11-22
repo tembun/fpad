@@ -85,13 +85,6 @@ public:
     void setIsFull (bool isFull) {
         isFull_ = isFull;
     }
-    bool getThickCursor() const {
-        return thickCursor_;
-    }
-    void setThickCursor (bool thick) {
-        thickCursor_ = thick;
-    }
-
     int getLightBgColorValue() const {
         return lightBgColorValue_;
     }
@@ -337,7 +330,6 @@ private:
          hideSearchbar_,
          showStatusbar_, showCursorPos_,
          isMaxed_, isFull_,
-         thickCursor_,
          tabWrapAround_,
          inertialScrolling_,
          autoSave_,

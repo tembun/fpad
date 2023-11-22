@@ -136,7 +136,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->tabCombo->setCurrentIndex (config.getTabPosition());
     ui->tabBox->setChecked (config.getTabWrapAround());
     connect (ui->tabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefTabWrapAround);
-    ui->thickCursorBox->setChecked (config.getThickCursor());
     ui->skipNonTextBox->setChecked (config.getSkipNonText());
     connect (ui->skipNonTextBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSkipNontext);
     ui->pastePathsBox->setChecked (pastePaths_);
@@ -258,7 +257,6 @@ void PrefDialog::onClosing()
     prefApplyAutoSave();
     prefTextTab();
     prefSaveUnmodified();
-    prefThickCursor();
     prefPastePaths();
 
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
@@ -508,25 +506,6 @@ void PrefDialog::prefTabPosition()
     {
         for (int i = 0; i < singleton->Wins.count(); ++i)
             singleton->Wins.at (i)->ui->tabWidget->setTabPosition (static_cast<QTabWidget::TabPosition>(index));
-    }
-}
-void PrefDialog::prefThickCursor()
-{
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    bool thick (ui->thickCursorBox->isChecked());
-    config.setThickCursor (thick);
-    for (int i = 0; i < singleton->Wins.count(); ++i)
-    {
-        int count = singleton->Wins.at (i)->ui->tabWidget->count();
-        for (int j = 0; j < count; ++j)
-        {
-            TextEdit *textedit = qobject_cast< TabPage *>(singleton->Wins.at (i)->ui->tabWidget->widget (j))
-                                 ->textEdit();
-            if (j == 0 && textedit->getThickCursor() == thick)
-                return;
-            textedit->setThickCursor (thick);
-        }
     }
 }
 void PrefDialog::prefPastePaths()

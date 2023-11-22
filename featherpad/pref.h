@@ -98,7 +98,6 @@ private:
     void prefTabPosition();
     void prefRecentFilesKind();
     void prefApplyAutoSave();
-    void prefThickCursor();
     void prefPastePaths();
     void showPrompt (const QString& str = QString(), bool temporary = false);
 

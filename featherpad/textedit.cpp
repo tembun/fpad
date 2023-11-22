@@ -73,7 +73,8 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
     keepTxtCurHPos_ = false;
     txtCurHPos_ = -1;
     textTab_ = "    ";
-    setMouseTracking (true);    
+    setMouseTracking (true);
+    setCursorWidth( 4 );
     setStyleSheet ("QPlainTextEdit {"
                            "selection-background-color: rgb(160, 160, 160);"
                            "selection-color: black;}");
@@ -169,8 +170,6 @@ void TextEdit::setEditorFont (const QFont &f, bool setDefault)
     opt.setTabStop (metrics.width (textTab_));
 #endif
     document()->setDefaultTextOption (opt);
-
-    /* the line number is bold only for the current line */
     QFont F(f);
     if (f.bold())
     {
@@ -179,8 +178,7 @@ void TextEdit::setEditorFont (const QFont &f, bool setDefault)
     }
     else
         lineNumberArea_->setFont (f);
-    /* find the widest digit (used in calculating line number area width)*/
-    F.setBold (true); // it's bold for the current line
+    F.setBold (true);
     widestDigit_ = 0;
     int maxW = 0;
     for (int i = 0; i < 10; ++i)
@@ -220,7 +218,7 @@ int TextEdit::lineNumberAreaWidth()
     QFont f = font();
     f.setBold (true);
 #if (QT_VERSION >= QT_VERSION_CHECK(5,11,0))
-    return (6 + QFontMetrics (f).horizontalAdvance (num)); // 6 = 3 + 3 (-> lineNumberAreaPaintEvent)
+    return (6 + QFontMetrics (f).horizontalAdvance (num));
 #else
     return (6 + QFontMetrics (f).width (num));
 #endif
@@ -240,8 +238,6 @@ void TextEdit::updateLineNumberArea (const QRect &rect, int dy)
         lineNumberArea_->scroll (0, dy);
     else
     {
-        /* since the current line number is distinguished from other numbers,
-           its rectangle should be updated also when the line is wrapped */
         if (lastCurrentLine_.isValid())
             lineNumberArea_->update (0, lastCurrentLine_.y(), lineNumberArea_->width(), lastCurrentLine_.height());
         QRect totalRect;
@@ -264,7 +260,7 @@ QString TextEdit::computeIndentation (const QTextCursor &cur) const
 {
     QTextCursor cusror = cur;
     if (cusror.hasSelection())
-    {// this is more intuitive to me
+    {
         if (cusror.anchor() <= cusror.position())
             cusror.setPosition (cusror.anchor());
         else
@@ -296,8 +292,6 @@ QString TextEdit::computeIndentation (const QTextCursor &cur) const
     }
     return str;
 }
-
-// Finds the (remaining) spaces that should be inserted with Ctrl+Tab.
 QString TextEdit::remainingSpaces (const QString& spaceTab, const QTextCursor& cursor) const
 {
     QTextCursor tmp = cursor;
@@ -329,7 +323,6 @@ QTextCursor TextEdit::backTabCursor (const QTextCursor& cursor, bool twoSpace) c
 {
     QTextCursor tmp = cursor;
     tmp.movePosition (QTextCursor::StartOfBlock);
-    /* find the start of the real text */
     const QString blockText = cursor.block().text();
     int indx = 0;
     QRegularExpressionMatch match;
@@ -348,7 +341,7 @@ QTextCursor TextEdit::backTabCursor (const QTextCursor& cursor, bool twoSpace) c
 #endif
     int n = 0, i = 0;
     while ((i = txt.indexOf("\t", i)) != -1)
-    { // find tab widths in terms of spaces
+    {
         tmp.setPosition (tmp.block().position() + i);
         qreal x = static_cast<qreal>(cursorRect (tmp).right());
         tmp.setPosition (tmp.position() + 1);
@@ -366,13 +359,13 @@ QTextCursor TextEdit::backTabCursor (const QTextCursor& cursor, bool twoSpace) c
     QChar ch = blockText.at (indx - 1);
     if (ch == QChar (QChar::Space))
         tmp.setPosition (txtStart - n, QTextCursor::KeepAnchor);
-    else // the previous character is a tab
+    else
     {
         qreal x = static_cast<qreal>(cursorRect (tmp).right());
         tmp.setPosition (txtStart - 1, QTextCursor::KeepAnchor);
         x -= static_cast<qreal>(cursorRect (tmp).right());
         n -= qRound (qAbs (x) / spaceL);
-        if (n < 0) n = 0; // impossible without "twoSpace"
+        if (n < 0) n = 0;
         tmp.setPosition (tmp.position() - n, QTextCursor::KeepAnchor);
     }
 
@@ -738,11 +731,10 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
         if (newLines > 0)
         {
             cursor.beginEditBlock();
-            cursor.setPosition (qMin (cursor.anchor(), cursor.position())); // go to the first block
+            cursor.setPosition (qMin (cursor.anchor(), cursor.position()));
             cursor.movePosition (QTextCursor::StartOfBlock);
             for (int i = 0; i <= newLines; ++i)
             {
-                /* skip all spaces to align the real text */
                 int indx = 0;
                 QRegularExpressionMatch match;
                 if (cursor.block().text().indexOf (QRegularExpression ("^\\s+"), 0, &match) > -1)
@@ -786,19 +778,17 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
             if (cursor.atBlockEnd())
             {
                 if (!cursor.movePosition (QTextCursor::NextBlock))
-                    break; // not needed
+                    break;
                 continue;
             }
             cursor = backTabCursor (cursor, event->modifiers() & Qt::MetaModifier
                                             ? true : false);
             cursor.removeSelectedText();
             if (!cursor.movePosition (QTextCursor::NextBlock))
-                break; // not needed
+                break;
         }
         cursor.endEditBlock();
         ensureCursorVisible();
-
-        /* otherwise, do nothing with SHIFT+TAB */
         event->accept();
         return;
     }
@@ -808,7 +798,7 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
         {
             setOverwriteMode (!overwriteMode());
             if (!overwriteMode())
-                update(); // otherwise, a part of the thick cursor might remain
+                update();
             event->accept();
             return;
         }

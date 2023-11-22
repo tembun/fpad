@@ -672,9 +672,6 @@ TabPage* FPwin::createEmptyTab (bool setCurrent)
     textEdit->setTtextTab (config.getTextTabSize());
     textEdit->setEditorFont (config.getFont());
     textEdit->setInertialScrolling (config.getInertialScrolling());
-    if (config.getThickCursor())
-        textEdit->setThickCursor (true);
-
     int index = ui->tabWidget->currentIndex();
     if (index == -1) enableWidgets (true);
     if ((index == -1 && config.getHideSearchbar())

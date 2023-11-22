@@ -447,13 +447,6 @@ Tab navigation with mouse wheel is not affected.</string>
                </layout>
               </item>
               <item>
-               <widget class="QCheckBox" name="thickCursorBox">
-                <property name="text">
-                 <string>Thick text cursor</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="inertiaBox">
                 <property name="toolTip">
                  <string>Should the mouse wheel scrolling be inertial

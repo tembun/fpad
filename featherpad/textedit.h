@@ -167,12 +167,6 @@ public:
     void setSaveCursor (bool save) {
         saveCursor_ = save;
     }
-    bool getThickCursor() const {
-        return (cursorWidth() > 1);
-    }
-    void setThickCursor (bool thick) {
-        setCursorWidth (thick ? 4 : 1);
-    }
     void forgetTxtCurHPos() {
         keepTxtCurHPos_ = false;
         txtCurHPos_ = -1;
