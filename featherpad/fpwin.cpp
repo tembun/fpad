@@ -65,8 +65,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     loadingProcesses_ = 0;
     rightClicked_ = -1;
     busyThread_ = nullptr;
-    autoSaver_ = nullptr;
-    autoSaverRemainingTime_ = -1;
     inactiveTabModified_ = false;
     ui->spinBox->hide();
     ui->label->hide();
@@ -208,7 +206,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
 }
 FPwin::~FPwin()
 {
-    startAutoSaving (false);
     delete dummyWidget; dummyWidget = nullptr;
     delete aGroup_; aGroup_ = nullptr;
     delete ui; ui = nullptr;
@@ -325,9 +322,6 @@ void FPwin::applyConfigOnStarting()
             action->setShortcut (QKeySequence (it.value(), QKeySequence::PortableText));
         ++it;
     }
-
-    if (config.getAutoSave())
-        startAutoSaving (true, config.getAutoSaveInterval());
 }
 void FPwin::addCursorPosLabel()
 {
@@ -390,7 +384,6 @@ void FPwin::deleteTabPage (int tabIndex, bool saveToList)
 bool FPwin::closeTabs (int first, int last, bool saveFilesList)
 {
     if (!isReady()) return true;
-    pauseAutoSaving (true);
     TabPage *curPage = nullptr;
         int cur = ui->tabWidget->currentIndex();
         if (!(first < cur && (cur < last || last == -1)))
@@ -424,7 +417,6 @@ bool FPwin::closeTabs (int first, int last, bool saveFilesList)
 
             if (last > -1)
                 --last;
-
             count = ui->tabWidget->count();
             if (count == 0)
             {
@@ -468,16 +460,12 @@ bool FPwin::closeTabs (int first, int last, bool saveFilesList)
             break;
         }
     }
-
     unbusy();
     if (!keep)
     {
         if (curPage)
             ui->tabWidget->setCurrentWidget (curPage);
     }
-
-    pauseAutoSaving (false);
-
     return keep;
 }
 void FPwin::closeOtherTabs()
@@ -513,7 +501,6 @@ void FPwin::dropEvent (QDropEvent *event)
                             0,
                             multiple);
     }
-
     event->acceptProposedAction();
 }
 FPwin::DOCSTATE FPwin::savePrompt (int tabIndex, bool noToAll)
@@ -533,9 +520,7 @@ FPwin::DOCSTATE FPwin::savePrompt (int tabIndex, bool noToAll)
         {
             ui->tabWidget->setCurrentIndex (tabIndex);
         }
-
         updateShortcuts (true);
-
         MessageBox msgBox (this);
         msgBox.setText ("<center><b><big>" + tr ("Save changes?") + "</big></b></center>");
         if (isRemoved)
@@ -575,7 +560,6 @@ FPwin::DOCSTATE FPwin::savePrompt (int tabIndex, bool noToAll)
             state = UNDECIDED;
             break;
         }
-
         updateShortcuts (false);
     }
     return state;
@@ -619,7 +603,6 @@ void FPwin::updateCustomizableShortcuts (bool disable)
         QHash<QString, QString> ca = static_cast<FPsingleton*>(qApp)->
                 getConfig().customShortcutActions();
         QList<QString> cn = ca.keys();
-
         while (iter != defaultShortcuts_.constEnd())
         {
             const QString name = iter.key()->objectName();
@@ -645,7 +628,6 @@ void FPwin::updateShortcuts (bool disable, bool page)
         ui->toolButtonAll->setShortcut (QKeySequence (Qt::Key_F10));
     }
     updateCustomizableShortcuts (disable);
-
     if (page)
     {
         if (TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget()))
@@ -863,21 +845,15 @@ void FPwin::focus_view_hard()
 void FPwin::closeTab()
 {
     if (!isReady()) return;
-
-    pauseAutoSaving (true);
-
     QListWidgetItem *curItem = nullptr;
     int index = -1;
-	index = ui->tabWidget->currentIndex();
-	if (index == -1)
-	{
-	pauseAutoSaving (false);
-	return;
-	}
-
+    index = ui->tabWidget->currentIndex();
+    if (index == -1)
+    {
+        return;
+    }
     if (savePrompt (index, false) != SAVED)
     {
-        pauseAutoSaving (false);
         return;
     }
 
@@ -895,19 +871,14 @@ void FPwin::closeTab()
         if (TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget()))
             tabPage->textEdit()->setFocus();
     }
-
-    pauseAutoSaving (false);
 }
 void FPwin::closeTabAtIndex (int index)
 {
-    pauseAutoSaving (true);
-
     TabPage *curPage = nullptr;
     if (index != ui->tabWidget->currentIndex())
         curPage = qobject_cast<TabPage*>(ui->tabWidget->currentWidget());
     if (savePrompt (index, false) != SAVED)
     {
-        pauseAutoSaving (false);
         return;
     }
     closeWarningBar();
@@ -928,8 +899,6 @@ void FPwin::closeTabAtIndex (int index)
         if (TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget()))
             tabPage->textEdit()->setFocus();
     }
-
-    pauseAutoSaving (false);
 }
 void FPwin::setTitle (const QString& fileName, int tabIndex)
 {
@@ -2441,53 +2410,6 @@ void FPwin::manageSessions()
     dlg->show();
     dlg->raise();
     dlg->activateWindow();
-}
-void FPwin::pauseAutoSaving (bool pause)
-{
-    if (!autoSaver_) return;
-    if (pause)
-    {
-        autoSaverPause_.start();
-        autoSaverRemainingTime_ = autoSaver_->remainingTime();
-    }
-    else if (autoSaverPause_.isValid())
-    {
-        if (autoSaverPause_.hasExpired (autoSaverRemainingTime_))
-        {
-            autoSaverPause_.invalidate();
-            autoSave();
-        }
-        else
-            autoSaverPause_.invalidate();
-    }
-}
-void FPwin::startAutoSaving (bool start, int interval)
-{
-    if (start)
-    {
-        if (!autoSaver_)
-        {
-            autoSaver_ = new QTimer (this);
-            connect (autoSaver_, &QTimer::timeout, this, &FPwin::autoSave);
-        }
-        autoSaver_->setInterval (interval * 1000 * 60);
-        autoSaver_->start();
-    }
-    else if (autoSaver_)
-    {
-        if (autoSaver_->isActive())
-            autoSaver_->stop();
-        delete autoSaver_; autoSaver_ = nullptr;
-    }
-}
-void FPwin::autoSave()
-{
-    if (autoSaverPause_.isValid()) return;
-    QTimer::singleShot (0, this, [=]() {
-        if (!autoSaver_ || !autoSaver_->isActive())
-            return;
-        saveAllFiles (false);
-    });
 }
 void FPwin::saveAllFiles (bool showWarning)
 {

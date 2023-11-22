@@ -271,20 +271,6 @@ public:
     void setLastFileCursorPos (const QHash<QString, QVariant>& curPos) {
         lasFilesCursorPos_ = curPos;
     }
-
-    bool getAutoSave() const {
-        return autoSave_;
-    }
-    void setAutoSave (bool as) {
-        autoSave_ = as;
-    }
-    int getAutoSaveInterval() const {
-        return autoSaveInterval_;
-    }
-    void setAutoSaveInterval (int i) {
-        autoSaveInterval_ = i;
-    }
-
     bool getSaveUnmodified() const {
         return saveUnmodified_;
     }
@@ -315,7 +301,6 @@ private:
          showStatusbar_, showCursorPos_,
          isMaxed_, isFull_,
          tabWrapAround_,
-         autoSave_,
          skipNonText_,
          saveUnmodified_,
          pastePaths_,
@@ -325,7 +310,6 @@ private:
         lightBgColorValue_,
         recentFilesNumber_,
         curRecentFilesNumber_,
-        autoSaveInterval_,
         textTabSize_;
     QSize winSize_, startSize_, prefSize_;
     QPoint winPos_;

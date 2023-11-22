@@ -84,8 +84,6 @@ public:
     void showRootWarning();
     void updateCustomizableShortcuts (bool disable = false);
 
-    void startAutoSaving (bool start, int interval = 1);
-
     QHash<QAction*, QKeySequence> defaultShortcuts() const {
         return defaultShortcuts_;
     }
@@ -160,8 +158,6 @@ private slots:
     void onPermissionDenied();
     void onOpeningUneditable();
     void onOpeningNonexistent();
-    void autoSave();
-    void pauseAutoSaving (bool pause);
 
 public:
     QWidget *dummyWidget;
@@ -223,9 +219,6 @@ private:
     QHash<QString, QAction*> langs_;
     QHash<QAction*, QKeySequence> defaultShortcuts_;
     bool inactiveTabModified_;
-    QTimer *autoSaver_;
-    QElapsedTimer autoSaverPause_;
-    int autoSaverRemainingTime_;
 
     bool standalone_;
 };

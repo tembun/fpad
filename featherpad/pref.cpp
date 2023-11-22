@@ -145,10 +145,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->recentSpin->setSuffix (" " + (ui->recentSpin->value() > 1 ? tr ("files") : tr ("file")));
     connect (ui->recentSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefRecentFilesNumber);
     ui->openedButton->setChecked (config.getRecentOpened());
-    ui->autoSaveBox->setChecked (config.getAutoSave());
-    ui->autoSaveSpin->setValue (config.getAutoSaveInterval());
-    ui->autoSaveSpin->setEnabled (ui->autoSaveBox->isChecked());
-    connect (ui->autoSaveBox, &QCheckBox::stateChanged, this, &PrefDialog::prefAutoSave);
     ui->unmodifiedSaveBox->setChecked (saveUnmodified_);
     if (FPwin *win = static_cast<FPwin *>(parent_))
     {
@@ -250,7 +246,6 @@ void PrefDialog::onClosing()
     prefShortcuts();
     prefTabPosition();
     prefRecentFilesKind();
-    prefApplyAutoSave();
     prefTextTab();
     prefSaveUnmodified();
     prefPastePaths();
@@ -691,13 +686,6 @@ void PrefDialog::prefShortcuts()
             win->updateCustomizableShortcuts();
     }
 }
-void PrefDialog::prefAutoSave (int checked)
-{
-    if (checked == Qt::Checked)
-        ui->autoSaveSpin->setEnabled (true);
-    else if (checked == Qt::Unchecked)
-        ui->autoSaveSpin->setEnabled (false);
-}
 void PrefDialog::prefSaveUnmodified()
 {
     FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
@@ -727,20 +715,6 @@ void PrefDialog::prefSaveUnmodified()
             else
                 connect (textEdit->document(), &QTextDocument::modificationChanged, win, &FPwin::enableSaving);
         }
-    }
-}
-void PrefDialog::prefApplyAutoSave()
-{
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    bool as = ui->autoSaveBox->isChecked();
-    int interval = ui->autoSaveSpin->value();
-    if (config.getAutoSave() != as || interval != config.getAutoSaveInterval())
-    {
-        config.setAutoSave (as);
-        config.setAutoSaveInterval (interval);
-        for (int i = 0; i < singleton->Wins.count(); ++i)
-            singleton->Wins.at (i)->startAutoSaving (as, interval);
     }
 }
 void PrefDialog::prefTextTabSize (int value)

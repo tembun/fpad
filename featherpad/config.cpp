@@ -34,7 +34,6 @@ Config::Config():
     isMaxed_ (false),
     isFull_ (false),
     tabWrapAround_ (false),
-    autoSave_ (false),
     skipNonText_ (true),
     saveUnmodified_ (false),
     pastePaths_ (false),
@@ -44,7 +43,6 @@ Config::Config():
     lightBgColorValue_ (255),
     recentFilesNumber_ (10),
     curRecentFilesNumber_ (10),
-    autoSaveInterval_ (1),
     textTabSize_ (6),
     winSize_ (QSize (700, 500)),
     startSize_ (QSize (700, 500)),
@@ -137,10 +135,6 @@ void Config::readConfig()
         else
             font_.setPointSize (qMax (QFont().pointSize(), 9));
     }
-
-    if (settings.value ("autoSave").toBool())
-        autoSave_ = true; // false by default
-
     v = settings.value ("skipNonText");
     if (v.isValid()) // true by default
         skipNonText_ = v.toBool();
@@ -162,7 +156,6 @@ void Config::readConfig()
         recentFiles_.removeLast();
     if (settings.value ("recentOpened").toBool())
         recentOpened_ = true; // false by default
-    autoSaveInterval_ = qBound (1, settings.value ("autoSaveInterval", 1).toInt(), 60);
     textTabSize_ = qBound (2, settings.value ("textTabSize", 4).toInt(), 10);
     settings.endGroup();
 }
@@ -246,7 +239,6 @@ void Config::writeConfig()
     settings.endGroup();
     settings.beginGroup ("text");
     settings.setValue ("font", font_.toString());
-    settings.setValue ("autoSave", autoSave_);
     settings.setValue ("skipNonText", skipNonText_);
     settings.setValue ("saveUnmodified", saveUnmodified_);
     settings.setValue ("pastePaths", pastePaths_);
@@ -260,7 +252,6 @@ void Config::writeConfig()
     else
         settings.setValue ("recentFiles", recentFiles_);
     settings.setValue ("recentOpened", recentOpened_);
-    settings.setValue ("autoSaveInterval", autoSaveInterval_);
     settings.setValue ("textTabSize", textTabSize_);
     settings.endGroup();
     settings.beginGroup ("shortcuts");

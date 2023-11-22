@@ -86,7 +86,6 @@ private slots:
     void prefShortcuts();
     void restoreDefaultShortcuts();
     void onShortcutChange (QTableWidgetItem *item);
-    void prefAutoSave (int checked);
     void prefSaveUnmodified();
     void prefTextTabSize (int value);
     void prefTextTab();
@@ -95,7 +94,6 @@ private:
     void closeEvent (QCloseEvent *event);
     void prefTabPosition();
     void prefRecentFilesKind();
-    void prefApplyAutoSave();
     void prefPastePaths();
     void showPrompt (const QString& str = QString(), bool temporary = false);
 
