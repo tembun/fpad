@@ -72,14 +72,12 @@ set(featherpad_SRCS
     tabpage.cpp
     searchbar.cpp
     session.cpp
-    fontDialog.cpp
-    svgicons.cpp)
+    fontDialog.cpp)
 
 if(NOT WITHOUT_X11 AND UNIX AND NOT APPLE AND NOT HAIKU)
   set(featherpad_SRCS ${featherpad_SRCS} x11.cpp)
 endif()
 
-set(featherpad_RESOURCES data/fp.qrc)
 set(ICON_FILE data/featherpad.svg)
 
 if(CMAKE_VERSION VERSION_LESS "3.10.0") # CMP0071 in 3.10: Let AUTOMOC and AUTOUIC process GENERATED files

@@ -32,13 +32,12 @@ TabBar::TabBar (QWidget *parent)
     : QTabBar (parent)
 {
     setMouseTracking (true);
-    setElideMode (Qt::ElideMiddle); // works with minimumTabSizeHint()
+    setElideMode (Qt::ElideMiddle);
     hideSingle_ = false;
     lock_ = false;
-    dragStarted_ = false; // not needed
+    dragStarted_ = false;
     noTabDND_ = false;
 }
-/*************************/
 void TabBar::mousePressEvent (QMouseEvent *event)
 {
     if (lock_)
@@ -57,7 +56,6 @@ void TabBar::mousePressEvent (QMouseEvent *event)
 
     dragStarted_ = false;
 }
-/*************************/
 void TabBar::mouseReleaseEvent (QMouseEvent *event)
 {
     QTabBar::mouseReleaseEvent (event);
@@ -70,7 +68,6 @@ void TabBar::mouseReleaseEvent (QMouseEvent *event)
             emit hideTabBar();
     }
 }
-/*************************/
 void TabBar::mouseMoveEvent (QMouseEvent *event)
 {
     if (!dragStartPosition_.isNull()
@@ -90,31 +87,22 @@ void TabBar::mouseMoveEvent (QMouseEvent *event)
             event->accept();
             return;
         }
-
         QPointer<QDrag> drag = new QDrag (this);
         QMimeData *mimeData = new QMimeData;
         QByteArray array = (QString::number(window()->winId()) + "+" + QString::number(index)).toUtf8();
         mimeData->setData ("application/featherpad-tab", array);
         drag->setMimeData (mimeData);
-        QPixmap px = QIcon (":icons/tab.svg").pixmap (22, 22);
-        drag->setPixmap (px);
-        drag->setHotSpot (QPoint (px.width()/2, px.height()));
         int N = count();
         Qt::DropAction dragged = drag->exec (Qt::MoveAction);
         if (dragged != Qt::MoveAction)
         {
-            /* A tab is dropped outside all windows. WARNING: Under Enlightenment,
-               this may be Qt::CopyAction, not IgnoreAction (an E bug). */
             if (N > 1)
                 emit tabDetached();
             else
                 finishMouseMoveEvent();
         }
-        else // a tab is dropped into another window
+        else
         {
-            /* WARNING: Theoretically, only FeatherPad should accept its tab drops
-               but another app (like Dolphin) may incorrectly accept any drop. So,
-               if no tab is removed here, we release the mouse as a workaround. */
             if (count() == N)
                 releaseMouse();
         }
@@ -131,8 +119,6 @@ void TabBar::mouseMoveEvent (QMouseEvent *event)
             QToolTip::hideText();
     }
 }
-/*************************/
-// Don't show tooltip with setTabToolTip().
 bool TabBar::event (QEvent *event)
 {
 #ifndef QT_NO_TOOLTIP
@@ -144,7 +130,6 @@ bool TabBar::event (QEvent *event)
     return QTabBar::event (event);
 #endif
 }
-/*************************/
 void TabBar::wheelEvent (QWheelEvent *event)
 {
     if (!lock_)
@@ -152,13 +137,11 @@ void TabBar::wheelEvent (QWheelEvent *event)
     else
         event->ignore();
 }
-/*************************/
 void TabBar::tabRemoved (int/* index*/)
 {
     if (hideSingle_ && count() == 1)
         hide();
 }
-/*************************/
 void TabBar::tabInserted (int/* index*/)
 {
     if (hideSingle_)
@@ -169,19 +152,16 @@ void TabBar::tabInserted (int/* index*/)
             show();
     }
 }
-/*************************/
 void TabBar::finishMouseMoveEvent()
 {
     QMouseEvent finishingEvent (QEvent::MouseMove, QPoint(), Qt::NoButton, Qt::NoButton, Qt::NoModifier);
     mouseMoveEvent (&finishingEvent);
 }
-/*************************/
 void TabBar::releaseMouse()
 {
     QMouseEvent releasingEvent (QEvent::MouseButtonRelease, QPoint(), Qt::LeftButton, Qt::NoButton, Qt::NoModifier);
     mouseReleaseEvent (&releasingEvent);
 }
-/*************************/
 QSize TabBar::tabSizeHint(int index) const
 {
     switch (shape()) {
@@ -196,9 +176,6 @@ QSize TabBar::tabSizeHint(int index) const
                       QTabBar::tabSizeHint (index).height());
     }
 }
-/*************************/
-// Set minimumTabSizeHint to tabSizeHint
-// to keep tabs from shrinking with eliding.
 QSize TabBar::minimumTabSizeHint(int index) const
 {
     return tabSizeHint (index);

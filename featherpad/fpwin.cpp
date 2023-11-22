@@ -27,7 +27,6 @@
 #include "fontDialog.h"
 #include "loading.h"
 #include "warningbar.h"
-#include "svgicons.h"
 
 #include <QPrintDialog>
 #include <QToolTip>
@@ -82,8 +81,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     wordButton->setFocusPolicy (Qt::NoFocus);
     wordButton->setAutoRaise (true);
     wordButton->setToolButtonStyle (Qt::ToolButtonIconOnly);
-    wordButton->setIconSize (QSize (16, 16));
-    wordButton->setIcon (symbolicIcon::icon (":icons/view-refresh.svg"));
     wordButton->setToolTip ("<p style='white-space:pre'>"
                             + tr ("Calculate number of words\n(For huge texts, this may be CPU-intensive.)")
                             + "</p>");
@@ -296,19 +293,6 @@ void FPwin::applyConfigOnStarting()
         }
     }
     ui->actionSave->setEnabled (config.getSaveUnmodified());
-    ui->actionNew->setIcon (symbolicIcon::icon (":icons/document-new.svg"));
-    ui->actionOpen->setIcon (symbolicIcon::icon (":icons/document-open.svg"));
-    ui->actionSave->setIcon (symbolicIcon::icon (":icons/document-save.svg"));
-    ui->actionSaveAs->setIcon (symbolicIcon::icon (":icons/document-save-as.svg"));
-    ui->actionSaveAllFiles->setIcon (symbolicIcon::icon (":icons/document-save-all.svg"));
-    ui->actionDoc->setIcon (symbolicIcon::icon (":icons/document-properties.svg"));
-    ui->actionReload->setIcon (symbolicIcon::icon (":icons/view-refresh.svg"));
-    ui->actionFont->setIcon (symbolicIcon::icon (":icons/preferences-desktop-font.svg"));
-    ui->actionPreferences->setIcon (symbolicIcon::icon (":icons/preferences-system.svg"));
-    ui->actionMenu->setIcon (symbolicIcon::icon (":icons/application-menu.svg"));
-    ui->toolButtonNext->setIcon (symbolicIcon::icon (":icons/go-down.svg"));
-    ui->toolButtonPrv->setIcon (symbolicIcon::icon (":icons/go-up.svg"));
-    ui->toolButtonAll->setIcon (symbolicIcon::icon (":icons/arrow-down-double.svg"));
     QIcon icn = QIcon::fromTheme ("featherpad");
     if (icn.isNull())
         icn = QIcon (":icons/featherpad.svg");
@@ -560,7 +544,6 @@ FPwin::DOCSTATE FPwin::savePrompt (int tabIndex, bool noToAll)
         updateShortcuts (true);
 
         MessageBox msgBox (this);
-        msgBox.setIcon (QMessageBox::Question);
         msgBox.setText ("<center><b><big>" + tr ("Save changes?") + "</big></b></center>");
         if (isRemoved)
             msgBox.setInformativeText ("<center><i>" + tr ("The file does not exist.") + "</i></center>");
@@ -967,8 +950,6 @@ void FPwin::setTitle (const QString& fileName, int tabIndex)
     int index = tabIndex;
     if (index < 0)
         index = ui->tabWidget->currentIndex();
-
-    bool isLink (false);
     QString shownName;
     if (fileName.isEmpty())
     {
@@ -982,17 +963,12 @@ void FPwin::setTitle (const QString& fileName, int tabIndex)
         if (tabIndex < 0)
             setWindowTitle (fileName.contains ("/") ? fileName
                                                     : fInfo.absolutePath() + "/" + fileName);
-        isLink = fInfo.isSymLink();
         shownName = fileName.section ('/', -1);
         shownName.replace ("\n", " ");
     }
     shownName.replace ("&", "&&");
     shownName.replace ('\t', ' ');
     ui->tabWidget->setTabText (index, shownName);
-    if (isLink)
-        ui->tabWidget->setTabIcon (index, QIcon (":icons/link.svg"));
-    else
-        ui->tabWidget->setTabIcon (index, QIcon());
 }
 void FPwin::enableSaving (bool modified)
 {
@@ -2373,10 +2349,6 @@ void FPwin::dropTab (const QString& str)
     }
     if (ui->tabWidget->count() == 0)
         enableWidgets (true);
-    bool isLink = lastFile_.isEmpty() ? false : QFileInfo (lastFile_).isSymLink();
-    ui->tabWidget->insertTab (insertIndex, tabPage,
-                              isLink ? QIcon (":icons/link.svg") : QIcon(),
-                              tabText);
     ui->tabWidget->setCurrentIndex (insertIndex);
     QList<QTextEdit::ExtraSelection> es;
     if ((ln || spin)

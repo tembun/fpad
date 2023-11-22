@@ -21,7 +21,6 @@
 #include <QCompleter>
 #include <QTimer>
 #include "searchbar.h"
-#include "svgicons.h"
 
 namespace FeatherPad {
 
@@ -108,8 +107,6 @@ SearchBar::SearchBar(QWidget *parent,
     }
     toolButton_nxt_ = new QToolButton (this);
     toolButton_prv_ = new QToolButton (this);
-    toolButton_nxt_->setIcon (symbolicIcon::icon (":icons/go-down.svg"));
-    toolButton_prv_->setIcon (symbolicIcon::icon (":icons/go-up.svg"));
     toolButton_nxt_->setAutoRaise (true);
     toolButton_prv_->setAutoRaise (true);
     toolButton_nxt_->setShortcut (nxtShortcut);
@@ -117,19 +114,16 @@ SearchBar::SearchBar(QWidget *parent,
     toolButton_nxt_->setToolTip (tr ("Next") + " (" + nxtShortcut.toString (QKeySequence::NativeText) + ")");
     toolButton_prv_->setToolTip (tr ("Previous") + " (" + prevShortcut.toString (QKeySequence::NativeText) + ")");
     button_case_ = new QToolButton (this);
-    button_case_->setIcon (symbolicIcon::icon (":icons/case.svg"));
     button_case_->setToolTip (tr ("Match Case") + " (" + csShortcut.toString (QKeySequence::NativeText) + ")");
     button_case_->setShortcut (csShortcut);
     button_case_->setCheckable (true);
     button_case_->setFocusPolicy (Qt::NoFocus);
     button_whole_ = new QToolButton (this);
-    button_whole_->setIcon (symbolicIcon::icon (":icons/whole.svg"));
     button_whole_->setToolTip (tr ("Whole Word") + " (" + wholeShortcut.toString (QKeySequence::NativeText) + ")");
     button_whole_->setShortcut (wholeShortcut);
     button_whole_->setCheckable (true);
     button_whole_->setFocusPolicy (Qt::NoFocus);
     button_regex_ = new QToolButton (this);
-    button_regex_->setIcon (symbolicIcon::icon (":icons/regex.svg"));
     button_regex_->setToolTip (tr ("Regular Expression") + " (" + regexShortcut.toString (QKeySequence::NativeText) + ")");
     button_regex_->setShortcut (regexShortcut);
     button_regex_->setCheckable (true);
