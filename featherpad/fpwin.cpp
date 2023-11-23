@@ -50,6 +50,7 @@
 #endif
 
 namespace FeatherPad {
+QString modified_prefix = QString("[ * ]");
 void BusyMaker::waiting() {
     QTimer::singleShot (timeout, this, &BusyMaker::makeBusy);
 }
@@ -858,18 +859,18 @@ void FPwin::asterisk (bool modified)
     if (fname.isEmpty())
     {
         shownName = tr ("Untitled");
-        setWindowTitle ((modified ? "*" : QString()) + shownName);
+        setWindowTitle ((modified ? modified_prefix : QString()) + shownName);
     }
     else
     {
         shownName = fname.section ('/', -1);
-        setWindowTitle ((modified ? "*" : QString())
+        setWindowTitle ((modified ? modified_prefix : QString())
                         + (fname.contains ("/") ? fname
                                                 : QFileInfo (fname).absolutePath() + "/" + fname));
     }
     shownName.replace ("\n", " ");
     if (modified)
-        shownName.prepend ("*");
+        shownName.prepend (modified_prefix);
     shownName.replace ("&", "&&");
     shownName.replace ('\t', ' ');
     ui->tabWidget->setTabText (index, shownName);
@@ -1605,13 +1606,11 @@ void FPwin::tabSwitch (int index)
         setWindowModified (false);
         return;
     }
-
     TextEdit *textEdit = tabPage->textEdit();
     if (!tabPage->isSearchBarVisible())
         textEdit->setFocus();
     QString fname = textEdit->getFileName();
     bool modified (textEdit->document()->isModified());
-
     QFileInfo info;
     QString shownName;
     if (fname.isEmpty())
@@ -1630,7 +1629,7 @@ void FPwin::tabSwitch (int index)
                             + "<center>" + tr ("Please be careful about reloading or saving this document!") + "</center>");
     }
     if (modified)
-        shownName.prepend ("*");
+        shownName.prepend (modified_prefix);
     setWindowTitle (shownName);
     encodingToCheck (textEdit->getEncoding());
     Config config = static_cast<FPsingleton*>(qApp)->getConfig();
