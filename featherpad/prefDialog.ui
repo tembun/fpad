@@ -153,35 +153,6 @@ and may not work with some window managers.</string>
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QCheckBox" name="tabBox">
-                <property name="toolTip">
-                 <string>This means that, for LTR, Alt+Right goes to the first tab
-after the last tab is activated, and the same for Alt+Left.
-
-Tab navigation with mouse wheel is not affected.</string>
-                </property>
-                <property name="text">
-                 <string>Tab navigation wraps &amp;around</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::MinimumExpanding</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>5</width>
-                  <height>1</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
              </layout>
             </widget>
            </item>

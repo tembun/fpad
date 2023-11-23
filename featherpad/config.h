@@ -97,12 +97,6 @@ public:
     void setTextTabSize (int textTab) {
         textTabSize_ = textTab;
     }
-    bool getTabWrapAround() const {
-        return tabWrapAround_;
-    }
-    void setTabWrapAround (bool wrap) {
-        tabWrapAround_ = wrap;
-    }
     QSize getWinSize() const {
         return winSize_;
     }
@@ -208,7 +202,6 @@ private:
 
     bool remSize_, remPos_, remSplitterPos_,
          isMaxed_, isFull_,
-         tabWrapAround_,
          saveUnmodified_;
     int maxSHSize_,
         lightBgColorValue_,

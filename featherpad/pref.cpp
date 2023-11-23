@@ -118,8 +118,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     connect (ui->spinY, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefStartSize);
     ui->winPosBox->setChecked (config.getRemPos());
     connect (ui->winPosBox, &QCheckBox::stateChanged, this, &PrefDialog::prefPos);
-    ui->tabBox->setChecked (config.getTabWrapAround());
-    connect (ui->tabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefTabWrapAround);
     ui->textTabSpin->setValue (textTabSize_);
     connect (ui->textTabSpin, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefTextTabSize);
     ui->unmodifiedSaveBox->setChecked (saveUnmodified_);
@@ -298,14 +296,6 @@ void PrefDialog::prefPos (int checked)
         config.setRemPos (true);
     else if (checked == Qt::Unchecked)
         config.setRemPos (false);
-}
-void PrefDialog::prefTabWrapAround (int checked)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    if (checked == Qt::Checked)
-        config.setTabWrapAround (true);
-    else if (checked == Qt::Unchecked)
-        config.setTabWrapAround (false);
 }
 void PrefDialog::prefMaxSHSize (int value)
 {

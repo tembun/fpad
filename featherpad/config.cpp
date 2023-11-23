@@ -28,7 +28,6 @@ Config::Config():
     remSplitterPos_ (true),
     isMaxed_ (false),
     isFull_ (false),
-    tabWrapAround_ (false),
     saveUnmodified_ (false),
     maxSHSize_ (2),
     lightBgColorValue_ (255),
@@ -74,9 +73,6 @@ void Config::readConfig()
         splitterPos_ = qMin (qMax (settings.value ("splitterPos", 20).toInt(), 0), 100);
 
     prefSize_ = settings.value ("prefSize").toSize();
-
-    if (settings.value ("tabWrapAround").toBool())
-        tabWrapAround_ = true; // false by default
 
     settings.endGroup();
 
@@ -170,7 +166,6 @@ void Config::writeConfig()
 
     settings.setValue ("prefSize", prefSize_);
     settings.setValue ("startSize", startSize_);
-    settings.setValue ("tabWrapAround", tabWrapAround_);
     settings.endGroup();
     settings.beginGroup ("text");
     settings.setValue ("font", font_.toString());

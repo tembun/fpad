@@ -1927,7 +1927,7 @@ void FPwin::nextTab()
     if (index == -1) return;
         if (QWidget *widget = ui->tabWidget->widget (index + 1))
             ui->tabWidget->setCurrentWidget (widget);
-        else if (static_cast<FPsingleton*>(qApp)->getConfig().getTabWrapAround())
+        else
             ui->tabWidget->setCurrentIndex (0);
 }
 void FPwin::previousTab()
@@ -1938,7 +1938,7 @@ void FPwin::previousTab()
     if (index == -1) return;
         if (QWidget *widget = ui->tabWidget->widget (index - 1))
             ui->tabWidget->setCurrentWidget (widget);
-        else if (static_cast<FPsingleton*>(qApp)->getConfig().getTabWrapAround())
+        else
         {
             int count = ui->tabWidget->count();
             if (count > 0)

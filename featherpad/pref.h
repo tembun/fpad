@@ -71,7 +71,6 @@ private slots:
     void prefSize (int checked);
     void prefStartSize (int value);
     void prefPos (int checked);
-    void prefTabWrapAround (int checked);
     void prefMaxSHSize (int value);
     void prefSplitterPos (int checked);
     void showWhatsThis();
