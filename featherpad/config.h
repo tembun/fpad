@@ -134,12 +134,6 @@ public:
     void setSplitterPos (int pos) {
         splitterPos_ = pos;
     }
-    bool getHideSearchbar() const {
-        return hideSearchbar_;
-    }
-    void setHideSearchbar (bool hide) {
-        hideSearchbar_ = hide;
-    }
     bool getShowStatusbar() const {
         return showStatusbar_;
     }
@@ -238,7 +232,6 @@ private:
     void writeCursorPos();
 
     bool remSize_, remPos_, remSplitterPos_,
-         hideSearchbar_,
          showStatusbar_, showCursorPos_,
          isMaxed_, isFull_,
          tabWrapAround_,

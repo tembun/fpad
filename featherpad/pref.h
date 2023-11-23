@@ -71,7 +71,6 @@ private slots:
     void prefSize (int checked);
     void prefStartSize (int value);
     void prefPos (int checked);
-    void prefSearchbar (int checked);
     void prefSearchHistory (int checked);
     void prefStatusbar (int checked);
     void prefStatusCursor (int checked);

@@ -174,13 +174,6 @@ and may not work with some window managers.</string>
                </layout>
               </item>
               <item>
-               <widget class="QCheckBox" name="searchbarBox">
-                <property name="text">
-                 <string>Hide search &amp;bar by default</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="searchHistoryBox">
                 <property name="toolTip">
                  <string>By default, each search entry

@@ -637,11 +637,7 @@ TabPage* FPwin::createEmptyTab (bool setCurrent)
     textEdit->setEditorFont (config.getFont());
     int index = ui->tabWidget->currentIndex();
     if (index == -1) enableWidgets (true);
-    if ((index == -1 && config.getHideSearchbar())
-        || (index > -1 && !qobject_cast< TabPage *>(ui->tabWidget->widget (index))->isSearchBarVisible()))
-    {
-        tabPage->setSearchBarVisible (false);
-    }
+    tabPage->setSearchBarVisible (false);
     ui->tabWidget->insertTab (index + 1, tabPage, tr ("Untitled"));
     ui->tabWidget->setTabToolTip (index + 1, tr ("Unsaved"));
     if (!ui->actionWrap->isChecked())

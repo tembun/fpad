@@ -26,7 +26,6 @@ Config::Config():
     remSize_ (true),
     remPos_ (false),
     remSplitterPos_ (true),
-    hideSearchbar_ (false),
     showStatusbar_ (true),
     showCursorPos_ (false),
     isMaxed_ (false),
@@ -79,10 +78,6 @@ void Config::readConfig()
         splitterPos_ = qMin (qMax (settings.value ("splitterPos", 20).toInt(), 0), 100);
 
     prefSize_ = settings.value ("prefSize").toSize();
-    
-    if (settings.value ("hideSearchbar").toBool())
-        hideSearchbar_ = true;
-
     v = settings.value ("showStatusbar");
     if (v.isValid())
         showStatusbar_ = v.toBool();
@@ -193,7 +188,6 @@ void Config::writeConfig()
     settings.setValue ("prefSize", prefSize_);
 
     settings.setValue ("startSize", startSize_);
-    settings.setValue ("hideSearchbar", hideSearchbar_);
     settings.setValue ("showStatusbar", showStatusbar_);
     settings.setValue ("showCursorPos", showCursorPos_);
     settings.setValue ("tabPosition", tabPosition_);

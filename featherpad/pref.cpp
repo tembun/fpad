@@ -119,8 +119,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     connect (ui->spinY, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefStartSize);
     ui->winPosBox->setChecked (config.getRemPos());
     connect (ui->winPosBox, &QCheckBox::stateChanged, this, &PrefDialog::prefPos);
-    ui->searchbarBox->setChecked (config.getHideSearchbar());
-    connect (ui->searchbarBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSearchbar);
     ui->searchHistoryBox->setChecked (sharedSearchHistory_);
     connect (ui->searchHistoryBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSearchHistory);
     ui->statusBox->setChecked (config.getShowStatusbar());
@@ -309,14 +307,6 @@ void PrefDialog::prefPos (int checked)
         config.setRemPos (true);
     else if (checked == Qt::Unchecked)
         config.setRemPos (false);
-}
-void PrefDialog::prefSearchbar (int checked)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    if (checked == Qt::Checked)
-        config.setHideSearchbar (true);
-    else if (checked == Qt::Unchecked)
-        config.setHideSearchbar (false);
 }
 void PrefDialog::prefSearchHistory (int checked)
 {
