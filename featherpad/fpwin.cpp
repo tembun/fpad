@@ -51,6 +51,7 @@
 
 namespace FeatherPad {
 QString modified_prefix = QString("[ * ]");
+QString noname = QString("[ noname ]");
 void BusyMaker::waiting() {
     QTimer::singleShot (timeout, this, &BusyMaker::makeBusy);
 }
@@ -596,7 +597,7 @@ TabPage* FPwin::createEmptyTab (bool setCurrent)
     int index = ui->tabWidget->currentIndex();
     if (index == -1) enableWidgets (true);
     tabPage->setSearchBarVisible (false);
-    ui->tabWidget->insertTab (index + 1, tabPage, tr ("Untitled"));
+    ui->tabWidget->insertTab (index + 1, tabPage, noname);
     ui->tabWidget->setTabToolTip (index + 1, tr ("Unsaved"));
     if (!ui->actionWrap->isChecked())
         textEdit->setLineWrapMode (QPlainTextEdit::NoWrap);
@@ -825,7 +826,7 @@ void FPwin::setTitle (const QString& fileName, int tabIndex)
     QString shownName;
     if (fileName.isEmpty())
     {
-        shownName = tr ("Untitled");
+        shownName = noname;
         if (tabIndex < 0)
             setWindowTitle (shownName);
     }
@@ -858,7 +859,7 @@ void FPwin::asterisk (bool modified)
     QString shownName;
     if (fname.isEmpty())
     {
-        shownName = tr ("Untitled");
+        shownName = noname;
         setWindowTitle ((modified ? modified_prefix : QString()) + shownName);
     }
     else
@@ -1424,7 +1425,7 @@ bool FPwin::saveFile ()
         if (fname.isEmpty())
         {
             QDir dir = QDir::home();
-            fname = dir.filePath (tr ("Untitled"));
+            fname = dir.filePath (noname);
         }
         else if (!QFile::exists (fname))
         {
@@ -1440,10 +1441,10 @@ bool FPwin::saveFile ()
             if (!textEdit->getFileName().isEmpty())
                 fname = dir.filePath (QFileInfo (fname).fileName());
             else
-                fname = dir.filePath (tr ("Untitled"));
+                fname = dir.filePath (noname);
         }
         else
-            fname = QFileInfo (fname).absoluteDir().filePath (tr ("Untitled"));
+            fname = QFileInfo (fname).absoluteDir().filePath (noname);
         if (!restorable
             && QObject::sender() != ui->actionSaveAs
         )
@@ -1615,7 +1616,7 @@ void FPwin::tabSwitch (int index)
     QString shownName;
     if (fname.isEmpty())
     {
-       shownName = tr ("Untitled");
+       shownName = noname;
     }
     else
     {
