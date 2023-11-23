@@ -220,7 +220,6 @@ void FPwin::closeEvent (QCloseEvent *event)
 void FPwin::applyConfigOnStarting()
 {
     Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-
     if (config.getRemSize())
     {
         resize (config.getWinSize());
@@ -241,7 +240,6 @@ void FPwin::applyConfigOnStarting()
         }
         resize (startSize);
     }
-
     if (config.getRemPos())
         move (config.getWinPos());
 
@@ -249,10 +247,7 @@ void FPwin::applyConfigOnStarting()
     ui->menuBar->actions().at( 1 )->setVisible( false );
     ui->menuBar->actions().at( 3 )->setVisible( false );
     ui->actionWrap->setChecked( false );
-    if (config.getTabPosition() != 0)
-    {
-        ui->tabWidget->setTabPosition (static_cast<QTabWidget::TabPosition>(config.getTabPosition()));
-    }
+    ui->tabWidget->setTabPosition(QTabWidget::North);
     ui->actionSave->setEnabled (config.getSaveUnmodified());
     QIcon icn = QIcon::fromTheme ("featherpad");
     if (icn.isNull())
@@ -1641,7 +1636,6 @@ void FPwin::tabSwitch (int index)
         shownName.prepend ("*");
     setWindowTitle (shownName);
     encodingToCheck (textEdit->getEncoding());
-
     Config config = static_cast<FPsingleton*>(qApp)->getConfig();
     bool readOnly = textEdit->isReadOnly();
     if (!config.getSaveUnmodified())

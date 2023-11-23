@@ -134,12 +134,6 @@ public:
     void setSplitterPos (int pos) {
         splitterPos_ = pos;
     }
-    int getTabPosition() const {
-        return tabPosition_;
-    }
-    void setTabPosition (int pos) {
-        tabPosition_ = pos;
-    }
     QFont getFont() const {
         return font_;
     }
@@ -216,8 +210,7 @@ private:
          isMaxed_, isFull_,
          tabWrapAround_,
          saveUnmodified_;
-    int tabPosition_,
-        maxSHSize_,
+    int maxSHSize_,
         lightBgColorValue_,
         textTabSize_;
     QSize winSize_, startSize_, prefSize_;

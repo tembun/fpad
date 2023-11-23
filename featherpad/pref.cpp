@@ -118,7 +118,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     connect (ui->spinY, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefStartSize);
     ui->winPosBox->setChecked (config.getRemPos());
     connect (ui->winPosBox, &QCheckBox::stateChanged, this, &PrefDialog::prefPos);
-    ui->tabCombo->setCurrentIndex (config.getTabPosition());
     ui->tabBox->setChecked (config.getTabWrapAround());
     connect (ui->tabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefTabWrapAround);
     ui->textTabSpin->setValue (textTabSize_);
@@ -222,7 +221,6 @@ void PrefDialog::closeEvent (QCloseEvent *event)
 void PrefDialog::onClosing()
 {
     prefShortcuts();
-    prefTabPosition();
     prefTextTab();
     prefSaveUnmodified();
 
@@ -300,18 +298,6 @@ void PrefDialog::prefPos (int checked)
         config.setRemPos (true);
     else if (checked == Qt::Unchecked)
         config.setRemPos (false);
-}
-void PrefDialog::prefTabPosition()
-{
-    int index = ui->tabCombo->currentIndex();
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    config.setTabPosition (index);
-    if (singleton->Wins.at (0)->ui->tabWidget->tabPosition() != static_cast<QTabWidget::TabPosition>(index))
-    {
-        for (int i = 0; i < singleton->Wins.count(); ++i)
-            singleton->Wins.at (i)->ui->tabWidget->setTabPosition (static_cast<QTabWidget::TabPosition>(index));
-    }
 }
 void PrefDialog::prefTabWrapAround (int checked)
 {

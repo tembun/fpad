@@ -84,7 +84,6 @@ private slots:
 
 private:
     void closeEvent (QCloseEvent *event);
-    void prefTabPosition();
     void showPrompt (const QString& str = QString(), bool temporary = false);
 
     Ui::PrefDialog *ui;
