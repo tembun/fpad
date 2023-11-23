@@ -29,18 +29,11 @@ class TabBar : public QTabBar
 
 public:
     TabBar (QWidget *parent = nullptr);
-
     void finishMouseMoveEvent();
     void releaseMouse();
-
     void hideSingle (bool hide) {
         hideSingle_ = hide;
     }
-
-    void lockTabs (bool lock) {
-        lock_ = lock;
-    }
-
     void noTabDND() {
         noTabDND_ = true;
     }
@@ -63,7 +56,6 @@ private:
     QPoint dragStartPosition_;
     bool dragStarted_;
     bool hideSingle_;
-    bool lock_;
     bool noTabDND_;
 };
 

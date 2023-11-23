@@ -913,7 +913,6 @@ void FPwin::loadText (const QString& fileName, bool enforceEncod, bool reload,
     thread->start();
 
     waitToMakeBusy();
-    ui->tabWidget->tabBar()->lockTabs (true);
     updateShortcuts (true, false);
 }
 void FPwin::addText (const QString& text, const QString& fileName, const QString& charset,
@@ -933,7 +932,6 @@ void FPwin::addText (const QString& text, const QString& fileName, const QString
         -- loadingProcesses_;
         if (!isLoading())
         {
-            ui->tabWidget->tabBar()->lockTabs (false);
             updateShortcuts (false, false);
             closeWarningBar();
             emit finishedLoading();
@@ -1125,7 +1123,6 @@ void FPwin::addText (const QString& text, const QString& fileName, const QString
     -- loadingProcesses_;
     if (!isLoading())
     {
-        ui->tabWidget->tabBar()->lockTabs (false);
         updateShortcuts (false, false);
         if (reload && scrollbarValue > -1)
         {

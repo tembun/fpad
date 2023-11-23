@@ -33,26 +33,18 @@ TabBar::TabBar (QWidget *parent)
 {
     setMouseTracking (true);
     setElideMode (Qt::ElideMiddle);
-    lock_ = false;
     dragStarted_ = false;
     noTabDND_ = false;
 }
 void TabBar::mousePressEvent (QMouseEvent *event)
 {
-    if (lock_)
-    {
-        event->ignore();
-        return;
-    }
     QTabBar::mousePressEvent (event);
-
     if (event->button() == Qt::LeftButton) {
         if (tabAt (event->pos()) > -1)
             dragStartPosition_ = event->pos();
         else if (event->type() == QEvent::MouseButtonDblClick && count() > 0)
             emit addEmptyTab();
     }
-
     dragStarted_ = false;
 }
 void TabBar::mouseReleaseEvent (QMouseEvent *event)
@@ -131,10 +123,7 @@ bool TabBar::event (QEvent *event)
 }
 void TabBar::wheelEvent (QWheelEvent *event)
 {
-    if (!lock_)
-        QTabBar::wheelEvent (event);
-    else
-        event->ignore();
+    event->ignore();
 }
 void TabBar::finishMouseMoveEvent()
 {
