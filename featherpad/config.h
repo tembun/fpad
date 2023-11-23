@@ -134,25 +134,12 @@ public:
     void setSplitterPos (int pos) {
         splitterPos_ = pos;
     }
-    bool getShowStatusbar() const {
-        return showStatusbar_;
-    }
-    void setShowStatusbar (bool show) {
-        showStatusbar_ = show;
-    }
-    bool getShowCursorPos() const {
-        return showCursorPos_;
-    }
-    void setShowCursorPos (bool show) {
-        showCursorPos_ = show;
-    }
     int getTabPosition() const {
         return tabPosition_;
     }
     void setTabPosition (int pos) {
         tabPosition_ = pos;
     }
-
     QFont getFont() const {
         return font_;
     }
@@ -226,7 +213,6 @@ private:
     void writeCursorPos();
 
     bool remSize_, remPos_, remSplitterPos_,
-         showStatusbar_, showCursorPos_,
          isMaxed_, isFull_,
          tabWrapAround_,
          saveUnmodified_;

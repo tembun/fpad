@@ -154,7 +154,6 @@
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
     <addaction name="actionSaveAllFiles"/>
-    <addaction name="actionDoc"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -209,7 +208,6 @@
    <addaction name="menuOptions"/>
    <addaction name="menuSearch"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockReplace">
    <property name="contextMenuPolicy">
     <enum>Qt::PreventContextMenu</enum>
@@ -427,14 +425,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+S</string>
-   </property>
-  </action>
-  <action name="actionDoc">
-   <property name="text">
-    <string>Documen&amp;t Properties</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+D</string>
    </property>
   </action>
   <action name="actionFont">

@@ -26,8 +26,6 @@ Config::Config():
     remSize_ (true),
     remPos_ (false),
     remSplitterPos_ (true),
-    showStatusbar_ (true),
-    showCursorPos_ (false),
     isMaxed_ (false),
     isFull_ (false),
     tabWrapAround_ (false),
@@ -77,13 +75,6 @@ void Config::readConfig()
         splitterPos_ = qMin (qMax (settings.value ("splitterPos", 20).toInt(), 0), 100);
 
     prefSize_ = settings.value ("prefSize").toSize();
-    v = settings.value ("showStatusbar");
-    if (v.isValid())
-        showStatusbar_ = v.toBool();
-
-    if (settings.value ("showCursorPos").toBool())
-        showCursorPos_ = true;
-
     int pos = settings.value ("tabPosition").toInt();
     if (pos > 0 && pos <= 3)
         tabPosition_ = pos; // 0 by default
@@ -182,10 +173,7 @@ void Config::writeConfig()
         settings.setValue ("splitterPos", "none");
 
     settings.setValue ("prefSize", prefSize_);
-
     settings.setValue ("startSize", startSize_);
-    settings.setValue ("showStatusbar", showStatusbar_);
-    settings.setValue ("showCursorPos", showCursorPos_);
     settings.setValue ("tabPosition", tabPosition_);
     settings.setValue ("tabWrapAround", tabWrapAround_);
     settings.endGroup();

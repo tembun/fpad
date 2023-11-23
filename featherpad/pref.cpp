@@ -118,10 +118,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     connect (ui->spinY, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefStartSize);
     ui->winPosBox->setChecked (config.getRemPos());
     connect (ui->winPosBox, &QCheckBox::stateChanged, this, &PrefDialog::prefPos);
-    ui->statusBox->setChecked (config.getShowStatusbar());
-    connect (ui->statusBox, &QCheckBox::stateChanged, this, &PrefDialog::prefStatusbar);
-    ui->statusCursorsBox->setChecked (config.getShowCursorPos());
-    connect (ui->statusCursorsBox, &QCheckBox::stateChanged, this, &PrefDialog::prefStatusCursor);
     ui->tabCombo->setCurrentIndex (config.getTabPosition());
     ui->tabBox->setChecked (config.getTabWrapAround());
     connect (ui->tabBox, &QCheckBox::stateChanged, this, &PrefDialog::prefTabWrapAround);
@@ -304,101 +300,6 @@ void PrefDialog::prefPos (int checked)
         config.setRemPos (true);
     else if (checked == Qt::Unchecked)
         config.setRemPos (false);
-}
-void PrefDialog::prefStatusbar (int checked)
-{
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    bool showCurPos = config.getShowCursorPos();
-    if (checked == Qt::Checked)
-    {
-        config.setShowStatusbar (true);
-        for (int i = 0; i < singleton->Wins.count(); ++i)
-        {
-            FPwin *win = singleton->Wins.at (i);
-
-            if (!win->ui->statusBar->isVisible())
-            {
-                if (TabPage *tabPage = qobject_cast<TabPage*>(win->ui->tabWidget->currentWidget()))
-                {
-                    TextEdit *textEdit = tabPage->textEdit();
-                    for (int j = 0; j < win->ui->tabWidget->count(); ++j)
-                    {
-                        TextEdit *thisTextEdit = qobject_cast< TabPage *>(win->ui->tabWidget->widget (j))->textEdit();
-                        if (showCurPos)
-                            connect (thisTextEdit, &QPlainTextEdit::cursorPositionChanged, win, &FPwin::showCursorPos);
-                    }
-                    win->ui->statusBar->setVisible (true);
-                    if (showCurPos)
-                    {
-                        win->addCursorPosLabel();
-                        win->showCursorPos();
-                    }
-                    if (QToolButton *wordButton = win->ui->statusBar->findChild<QToolButton *>("wordButton"))
-                    {
-                        wordButton->setVisible (true);
-                        if (textEdit->getWordNumber() != -1
-                            || textEdit->document()->isEmpty())
-                        {
-                            win->updateWordInfo();
-                        }
-                    }
-                }
-            }
-            win->ui->actionDoc->setVisible (false);
-        }
-    }
-    else if (checked == Qt::Unchecked)
-    {
-        config.setShowStatusbar (false);
-        for (int i = 0; i < singleton->Wins.count(); ++i)
-            singleton->Wins.at (i)->ui->actionDoc->setVisible (true);
-    }
-}
-void PrefDialog::prefStatusCursor (int checked)
-{
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    if (checked == Qt::Checked)
-    {
-        config.setShowCursorPos (true);
-        for (int i = 0; i < singleton->Wins.count(); ++i)
-        {
-            FPwin *win = singleton->Wins.at (i);
-            int count = win->ui->tabWidget->count();
-            if (count > 0 && win->ui->statusBar->isVisible())
-            {
-                win->addCursorPosLabel();
-                win->showCursorPos();
-                for (int j = 0; j < count; ++j)
-                {
-                    TextEdit *textEdit = qobject_cast< TabPage *>(win->ui->tabWidget->widget (j))->textEdit();
-                    connect (textEdit, &QPlainTextEdit::cursorPositionChanged, win, &FPwin::showCursorPos);
-                }
-            }
-        }
-    }
-    else if (checked == Qt::Unchecked)
-    {
-        config.setShowCursorPos (false);
-        for (int i = 0; i < singleton->Wins.count(); ++i)
-        {
-            FPwin *win = singleton->Wins.at (i);
-            if (QLabel *posLabel = win->ui->statusBar->findChild<QLabel *>("posLabel"))
-            {
-                int count = win->ui->tabWidget->count();
-                if (count > 0 && win->ui->statusBar->isVisible())
-                {
-                    for (int j = 0; j < count; ++j)
-                    {
-                        TextEdit *textEdit = qobject_cast< TabPage *>(win->ui->tabWidget->widget (j))->textEdit();
-                        disconnect (textEdit, &QPlainTextEdit::cursorPositionChanged, win, &FPwin::showCursorPos);
-                    }
-                }
-                posLabel->deleteLater();
-            }
-        }
-    }
 }
 void PrefDialog::prefTabPosition()
 {

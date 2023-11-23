@@ -79,7 +79,6 @@ public:
         }
         return false;
     }
-    void addCursorPosLabel();
     void showCrashWarning();
     void showRootWarning();
     void updateCustomizableShortcuts (bool disable = false);
@@ -101,8 +100,6 @@ public slots:
                          int posInLine, // If restoreCursor > 1, this is the cursor position in the line.
                          bool multiple = false);
     void newTab();
-    void showCursorPos();
-    void updateWordInfo (int position = -1, int charsRemoved = 0, int charsAdded = 0);
     void enableSaving (bool modified);
 
 private slots:
@@ -141,7 +138,6 @@ private slots:
     void focus_view_soft();
     void focus_view_hard();
     void manageSessions();
-    void docProp();
     void nextTab();
     void previousTab();
     void editorContextMenu (const QPoint& p);
