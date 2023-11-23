@@ -26,8 +26,6 @@ Config::Config():
     remSize_ (true),
     remPos_ (false),
     remSplitterPos_ (true),
-    noToolbar_ (false),
-    noMenubar_ (false),
     hideSearchbar_ (false),
     showStatusbar_ (true),
     showCursorPos_ (false),
@@ -81,19 +79,7 @@ void Config::readConfig()
         splitterPos_ = qMin (qMax (settings.value ("splitterPos", 20).toInt(), 0), 100);
 
     prefSize_ = settings.value ("prefSize").toSize();
-
-    if (settings.value ("noToolbar").toBool())
-        noToolbar_ = true; // false by default
-
-    if (settings.value ("noMenubar").toBool())
-        noMenubar_ = true; // false by default
-
-    if (noToolbar_ && noMenubar_)
-    {
-        noToolbar_ = false;
-        noMenubar_ = true;
-    }
-
+    
     if (settings.value ("hideSearchbar").toBool())
         hideSearchbar_ = true;
 
@@ -207,8 +193,6 @@ void Config::writeConfig()
     settings.setValue ("prefSize", prefSize_);
 
     settings.setValue ("startSize", startSize_);
-    settings.setValue ("noToolbar", noToolbar_);
-    settings.setValue ("noMenubar", noMenubar_);
     settings.setValue ("hideSearchbar", hideSearchbar_);
     settings.setValue ("showStatusbar", showStatusbar_);
     settings.setValue ("showCursorPos", showCursorPos_);

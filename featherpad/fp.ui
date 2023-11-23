@@ -209,25 +209,6 @@
    <addaction name="menuOptions"/>
    <addaction name="menuSearch"/>
   </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <property name="contextMenuPolicy">
-    <enum>Qt::PreventContextMenu</enum>
-   </property>
-   <property name="movable">
-    <bool>false</bool>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionNew"/>
-   <addaction name="actionOpen"/>
-   <addaction name="actionSave"/>
-   <addaction name="actionReload"/>
-   <addaction name="actionMenu"/>
-  </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockReplace">
    <property name="contextMenuPolicy">

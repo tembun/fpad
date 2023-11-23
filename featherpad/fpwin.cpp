@@ -107,17 +107,12 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     applyConfigOnStarting();
     QWidget* spacer = new QWidget();
     spacer->setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Preferred);
-    ui->mainToolBar->insertWidget (ui->actionMenu, spacer);
-    QMenu *menu = new QMenu (ui->mainToolBar);
+    QMenu *menu = new QMenu (ui->menuBar);
     menu->addMenu (ui->menuFile);
     menu->addMenu (ui->menuEdit);
     menu->addMenu (ui->menuOptions);
     menu->addMenu (ui->menuSearch);
     ui->actionMenu->setMenu(menu);
-    QList<QToolButton*> tbList = ui->mainToolBar->findChildren<QToolButton*>();
-    if (!tbList.isEmpty())
-        tbList.at (tbList.count() - 1)->setPopupMode (QToolButton::InstantPopup);
-
     newTab();
     aGroup_ = new QActionGroup (this);
     ui->actionUTF_8->setActionGroup (aGroup_);
@@ -259,11 +254,9 @@ void FPwin::applyConfigOnStarting()
     if (config.getRemPos())
         move (config.getWinPos());
 
-    ui->mainToolBar->setVisible (!config.getNoToolbar());
-    ui->menuBar->setVisible (!config.getNoMenubar());
+    ui->menuBar->setVisible (true);
     ui->menuBar->actions().at( 1 )->setVisible( false );
     ui->menuBar->actions().at( 3 )->setVisible( false );
-    ui->actionMenu->setVisible (config.getNoMenubar());
     ui->actionDoc->setVisible (!config.getShowStatusbar());
     ui->actionWrap->setChecked( false );
     if (!config.getShowStatusbar())

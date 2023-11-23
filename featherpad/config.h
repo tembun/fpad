@@ -134,35 +134,18 @@ public:
     void setSplitterPos (int pos) {
         splitterPos_ = pos;
     }
-
-    bool getNoToolbar() const {
-        return noToolbar_;
-    }
-    void setNoToolbar (bool noTB) {
-        noToolbar_ = noTB;
-    }
-
-    bool getNoMenubar() const {
-        return noMenubar_;
-    }
-    void setNoMenubar (bool noMB) {
-        noMenubar_ = noMB;
-    }
-
     bool getHideSearchbar() const {
         return hideSearchbar_;
     }
     void setHideSearchbar (bool hide) {
         hideSearchbar_ = hide;
     }
-
     bool getShowStatusbar() const {
         return showStatusbar_;
     }
     void setShowStatusbar (bool show) {
         showStatusbar_ = show;
     }
-
     bool getShowCursorPos() const {
         return showCursorPos_;
     }
@@ -255,7 +238,6 @@ private:
     void writeCursorPos();
 
     bool remSize_, remPos_, remSplitterPos_,
-         noToolbar_, noMenubar_,
          hideSearchbar_,
          showStatusbar_, showCursorPos_,
          isMaxed_, isFull_,

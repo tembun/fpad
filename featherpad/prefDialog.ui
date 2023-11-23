@@ -174,24 +174,6 @@ and may not work with some window managers.</string>
                </layout>
               </item>
               <item>
-               <widget class="QCheckBox" name="toolbarBox">
-                <property name="text">
-                 <string>Do not show &amp;toolbar</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="menubarBox">
-                <property name="toolTip">
-                 <string>If the menubar is hidden,
-a menu button appears on the toolbar.</string>
-                </property>
-                <property name="text">
-                 <string>Do not show &amp;menubar</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="searchbarBox">
                 <property name="text">
                  <string>Hide search &amp;bar by default</string>
