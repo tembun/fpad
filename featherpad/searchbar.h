@@ -58,7 +58,6 @@ public:
                const QList<QKeySequence>& shortcuts = QList<QKeySequence>(),
                Qt::WindowFlags f = Qt::WindowFlags());
 
-    void setSearchModel (QStandardItemModel *model);
     void focusLineEdit();
     bool lineEditHasFocus() const;
     QString searchEntry() const;

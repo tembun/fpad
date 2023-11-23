@@ -23,9 +23,6 @@
 #include <QTabBar>
 
 namespace FeatherPad {
-
-/* The tab dropping signal (for tab detaching) should come here and not in TabWidget
-   because, otherwise, the tabMoved() signal wouldn't do its job completely. */
 class TabBar : public QTabBar
 {
     Q_OBJECT

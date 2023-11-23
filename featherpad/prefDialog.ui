@@ -174,17 +174,6 @@ and may not work with some window managers.</string>
                </layout>
               </item>
               <item>
-               <widget class="QCheckBox" name="searchHistoryBox">
-                <property name="toolTip">
-                 <string>By default, each search entry
-has a separate search history.</string>
-                </property>
-                <property name="text">
-                 <string>Use a shared search history</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="statusBox">
                 <property name="text">
                  <string>Always show st&amp;atus bar</string>

@@ -37,11 +37,6 @@ public:
     QPointer<TextEdit> textEdit() const {
         return textEdit_;
     }
-
-    void setSearchModel (QStandardItemModel *model) {
-        searchBar_->setSearchModel (model);
-    }
-
     void setSearchBarVisible (bool visible);
     bool isSearchBarVisible() const;
     void focusSearchBar();

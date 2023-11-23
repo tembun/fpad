@@ -91,7 +91,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     lightColValue_ = config.getLightBgColorValue();
     textTabSize_ = config.getTextTabSize();
     saveUnmodified_ = config.getSaveUnmodified();
-    sharedSearchHistory_ = config.getSharedSearchHistory();
     ui->winSizeBox->setChecked (config.getRemSize());
     connect (ui->winSizeBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSize);
     if (ui->winSizeBox->isChecked())
@@ -119,8 +118,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     connect (ui->spinY, QOverload<int>::of(&QSpinBox::valueChanged), this, &PrefDialog::prefStartSize);
     ui->winPosBox->setChecked (config.getRemPos());
     connect (ui->winPosBox, &QCheckBox::stateChanged, this, &PrefDialog::prefPos);
-    ui->searchHistoryBox->setChecked (sharedSearchHistory_);
-    connect (ui->searchHistoryBox, &QCheckBox::stateChanged, this, &PrefDialog::prefSearchHistory);
     ui->statusBox->setChecked (config.getShowStatusbar());
     connect (ui->statusBox, &QCheckBox::stateChanged, this, &PrefDialog::prefStatusbar);
     ui->statusCursorsBox->setChecked (config.getShowCursorPos());
@@ -307,16 +304,6 @@ void PrefDialog::prefPos (int checked)
         config.setRemPos (true);
     else if (checked == Qt::Unchecked)
         config.setRemPos (false);
-}
-void PrefDialog::prefSearchHistory (int checked)
-{
-    Config& config = static_cast<FPsingleton*>(qApp)->getConfig();
-    if (checked == Qt::Checked)
-        config.setSharedSearchHistory (true);
-    else if (checked == Qt::Unchecked)
-        config.setSharedSearchHistory (false);
-
-    showPrompt();
 }
 void PrefDialog::prefStatusbar (int checked)
 {

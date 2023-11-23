@@ -45,18 +45,18 @@ void ComboBox::keyPressEvent (QKeyEvent *event)
     }
     QComboBox::keyPressEvent (event);
 }
-/*************************/
+
 bool ComboBox::hasPopup() const
 {
     return hasPopup_;
 }
-/*************************/
+
 void ComboBox::showPopup()
 {
     hasPopup_ = true;
     QComboBox::showPopup();
 }
-/*************************/
+
 void ComboBox::hidePopup()
 {
     QComboBox::hidePopup();
@@ -65,7 +65,7 @@ void ComboBox::hidePopup()
         hasPopup_ = false;
     });
 }
-/*************************/
+
 SearchBar::SearchBar(QWidget *parent,
                      const QList<QKeySequence> &shortcuts,
                      Qt::WindowFlags f)
@@ -179,34 +179,6 @@ SearchBar::SearchBar(QWidget *parent,
         }
     });
 }
-void SearchBar::setSearchModel (QStandardItemModel *model)
-{
-    if (model != nullptr)
-    {
-        combo_->setModel (model);
-        lineEdit_->setText (QString());
-        connect (combo_->model(), &QAbstractItemModel::rowsAboutToBeRemoved, lineEdit_, [this] (const QModelIndex&, int, int) {
-            if (!searchStarted_)
-                searchText_ = lineEdit_->text();
-        });
-        connect (combo_->model(), &QAbstractItemModel::rowsRemoved, lineEdit_, [this] (const QModelIndex&, int, int) {
-            /* may also happen when our maximum row count (= 40) has been reached */
-            if (!searchStarted_ && lineEdit_->text() != searchText_)
-                lineEdit_->setText (searchText_);
-            searchText_.clear();
-        });
-        connect (combo_->model(), &QAbstractItemModel::rowsAboutToBeInserted, lineEdit_, [this] (const QModelIndex&, int, int) {
-            if (!searchStarted_)
-                searchText_ = lineEdit_->text();
-        });
-        connect (combo_->model(), &QAbstractItemModel::rowsInserted, lineEdit_, [this] (const QModelIndex&, int, int) {
-            if (!searchStarted_ && lineEdit_->text() != searchText_)
-                lineEdit_->setText (searchText_);
-            searchText_.clear();
-        });
-    }
-}
-/*************************/
 void SearchBar::searchStarted()
 {
     searchStarted_ = true;
@@ -217,7 +189,6 @@ void SearchBar::searchStarted()
     {
         if (index > 0)
             combo_->removeItem (index);
-        /* we set the maximum row count ourself while searchStarted_ is true (see setSearchModel()) */
         else if (combo_->count() == MAX_ROW_COUNT)
             combo_->removeItem (MAX_ROW_COUNT - 1);
         combo_->insertItem (0, txt);
@@ -225,60 +196,58 @@ void SearchBar::searchStarted()
     combo_->setCurrentIndex (0);
     searchStarted_ = false;
 }
-/*************************/
 void SearchBar::focusLineEdit()
 {
     lineEdit_->setFocus();
     lineEdit_->selectAll();
 }
-/*************************/
 bool SearchBar::lineEditHasFocus() const
 {
     return lineEdit_->hasFocus();
 }
-/*************************/
+
 QString SearchBar::searchEntry() const
 {
     return lineEdit_->text();
 }
-/*************************/
+
 void SearchBar::clearSearchEntry()
 {
     return;
 }
-/*************************/
+
 void SearchBar::findForward()
 {
     searchStarted();
     emit find (true);
 }
-/*************************/
+
 void SearchBar::findBackward()
 {
     searchStarted();
     emit find (false);
 }
-/*************************/
+
 bool SearchBar::matchCase() const
 {
     return button_case_->isChecked();
 }
-/*************************/
+
 bool SearchBar::matchWhole() const
 {
     return button_whole_->isChecked();
 }
-/*************************/
+
 bool SearchBar::matchRegex() const
 {
     return button_regex_->isChecked();
 }
-/*************************/
+
 bool SearchBar::hasPopup() const
 {
     return combo_->hasPopup();
 }
-/*************************/
+
 // Used only in a workaround (-> FPwin::updateShortcuts())
 void SearchBar::updateShortcuts (bool disable)
 {

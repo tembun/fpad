@@ -630,7 +630,6 @@ TabPage* FPwin::createEmptyTab (bool setCurrent)
     TabPage *tabPage = new TabPage (config.getLightBgColorValue(),
                                     searchShortcuts,
                                     nullptr);
-    tabPage->setSearchModel (singleton->searchModel());
     TextEdit *textEdit = tabPage->textEdit();
     connect (textEdit, &QWidget::customContextMenuRequested, this, &FPwin::editorContextMenu);
     textEdit->setTtextTab (config.getTextTabSize());

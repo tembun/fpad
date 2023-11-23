@@ -26,7 +26,7 @@
 #include <QThread>
 
 #if defined Q_OS_LINUX || defined Q_OS_FREEBSD || defined Q_OS_OPENBSD || defined Q_OS_NETBSD || defined Q_OS_HURD
-#include <unistd.h> // for geteuid()
+#include <unistd.h>
 #endif
 
 #ifdef HAS_X11
@@ -46,35 +46,25 @@ namespace FeatherPad {
 FPsingleton::FPsingleton (int &argc, char **argv, bool standalone) : QApplication (argc, argv)
 {
 #ifdef HAS_X11
-    // For now, the lack of x11 is seen as wayland.
 #if defined Q_WS_X11 || defined Q_OS_LINUX || defined Q_OS_FREEBSD || defined Q_OS_OPENBSD || defined Q_OS_NETBSD || defined Q_OS_HURD
     isX11_ = QX11Info::isPlatformX11();
 #else
     isX11_ = false;
-#endif // defined Q_WS_X11...
+#endif
 #else
     isX11_ = false;
-#endif // HAS_X11
+#endif
 
     standalone_ = standalone;
     socketFailure_ = false;
     config_.readConfig();
     lastFiles_ = config_.getLastFiles();
-    if (config_.getSharedSearchHistory())
-        searchModel_ = new QStandardItemModel (0, 1, this);
-    else
-        searchModel_ = nullptr;
-
     if (standalone)
     {
         lockFile_ = nullptr;
         localServer_ = nullptr;
         return;
     }
-
-    /* Instead of QSharedMemory, a lock file is used for creating a single instance because
-       QSharedMemory not only would be unsafe with a crash but also might persist without a
-       crash and even after being attached and detached, resulting in an unchangeable state. */
     QByteArray user = qgetenv ("USER");
     uniqueKey_ = "featherpad-" + QString::fromLocal8Bit (user) + QLatin1Char ('-')
                  + QCryptographicHash::hash (user, QCryptographicHash::Sha1).toHex();
@@ -83,7 +73,7 @@ FPsingleton::FPsingleton (int &argc, char **argv, bool standalone) : QApplicatio
     lockFile_ = new QLockFile (lockFilePath);
 
     if (lockFile_->tryLock())
-    { // create a local server and listen to incoming messages from other instances
+    {
         localServer_ = new QLocalServer (this);
         connect (localServer_, &QLocalServer::newConnection, this, &FPsingleton::receiveMessage);
         if (!localServer_->listen (uniqueKey_))
@@ -112,8 +102,6 @@ FPsingleton::~FPsingleton()
 
 void FPsingleton::quitting()
 {
-    if (searchModel_)
-        delete searchModel_;
     config_.writeConfig();
 }
 
@@ -218,9 +206,9 @@ QStringList FPsingleton::processInfo (const QString& message,
                                       bool *newWindow)
 {
     desktop = -1;
-    lineNum = 0; // no cursor placing
+    lineNum = 0;
     posInLine = 0;
-    QStringList sl = message.split ("\n\r"); // "\n\r" was used as the splitter
+    QStringList sl = message.split ("\n\r");
     if (sl.count() < 3)
     {
         *newWindow = true;
@@ -264,12 +252,12 @@ QStringList FPsingleton::processInfo (const QString& message,
     QStringList filesList;
     for (const auto &path : qAsConst (sl))
     {
-        if (!path.isEmpty()) // no empty path/name
+        if (!path.isEmpty())
         {
             QString realPath = path;
             if (realPath.startsWith ("file://"))
                 realPath = QUrl (realPath).toLocalFile();
-            realPath = curDir.absoluteFilePath (realPath); // also works with absolute paths outside curDir
+            realPath = curDir.absoluteFilePath (realPath);
             filesList << QDir::cleanPath (realPath);
         }
     }
@@ -304,14 +292,14 @@ FPwin* FPsingleton::newWin (const QStringList& filesList,
     if (!filesList.isEmpty())
     {
         bool multiple (filesList.count() > 1 || fp->isLoading());
-        for (int i = 0; i < filesList.count(); ++i) // open all files in new tabs
+        for (int i = 0; i < filesList.count(); ++i)
             fp->newTabFromName (filesList.at (i), lineNum, posInLine, multiple);
     }
     else if (!lastFiles_.isEmpty())
     {
         bool multiple (lastFiles_.count() > 1 || fp->isLoading());
         for (int i = 0; i < lastFiles_.count(); ++i)
-            fp->newTabFromName (lastFiles_.at (i), -1, 0, multiple); // restore cursor positions too
+            fp->newTabFromName (lastFiles_.at (i), -1, 0, multiple);
     }
 
     return fp;
@@ -367,7 +355,7 @@ void FPsingleton::handleMessage (const QString& message)
                 if (hasDialog) continue;
                 if (sr.contains (Wins.at (i)->geometry().center()))
                 {
-                    if (d >= 0) // it may be -1 for some DEs that don't support _NET_CURRENT_DESKTOP
+                    if (d >= 0)
                     {
                         Wins.at (i)->dummyWidget->showMinimized();
                         QTimer::singleShot (0, Wins.at (i)->dummyWidget, &QWidget::close);

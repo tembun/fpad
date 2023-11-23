@@ -219,12 +219,6 @@ public:
     void setSaveUnmodified (bool save) {
         saveUnmodified_ = save;
     }
-    bool getSharedSearchHistory() const {
-        return sharedSearchHistory_;
-    }
-    void setSharedSearchHistory (bool share) {
-        sharedSearchHistory_ = share;
-    }
 
 private:
     QString validatedShortcut (const QVariant v, bool *isValid);
@@ -235,8 +229,7 @@ private:
          showStatusbar_, showCursorPos_,
          isMaxed_, isFull_,
          tabWrapAround_,
-         saveUnmodified_,
-         sharedSearchHistory_;
+         saveUnmodified_;
     int tabPosition_,
         maxSHSize_,
         lightBgColorValue_,

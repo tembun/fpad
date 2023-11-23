@@ -71,7 +71,6 @@ private slots:
     void prefSize (int checked);
     void prefStartSize (int value);
     void prefPos (int checked);
-    void prefSearchHistory (int checked);
     void prefStatusbar (int checked);
     void prefStatusCursor (int checked);
     void prefTabWrapAround (int checked);
@@ -92,7 +91,7 @@ private:
 
     Ui::PrefDialog *ui;
     QWidget * parent_;
-    bool saveUnmodified_, sharedSearchHistory_;
+    bool saveUnmodified_;
     int lightColValue_, textTabSize_;
     QHash<QString, QString> shortcuts_, newShortcuts_;
     QString prevtMsg_;

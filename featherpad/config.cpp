@@ -32,7 +32,6 @@ Config::Config():
     isFull_ (false),
     tabWrapAround_ (false),
     saveUnmodified_ (false),
-    sharedSearchHistory_ (false),
     tabPosition_ (0),
     maxSHSize_ (2),
     lightBgColorValue_ (255),
@@ -92,9 +91,6 @@ void Config::readConfig()
     if (settings.value ("tabWrapAround").toBool())
         tabWrapAround_ = true; // false by default
 
-    if (settings.value ("sharedSearchHistory").toBool())
-        sharedSearchHistory_ = true; // false by default
-
     settings.endGroup();
 
     settings.beginGroup ("text");
@@ -151,7 +147,7 @@ QStringList Config::getLastFiles()
     QStringList lastFiles = lasFilesCursorPos_.keys();
     lastFiles.removeAll ("");
     lastFiles.removeDuplicates();
-    while (lastFiles.count() > 50) // never more than 50 files
+    while (lastFiles.count() > 50)
         lastFiles.removeLast();
     return lastFiles;
 }
@@ -192,7 +188,6 @@ void Config::writeConfig()
     settings.setValue ("showCursorPos", showCursorPos_);
     settings.setValue ("tabPosition", tabPosition_);
     settings.setValue ("tabWrapAround", tabWrapAround_);
-    settings.setValue ("sharedSearchHistory", sharedSearchHistory_);
     settings.endGroup();
     settings.beginGroup ("text");
     settings.setValue ("font", font_.toString());

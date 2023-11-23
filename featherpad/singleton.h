@@ -50,9 +50,6 @@ public:
     bool isX11() const {
       return isX11_;
     }
-    QStandardItemModel *searchModel() const {
-        return searchModel_;
-    }
 
 public slots:
     void receiveMessage();
@@ -76,9 +73,7 @@ private:
     QStringList lastFiles_;
     bool isX11_;
     bool socketFailure_;
-    QStandardItemModel *searchModel_; // The common search history if any.
-
-    bool standalone_; // Whether this is a standalone instance.
+    bool standalone_;
 };
 
 }
