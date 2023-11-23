@@ -1182,20 +1182,14 @@ void TextEdit::paintEvent (QPaintEvent *event)
 void TextEdit::lineNumberAreaPaintEvent (QPaintEvent *event)
 {
     QPainter painter (lineNumberArea_);
-    QColor currentBlockFg, currentLineBg, currentLineFg;
     painter.fillRect (event->rect(), QColor ( 255 , 255 , 255 ));
     painter.setPen (Qt::black);
-    currentBlockFg = QColor ( 0 , 0 , 0 );
-    currentLineBg = QColor ( 0 , 0 , 0 , 0 );
-    currentLineFg = QColor ( 0 , 0 , 0 );
-    bool rtl (QApplication::layoutDirection() == Qt::RightToLeft);
     int w = lineNumberArea_->width();
-    int left = rtl ? 3 : 0;
+    int left = 3;
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();
     int top = static_cast<int>(blockBoundingGeometry (block).translated (contentOffset()).top());
     int bottom = top + static_cast<int>(blockBoundingRect (block).height());
-    int curBlock = textCursor().blockNumber();
     int h = fontMetrics().height();
     QFont bf = font();
     bf.setBold (true);
@@ -1204,36 +1198,9 @@ void TextEdit::lineNumberAreaPaintEvent (QPaintEvent *event)
         if (block.isVisible() && bottom >= event->rect().top())
         {
             QString number = QString::number (blockNumber + 1);
-            if (blockNumber == curBlock)
-            {
-                lastCurrentLine_ = QRect (0, top, 1, top + h);
-                painter.save();
-                int cur = cursorRect().center().y();
-                painter.setFont (bf);
-                painter.setPen (currentLineFg);
-                painter.fillRect (0, cur - h / 2, w, h, currentLineBg);
-                QTextCursor tmp = textCursor();
-                tmp.movePosition (QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
-                if (!tmp.atBlockStart())
-                {
-                    painter.drawText (left, cur - h / 2, w - 3, h,
-                                      Qt::AlignRight, rtl ? "↲" : "↳");
-                    painter.setPen (currentBlockFg);
-                    if (tmp.movePosition (QTextCursor::Up, QTextCursor::MoveAnchor) // always true
-                        && !tmp.atBlockStart())
-                    {
-                        cur = cursorRect (tmp).center().y();
-                        painter.drawText (left, cur - h / 2, w - 3, h,
-                                          Qt::AlignRight, number);
-                    }
-                }
-            }
             painter.drawText (left, top, w - 3, h,
                               Qt::AlignRight, number);
-            if (blockNumber == curBlock)
-                painter.restore();
         }
-
         block = block.next();
         top = bottom;
         bottom = top + static_cast<int>(blockBoundingRect (block).height());
