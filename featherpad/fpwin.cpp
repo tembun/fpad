@@ -1094,18 +1094,14 @@ void FPwin::addText (const QString& text, const QString& fileName, const QString
         if (QListWidgetItem *wi = sideItems_.key (tabPage))
             wi->setToolTip (elidedTip);
     }
-
-    if (uneditable || alreadyOpen (tabPage))
+    
+    if (uneditable)
     {
         textEdit->setReadOnly (true);
       if (uneditable)
             textEdit->viewport()->setStyleSheet (".QWidget {"
                                           	"color: black;"
                                                 "background-color: rgb(225, 238, 255);}");
-      else
-            textEdit->viewport()->setStyleSheet (".QWidget {"
-                                                "color: black;"
-                                                "background-color: rgb(236, 236, 208);}");
        if (!multiple || openInCurrentTab)
         {
             ui->actionSaveAs->setDisabled (true);
@@ -1307,15 +1303,25 @@ void FPwin::fileOpen()
         const QStringList files = dialog.selectedFiles();
         bool multiple (files.count() > 1 || isLoading());
         for (const QString &file : files)
-            newTabFromName (file, 0, 0, multiple);
+        {
+        	int exists_tab_idx = already_opened_idx( file );
+        	if( exists_tab_idx != -2 )
+        	{
+        		ui->tabWidget->setCurrentIndex(  exists_tab_idx  );
+        	}
+        	
+        	else
+        	{
+        		newTabFromName (file, 0, 0, multiple);
+        	}
+        }
     }
     updateShortcuts (false);
 }
-bool FPwin::alreadyOpen (TabPage *tabPage) const
+int FPwin::already_opened_idx (const QString& fileName) const
 {
-    bool res = false;
+    int res = -2;
 
-    QString fileName = tabPage->textEdit()->getFileName();
     QFileInfo info (fileName);
     QString target = info.isSymLink() ? info.symLinkTarget()
                                       : fileName;
@@ -1326,8 +1332,6 @@ bool FPwin::alreadyOpen (TabPage *tabPage) const
         for (int j = 0; j < thisOne->ui->tabWidget->count(); ++j)
         {
             TabPage *thisTabPage = qobject_cast<TabPage*>(thisOne->ui->tabWidget->widget (j));
-            if (thisOne == this && thisTabPage == tabPage)
-                continue;
             TextEdit *thisTextEdit = thisTabPage->textEdit();
             if (thisTextEdit->isReadOnly())
                 continue;
@@ -1336,11 +1340,11 @@ bool FPwin::alreadyOpen (TabPage *tabPage) const
                                                       : thisTextEdit->getFileName();
             if (thisTarget == target)
             {
-                res = true;
+                res = j;
                 break;
             }
         }
-        if (res) break;
+        if (res!=-2) break;
     }
     return res;
 }

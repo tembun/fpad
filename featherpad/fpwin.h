@@ -171,7 +171,7 @@ private:
     void loadText (const QString& fileName, bool enforceEncod, bool reload,
                    int restoreCursor = 0, int posInLine = 0,
                    bool enforceUneditable = false, bool multiple = false);
-    bool alreadyOpen (TabPage *tabPage) const;
+    int already_opened_idx (const QString& fileName) const;
     void setTitle (const QString& fileName, int tabIndex = -1);
     DOCSTATE savePrompt (int tabIndex, bool noToAll);
     bool saveFile ();
