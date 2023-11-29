@@ -17,6 +17,7 @@
  * @license GPL-3.0+ <https://spdx.org/licenses/GPL-3.0+.html>
  */
 
+#include "ui_fp.h"
 #include <QDir>
 #include <QScreen>
 #include <QLocalSocket>
@@ -293,7 +294,8 @@ FPwin* FPsingleton::newWin (const QStringList& filesList,
     {
         bool multiple (filesList.count() > 1 || fp->isLoading());
         for (int i = 0; i < filesList.count(); ++i)
-            fp->newTabFromName (filesList.at (i), lineNum, posInLine, multiple);
+        	fp->newTabFromName (filesList.at (i), lineNum, posInLine, multiple);
+        
     }
     else if (!lastFiles_.isEmpty())
     {
@@ -367,7 +369,25 @@ void FPsingleton::handleMessage (const QString& message)
                     {
                         bool multiple (filesList.count() > 1 || Wins.at (i)->isLoading());
                         for (int j = 0; j < filesList.count(); ++j)
-                            Wins.at (i)->newTabFromName (filesList.at (j), lineNum, posInLine, multiple);
+                        {
+					
+                        	FPwin* fp = Wins.at( i );
+                        	
+                        	
+                        	int exists_tab_idx = fp->already_opened_idx( filesList.at (i) );
+                        	
+                        	if( exists_tab_idx != -2 )
+        				{
+        					fp->ui->tabWidget->setCurrentIndex(  exists_tab_idx  );
+        					
+        					fp->stealFocus();
+        				}
+        				
+        				else
+        				{
+                        		fp->newTabFromName (filesList.at (j), lineNum, posInLine, multiple);
+                        	}
+                        }
                     }
                     found = true;
                     break;

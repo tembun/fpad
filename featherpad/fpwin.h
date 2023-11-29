@@ -157,6 +157,8 @@ private slots:
 public:
     QWidget *dummyWidget;
     Ui::FPwin *ui;
+    int already_opened_idx (const QString& fileName) const;
+    void stealFocus();
 
 private:
     enum DOCSTATE {
@@ -171,7 +173,6 @@ private:
     void loadText (const QString& fileName, bool enforceEncod, bool reload,
                    int restoreCursor = 0, int posInLine = 0,
                    bool enforceUneditable = false, bool multiple = false);
-    int already_opened_idx (const QString& fileName) const;
     void setTitle (const QString& fileName, int tabIndex = -1);
     DOCSTATE savePrompt (int tabIndex, bool noToAll);
     bool saveFile ();
@@ -200,8 +201,6 @@ private:
     void showWarningBar (const QString& message, bool startupBar = false);
     void closeWarningBar (bool keepOnStartup = false);
     void disconnectLambda();
-    void stealFocus();
-
     QActionGroup *aGroup_;
     QString lastFile_;
     QHash<QString, QVariant> lastWinFilesCur_;
@@ -214,7 +213,6 @@ private:
     QHash<QString, QAction*> langs_;
     QHash<QAction*, QKeySequence> defaultShortcuts_;
     bool inactiveTabModified_;
-
     bool standalone_;
 };
 
