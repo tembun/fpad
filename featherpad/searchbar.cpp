@@ -73,9 +73,6 @@ SearchBar::SearchBar(QWidget *parent,
 {
     searchStarted_ = false;
     combo_ = new ComboBox (this);
-    /* WARNING: If the minimum width is not set here, it will be set by the model,
-                which can contain long texts and make the whole window very wide
-                when the search history is shared. */
     combo_->setMinimumWidth (150);
     combo_->setMinimumHeight( 45 );
     
@@ -91,19 +88,15 @@ SearchBar::SearchBar(QWidget *parent,
     lineEdit_->setPlaceholderText (tr ("Search..."));
     combo_->setLineEdit (lineEdit_);
     combo_->setInsertPolicy (QComboBox::NoInsert);
-    combo_->setCompleter (nullptr); // disable auto-completion to keep history
-    /* we add 1 to be cautiously in control of it; see searchStarted() */
+    combo_->setCompleter (nullptr);
     combo_->setMaxCount (MAX_ROW_COUNT + 1);
 
     shortcuts_ = shortcuts;
-    QKeySequence nxtShortcut, prevShortcut, csShortcut, wholeShortcut, regexShortcut;
+    QKeySequence nxtShortcut, prevShortcut;
     if (shortcuts.size() >= 5)
     {
         nxtShortcut = shortcuts.at (0);
         prevShortcut = shortcuts.at (1);
-        csShortcut = shortcuts.at (2);
-        wholeShortcut = shortcuts.at (3);
-        regexShortcut = shortcuts.at (4);
     }
     toolButton_nxt_ = new QToolButton (this);
     toolButton_prv_ = new QToolButton (this);
@@ -114,18 +107,26 @@ SearchBar::SearchBar(QWidget *parent,
     toolButton_nxt_->setToolTip (tr ("Next") + " (" + nxtShortcut.toString (QKeySequence::NativeText) + ")");
     toolButton_prv_->setToolTip (tr ("Previous") + " (" + prevShortcut.toString (QKeySequence::NativeText) + ")");
     button_case_ = new QToolButton (this);
-    button_case_->setToolTip (tr ("Match Case") + " (" + csShortcut.toString (QKeySequence::NativeText) + ")");
-    button_case_->setShortcut (csShortcut);
+    QFont _font = button_case_->font();
+    _font.setPointSize( 27 );
+    button_case_->setText( "I" );
+    button_case_->setFont(_font);
+    button_case_->setToolTip ("Match Case ALT+I");
+    button_case_->setShortcut (QKeySequence(Qt::ALT + Qt::Key_I));
     button_case_->setCheckable (true);
     button_case_->setFocusPolicy (Qt::NoFocus);
     button_whole_ = new QToolButton (this);
-    button_whole_->setToolTip (tr ("Whole Word") + " (" + wholeShortcut.toString (QKeySequence::NativeText) + ")");
-    button_whole_->setShortcut (wholeShortcut);
+    button_whole_->setText( "W" );
+    button_whole_->setFont(_font);
+    button_whole_->setToolTip ("Whole Word ALT+W");
+    button_whole_->setShortcut (QKeySequence(Qt::ALT + Qt::Key_W));
     button_whole_->setCheckable (true);
     button_whole_->setFocusPolicy (Qt::NoFocus);
     button_regex_ = new QToolButton (this);
-    button_regex_->setToolTip (tr ("Regular Expression") + " (" + regexShortcut.toString (QKeySequence::NativeText) + ")");
-    button_regex_->setShortcut (regexShortcut);
+    button_regex_->setText( "R" );
+    button_regex_->setFont(_font);
+    button_regex_->setToolTip ("RegEx ALT+R");
+    button_regex_->setShortcut (QKeySequence(Qt::ALT + Qt::Key_R));
     button_regex_->setCheckable (true);
     button_regex_->setFocusPolicy (Qt::NoFocus);
     toolButton_nxt_->setFocusPolicy (Qt::NoFocus);

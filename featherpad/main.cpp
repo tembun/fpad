@@ -87,12 +87,22 @@ int main (int argc, char **argv)
         return 0;
     }
     FeatherPad::FPsingleton singleton (argc, argv, option == "--standalone" || option == "-s");
+    singleton.setStyleSheet(
+    	"QToolButton:checked {"
+    	"	background-color: #000000;"
+    	"	color: #ffffff;"
+	"};"
+	"QToolButton {"
+     	"	background-color: #ffffff;"
+     	"	color: #000000;"
+     	"};"
+    );
     singleton.setApplicationName (name);
     singleton.setApplicationVersion (version);
     handleQuitSignals ({SIGQUIT, SIGINT, SIGTERM, SIGHUP});
     singleton.setAttribute(Qt::AA_UseHighDpiPixmaps, true);
     QStringList langs (QLocale::system().uiLanguages());
-    QString lang; // bcp47Name() doesn't work under vbox
+    QString lang;
     if (!langs.isEmpty())
         lang = langs.first().replace ('-', '_');
     QString info;
