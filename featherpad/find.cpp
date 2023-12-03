@@ -45,7 +45,7 @@ void FPwin::find (bool forward)
     if (txt.isEmpty())
     {
         QList<QTextEdit::ExtraSelection> es;
-        textEdit->setGreenSel (es); // not needed
+        textEdit->setGreenSel (es);
         if (ui->spinBox->isVisible())
             es.prepend (textEdit->currentLineSelection());
         es.append (textEdit->getBlueSel());
@@ -76,6 +76,7 @@ void FPwin::find (bool forward)
         if (newSrch) textEdit->setTextCursor (start);
         start.setPosition (found.position(), QTextCursor::KeepAnchor);
         textEdit->setTextCursor (start);
+        textEdit->centerCursor();
     }
     hlight();
     connect (textEdit, &QPlainTextEdit::textChanged, this, &FPwin::hlight);
