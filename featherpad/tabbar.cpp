@@ -103,11 +103,6 @@ void TabBar::mouseMoveEvent (QMouseEvent *event)
     else
     {
         QTabBar::mouseMoveEvent (event);
-        int index = tabAt (event->pos());
-        if (index > -1)
-            QToolTip::showText (event->globalPos(), tabToolTip (index));
-        else
-            QToolTip::hideText();
     }
 }
 bool TabBar::event (QEvent *event)
