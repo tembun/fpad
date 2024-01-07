@@ -52,6 +52,8 @@
 namespace FeatherPad {
 QString modified_prefix = QString("[ * ]");
 QString noname = QString("[ noname ]");
+QString program_name = QString( "fpad" );
+QString title_prefix = program_name + QString( " - " );
 void BusyMaker::waiting() {
     QTimer::singleShot (timeout, this, &BusyMaker::makeBusy);
 }
@@ -834,8 +836,8 @@ void FPwin::setTitle (const QString& fileName, int tabIndex)
     {
         QFileInfo fInfo (fileName);
         if (tabIndex < 0)
-            setWindowTitle (fileName.contains ("/") ? fileName
-                                                    : fInfo.absolutePath() + "/" + fileName);
+            setWindowTitle (title_prefix + (fileName.contains ("/") ? fileName
+                                                    : fInfo.absolutePath() + "/" + fileName));
         shownName = fileName.section ('/', -1);
         shownName.replace ("\n", " ");
     }
@@ -860,18 +862,18 @@ void FPwin::asterisk (bool modified)
     if (fname.isEmpty())
     {
         shownName = noname;
-        setWindowTitle ((modified ? modified_prefix : QString()) + shownName);
+        setWindowTitle ((modified ? modified_prefix : QString()) + title_prefix + shownName);
     }
     else
     {
         shownName = fname.section ('/', -1);
         setWindowTitle ((modified ? modified_prefix : QString())
-                        + (fname.contains ("/") ? fname
+                        + title_prefix + (fname.contains ("/") ? fname
                                                 : QFileInfo (fname).absolutePath() + "/" + fname));
     }
     shownName.replace ("\n", " ");
     if (modified)
-        shownName.prepend (modified_prefix);
+        shownName.prepend ( modified_prefix );
     shownName.replace ("&", "&&");
     shownName.replace ('\t', ' ');
     ui->tabWidget->setTabText (index, shownName);
@@ -1635,7 +1637,7 @@ void FPwin::tabSwitch (int index)
     }
     if (modified)
         shownName.prepend (modified_prefix);
-    setWindowTitle (shownName);
+    setWindowTitle (title_prefix + shownName);
     encodingToCheck (textEdit->getEncoding());
     Config config = static_cast<FPsingleton*>(qApp)->getConfig();
     bool readOnly = textEdit->isReadOnly();
