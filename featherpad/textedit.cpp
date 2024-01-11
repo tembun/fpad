@@ -602,7 +602,7 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
             {
                 QTextCursor startCur = cursor;
                 startCur.movePosition (QTextCursor::StartOfLine);
-                hPos = qAbs (cursorRect().left() - cursorRect (startCur).left()); // is negative for RTL
+                hPos = qAbs (cursorRect().left() - cursorRect (startCur).left());
                 txtCurHPos_ = hPos;
             }
             QTextCursor::MoveMode mode = ((event->modifiers() & Qt::ShiftModifier)
@@ -657,7 +657,7 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
       	
       	if ( event->modifiers() == Qt::ControlModifier )
       	{
-      		vbar->setValue( vbar->value() + ( event->key() == Qt::Key_PageDown ? 6 : -6 ) * vbar->pageStep() );
+      		vbar->setValue( vbar->value() + ( event->key() == Qt::Key_PageDown ? 1 : -1 ) * vbar->pageStep() );
       		sync_cursor();
       	}
       	else if( event->modifiers() == Qt::AltModifier )
