@@ -72,7 +72,21 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
     setCursorWidth( 4 );
     setStyleSheet ("QPlainTextEdit {"
                            "selection-background-color: rgb(160, 160, 160);"
-                           "selection-color: black;}");
+                           "selection-color: black;}"
+                           "QScrollBar {"
+                           "	background:#000000}"
+                           "QScrollBar::add-line{"
+                           "	border:#000000}"
+                           "QScrollBar::sub-line{"
+                           "	border:#000000}"
+                           "QScrollBar::add-page {"
+                           "	background:#8a8a8a}"
+                           "QScrollBar::sub-page{"
+                           "	background:#8a8a8a}"
+                           "QScrollBar::handle{"
+                           "	min-height: 75px;"
+                           "	border:1px solid #000000}"
+	);
     QPalette p = palette();
     bgColorValue = qBound (0, bgColorValue, 255);
         viewport()->setStyleSheet (QString (".QWidget {"
