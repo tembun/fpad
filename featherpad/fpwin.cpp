@@ -1290,7 +1290,7 @@ void FPwin::fileOpen()
     }
     FileDialog dialog (this);
     dialog.setAcceptMode (QFileDialog::AcceptOpen);
-    dialog.setWindowTitle (tr ("Open file..."));
+    dialog.setWindowTitle (title_prefix + QString("Open file..."));
     dialog.setFileMode (QFileDialog::ExistingFiles);
     dialog.setNameFilter (filter);
     if (QFileInfo (path).isDir())
@@ -1459,7 +1459,7 @@ bool FPwin::saveFile ()
             updateShortcuts (true);
             FileDialog dialog (this);
             dialog.setAcceptMode (QFileDialog::AcceptSave);
-            dialog.setWindowTitle (tr ("Save as..."));
+            dialog.setWindowTitle (title_prefix + QString("Save as..."));
             dialog.setFileMode (QFileDialog::AnyFile);
             dialog.setNameFilter (filter);
             dialog.setDirectory (fname.section ("/", 0, -2));
@@ -1488,7 +1488,7 @@ bool FPwin::saveFile ()
         updateShortcuts (true);
         FileDialog dialog (this);
         dialog.setAcceptMode (QFileDialog::AcceptSave);
-        dialog.setWindowTitle (tr ("Save as..."));
+        dialog.setWindowTitle (title_prefix + QString("Save as..."));
         dialog.setFileMode (QFileDialog::AnyFile);
         dialog.setNameFilter (filter);
         dialog.setDirectory (fname.section ("/", 0, -2));
@@ -1609,7 +1609,7 @@ void FPwin::tabSwitch (int index)
     TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->widget (index));
     if (tabPage == nullptr)
     {
-        setWindowTitle ("FeatherPad[*]");
+        setWindowTitle (program_name);
         setWindowModified (false);
         return;
     }
