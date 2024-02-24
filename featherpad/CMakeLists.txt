@@ -72,7 +72,8 @@ set(featherpad_SRCS
     tabpage.cpp
     searchbar.cpp
     session.cpp
-    fontDialog.cpp)
+    fontDialog.cpp
+    snippets.cc)
 
 if(NOT WITHOUT_X11 AND UNIX AND NOT APPLE AND NOT HAIKU)
   set(featherpad_SRCS ${featherpad_SRCS} x11.cpp)

@@ -27,6 +27,7 @@
 #include "fontDialog.h"
 #include "loading.h"
 #include "warningbar.h"
+#include "snippets.h"
 
 #include <QPrintDialog>
 #include <QToolTip>
@@ -44,6 +45,7 @@
 #include <QStandardPaths>
 #include <QDesktopServices>
 #include <QPushButton>
+
 
 #ifdef HAS_X11
 #include "x11.h"
@@ -193,7 +195,110 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     setAcceptDrops (true);
     setAttribute (Qt::WA_AlwaysShowToolTips);
     setAttribute (Qt::WA_DeleteOnClose, false);
+    
+    for( auto & tup : snippet_list )
+    {
+    	QString shortc_str = std::get< 0 >( tup );
+    	QString snip = std::get< 1 >( tup );
+    	int off_hor = std::get<  2  >( tup );
+    	int off_vert = std::get< 3 >( tup );
+    	
+	QShortcut* snip_shortcut = new QShortcut( QKeySequence( shortc_str ), this );
+    	connect (snip_shortcut , &QShortcut::activated, this, [=]{
+    		apply_snippet( snip , off_hor, off_vert );
+    	});
+    };
+    
 }
+
+void FPwin::apply_snippet(QString qstr, int off_hor , int off_vert  )
+{
+	int cur = ui->tabWidget->currentIndex();
+	TabPage *tabPage = qobject_cast<TabPage *>(ui->tabWidget->widget ( cur ));
+	QTextCursor curs = tabPage->textEdit()->textCursor();
+	
+	// Determine indentation. //
+	QTextCursor curs_line_start = (
+		tabPage->textEdit()->textCursor()
+	);
+	curs_line_start.movePosition( QTextCursor::StartOfLine );
+	int indent = curs.position() - curs_line_start.position();	
+	
+	// Indent snippet string. //
+	std::string str = qstr.toStdString();
+	unsigned int i = 0;
+	while( i < str.length() )
+	{
+		
+		if( str[i] == '\n' )
+		{
+			str.insert(
+				i + 1
+				,
+				indent
+				,
+				'\t'
+			);
+			
+			i +=  ( indent+1 );
+			continue ;
+			
+			}
+		i+=1;
+		
+	};
+	// Insert snippet text. //
+	curs.insertText( QString::fromStdString(str) );
+	
+	
+	// Hor cursor offset. //
+	if( off_hor != 0  )
+	{
+		curs.movePosition(
+		
+		(
+			
+			( off_hor > 0)
+			?
+				QTextCursor::Right
+			:
+				QTextCursor::Left
+			
+		)
+		,
+		QTextCursor::MoveAnchor
+		,
+		
+		std:: abs ( off_hor )
+		
+		);
+	}
+	
+	// Vert cursor offset. //
+	if( off_vert != 0 )
+	{
+		curs.movePosition(
+			
+			(
+				( off_vert > 0 )
+				?
+					QTextCursor::Down
+				:
+					QTextCursor::Up
+			)
+			,
+			QTextCursor::MoveAnchor
+			,
+			std::abs( off_vert )
+			
+		);
+	}
+	
+	// Apply cursor offsets. //
+	tabPage->textEdit()->setTextCursor(curs);
+		
+};
+
 FPwin::~FPwin()
 {
     delete dummyWidget; dummyWidget = nullptr;

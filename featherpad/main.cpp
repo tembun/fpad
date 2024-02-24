@@ -17,9 +17,10 @@
  * @license GPL-3.0+ <https://spdx.org/licenses/GPL-3.0+.html>
  */
 
-#include <QApplication>
 #include <QDir>
+#include <QApplication>
 #include "singleton.h"
+#include "snippets.h"
 
 #ifdef HAS_X11
 #include "x11.h"
@@ -27,6 +28,7 @@
 
 #include <signal.h>
 #include <QLibraryInfo>
+
 
 void handleQuitSignals (const std::vector<int>& quitSignals)
 {
@@ -39,10 +41,13 @@ void handleQuitSignals (const std::vector<int>& quitSignals)
         signal (sig, handler);
 }
 
+
 int main (int argc, char **argv)
 {
     
     QApplication::setCursorFlashTime( 0 );
+    
+    parse_snippets_file();
     
     const QString name = "FeatherPad";
     const QString version = "0.16.0";
