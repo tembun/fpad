@@ -200,18 +200,18 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     {
     	QString shortc_str = std::get< 0 >( tup );
     	QString snip = std::get< 1 >( tup );
-    	int off_hor = std::get<  2  >( tup );
-    	int off_vert = std::get< 3 >( tup );
+    	int off_vert = std::get< 2 >( tup );
+    	int off_hor = std::get<  3  >( tup );
     	
 	QShortcut* snip_shortcut = new QShortcut( QKeySequence( shortc_str ), this );
     	connect (snip_shortcut , &QShortcut::activated, this, [=]{
-    		apply_snippet( snip , off_hor, off_vert );
+    		apply_snippet( snip , off_vert , off_hor );
     	});
     };
     
 }
 
-void FPwin::apply_snippet(QString qstr, int off_hor , int off_vert  )
+void FPwin::apply_snippet(QString qstr, int off_vert , int off_hor  )
 {
 	int cur = ui->tabWidget->currentIndex();
 	TabPage *tabPage = qobject_cast<TabPage *>(ui->tabWidget->widget ( cur ));
@@ -247,9 +247,30 @@ void FPwin::apply_snippet(QString qstr, int off_hor , int off_vert  )
 		i+=1;
 		
 	};
+	
 	// Insert snippet text. //
 	curs.insertText( QString::fromStdString(str) );
 	
+	
+	// Vert cursor offset. //
+	if( off_vert != 0 )
+	{
+		curs.movePosition(
+			
+			(
+				( off_vert > 0 )
+				?
+					QTextCursor::Down
+				:
+					QTextCursor::Up
+			)
+			,
+			QTextCursor::MoveAnchor
+			,
+			std::abs( off_vert )
+			
+		);
+	}
 	
 	// Hor cursor offset. //
 	if( off_hor != 0  )
@@ -274,25 +295,6 @@ void FPwin::apply_snippet(QString qstr, int off_hor , int off_vert  )
 		);
 	}
 	
-	// Vert cursor offset. //
-	if( off_vert != 0 )
-	{
-		curs.movePosition(
-			
-			(
-				( off_vert > 0 )
-				?
-					QTextCursor::Down
-				:
-					QTextCursor::Up
-			)
-			,
-			QTextCursor::MoveAnchor
-			,
-			std::abs( off_vert )
-			
-		);
-	}
 	
 	// Apply cursor offsets. //
 	tabPage->textEdit()->setTextCursor(curs);

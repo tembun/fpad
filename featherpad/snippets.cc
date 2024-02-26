@@ -25,7 +25,10 @@ void
 parse_snippets_file()
 {
 	
-	QString snippets_filepath = QDir().absoluteFilePath("../featherpad/snippets.json");
+	QString snippets_filepath = (
+		QFileInfo(__FILE__).absoluteDir()
+			.absoluteFilePath("snippets.json")
+	);
 	QFile snippets_file;
 	snippets_file.setFileName(  snippets_filepath  );
 	
@@ -45,7 +48,7 @@ parse_snippets_file()
 		int off_hor = ( shortcut_data.value( "hor" ) ).toInt();
 		int off_vert = ( shortcut_data.value("vert") ).toInt();
 		
-		snippet_list.insert(snippet_list.end(), {key,str,off_hor,off_vert});
+		snippet_list.insert(snippet_list.end(), {key,str,off_vert,off_hor});
 		
 	};
 	

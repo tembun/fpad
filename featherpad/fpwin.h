@@ -178,7 +178,7 @@ private:
     bool saveFile ();
     void saveAllFiles (bool showWarning);
     void closeEvent (QCloseEvent *event);
-    void apply_snippet(QString snip,int off_hor, int off_vert);
+    void apply_snippet(QString snip,int off_vert, int off_hor);
     bool closeTabs (int first, int last, bool saveFilesList = false);
     void dragEnterEvent (QDragEnterEvent *event);
     void dropEvent (QDropEvent *event);
