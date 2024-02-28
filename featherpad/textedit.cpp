@@ -69,7 +69,7 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
     txtCurHPos_ = -1;
     textTab_ = "    ";
     setMouseTracking (true);
-    setCursorWidth( 4 );
+    setCursorWidth( 13 );
     setStyleSheet ("QPlainTextEdit {"
                            "selection-background-color: rgb(160, 160, 160);"
                            "selection-color: black;}"
