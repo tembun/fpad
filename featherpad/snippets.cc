@@ -1,4 +1,4 @@
-#include <QDir>
+#include <stdlib.h>
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -10,24 +10,23 @@ std::vector<std::tuple<QString,QString,int,int>> snippet_list;
 
 /*
  ******************************************************************************************
- * Place your custom text snippets in "snippets.json" file with following structure:
+ * Place your custom text snippets in ~/.config/featherpad/snippets.json file with following structure:
  * {
  *	<key_binding>: {
  *		"str": <your_snippet>,
  *		"hor": <horizontal_cursor_offset (negative - go left, positive - right)>,
  *		"vert": <vertical_cursor_offset (negative - go up, positive - down)>
- *	},
- *	...
+ *	}
  * }
  *******************************************************************************************
  */
 void
 parse_snippets_file()
 {
-	
+	char home_buf[1024];
+	strcpy( home_buf, getenv("HOME") );
 	QString snippets_filepath = (
-		QFileInfo(__FILE__).absoluteDir()
-			.absoluteFilePath("snippets.json")
+		strcat( home_buf , "/.config/featherpad/snippets.json" )
 	);
 	QFile snippets_file;
 	snippets_file.setFileName(  snippets_filepath  );
@@ -53,4 +52,3 @@ parse_snippets_file()
 	};
 	
 };
-
