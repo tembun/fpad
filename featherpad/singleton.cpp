@@ -330,70 +330,37 @@ void FPsingleton::handleMessage (const QString& message)
             sr = pScreen->virtualGeometry();
         for (int i = 0; i < Wins.count(); ++i)
         {
-#ifdef HAS_X11
-            WId id = Wins.at (i)->winId();
-            long whichDesktop = -1;
-            if (isX11_)
-                whichDesktop = onWhichDesktop (id);
-#endif
-            if (!isX11_
-#ifdef HAS_X11
-                || ((whichDesktop == d
-                     || whichDesktop == -1)
-                    && (!Wins.at (i)->isMinimized() || isWindowShaded (id)))
-#endif
-               )
-            {
-                bool hasDialog = false;
-                QList<QDialog*> dialogs = Wins.at (i)->findChildren<QDialog*>();
-                for (int j = 0; j < dialogs.count(); ++j)
-                {
-                    if (dialogs.at (j)->isModal())
-                    {
-                        hasDialog = true;
-                        break;
-                    }
-                }
-                if (hasDialog) continue;
-                if (sr.contains (Wins.at (i)->geometry().center()))
-                {
-                    if (d >= 0)
-                    {
-                        Wins.at (i)->dummyWidget->showMinimized();
-                        QTimer::singleShot (0, Wins.at (i)->dummyWidget, &QWidget::close);
-                    }
-
-                    if (filesList.isEmpty())
-                        Wins.at (i)->newTab();
-                    else
-                    {
-                        bool multiple (filesList.count() > 1 || Wins.at (i)->isLoading());
-                        for (int j = 0; j < filesList.count(); ++j)
-                        {
-					
-                        	FPwin* fp = Wins.at( i );
-                        	
-                        	
-                        	int exists_tab_idx = fp->already_opened_idx( filesList.at (i) );
-                        	
-                        	if( exists_tab_idx != -2 )
-        				{
-        					fp->ui->tabWidget->setCurrentIndex(  exists_tab_idx  );
-        					
-        					fp->stealFocus();
-        				}
+           if (filesList.isEmpty())
+           {
+          	 Wins.at (i)->newTab();
+           }
+           else
+           {
+           	  bool multiple (filesList.count() > 1 || Wins.at (i)->isLoading());
+           	  for (int j = 0; j < filesList.count(); ++j)
+           	  {
+			
+                  FPwin* fp = Wins.at( i );
+                 	
+                 	
+                 	int exists_tab_idx = fp->already_opened_idx( filesList.at (i) );
+                 	
+                 	if( exists_tab_idx != -2 )
+      			{
+        				fp->ui->tabWidget->setCurrentIndex(  exists_tab_idx  );
         				
-        				else
-        				{
-                        		fp->newTabFromName (filesList.at (j), lineNum, posInLine, multiple);
-                        	}
-                        }
-                    }
-                    found = true;
-                    break;
-                }
+        				fp->stealFocus();
+      			}
+        			
+        			else
+        			{
+                        	fp->newTabFromName (filesList.at (j), lineNum, posInLine, multiple);
+                  	}
             }
         }
+        found = true;
+        break;
+    }
     if (!found)
     {
         newWin (filesList, lineNum, posInLine);
