@@ -527,7 +527,7 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
     {
         QTextCursor cursor = textCursor();
     
-        if( event->modifiers() == (Qt::ControlModifier | Qt::AltModifier) )
+        if( event->modifiers() == (Qt::ControlModifier|Qt::AltModifier) )
         {
         	
         	cursor.setPosition( cursor.position() , QTextCursor::KeepAnchor );
@@ -546,6 +546,14 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
         	
         	setTextCursor( cursor );
         	
+        }
+        else if(event->modifiers()==Qt::AltModifier)
+        {
+        		int lft=event->key() == Qt::Key_Left;                			
+                			cursor.movePosition(lft?QTextCursor::Left : QTextCursor::Right , QTextCursor::MoveAnchor,30);
+                			setTextCursor(cursor);
+                			event->accept();
+                			return;
         }
         /* when text is selected, use arrow keys
            to go to the start or end of the selection */
