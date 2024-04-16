@@ -129,9 +129,9 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     }
     connect (ui->actionNew, &QAction::triggered, this, &FPwin::newTab);
     connect (ui->tabWidget->tabBar(), &TabBar::addEmptyTab, this, &FPwin::newTab);
-    QShortcut* next_tab_shortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Semicolon), this);
+    QShortcut* next_tab_shortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_W), this);
     connect (next_tab_shortcut, &QShortcut::activated, this, &FPwin::nextTab);
-    QShortcut* prev_tab_shortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_J), this);
+    QShortcut* prev_tab_shortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_Q), this);
     connect (prev_tab_shortcut , &QShortcut::activated, this, &FPwin::previousTab);
     QShortcut* close_tab_shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), this);
     connect (close_tab_shortcut , &QShortcut::activated, this, &FPwin::closeTab);
