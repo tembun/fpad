@@ -420,7 +420,6 @@ void TextEdit::sync_cursor()
 void TextEdit::keyPressEvent (QKeyEvent *event)
 {
     keepTxtCurHPos_ = false;
-
     /* workarounds for copy/cut/... -- see TextEdit::copy()/cut()/... */
     if (event == QKeySequence::Copy)
     {
@@ -523,66 +522,139 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
             return;
         }
     }
-    else if (event->key() == Qt::Key_Left || event->key() == Qt::Key_Right)
+    else if (event->key() == Qt::Key_Left||event->key() == Qt::Key_Right)
+    {return;}
+    else if (event->key() == Qt::Key_J||event->key() == Qt::Key_Semicolon||event->key()==Qt::Key_Colon)
     {
-        QTextCursor cursor = textCursor();
-    
-        if( event->modifiers() == (Qt::ControlModifier|Qt::AltModifier) )
-        {
-        	
-        	cursor.setPosition( cursor.position() , QTextCursor::KeepAnchor );
-        	
-        	if( event->key() == Qt::Key_Left )
+    	QTextCursor cursor = textCursor();
+    	if(event->modifiers()==Qt::AltModifier)
+    	{
+    		if (cursor.hasSelection())
         	{
-        	
+            	QString selTxt = cursor.selectedText();
+            	if (event->key() == Qt::Key_J)
+            	{
+                	if (selTxt.isRightToLeft())
+                    	cursor.setPosition (cursor.selectionEnd());
+                	else
+                    	cursor.setPosition (cursor.selectionStart());
+            	}
+            	else
+            	{
+                	if (selTxt.isRightToLeft())
+                    	cursor.setPosition (cursor.selectionStart());
+                	else
+                    	cursor.setPosition (cursor.selectionEnd());
+            	}
+            	cursor.clearSelection();
+            	setTextCursor(cursor);
+            	event->accept();
+            	return;
+        	}
+        	else
+        	{
+    			cursor.movePosition(event->key() == Qt::Key_J?QTextCursor::Left : QTextCursor::Right , QTextCursor::MoveAnchor);
+      		setTextCursor(cursor);
+      		event->accept();
+      		return;
+    		}
+    	}
+    	else if(event->modifiers()==(Qt::AltModifier|Qt::ShiftModifier))
+    	{
+    		cursor.movePosition(event->key() == Qt::Key_J?QTextCursor::Left : QTextCursor::Right,QTextCursor::KeepAnchor);
+    		setTextCursor(cursor);
+      	return;
+    	}
+    	else if(event->modifiers()==(Qt::AltModifier|Qt::ControlModifier))
+    	{
+    		cursor.setPosition( cursor.position() , QTextCursor::KeepAnchor );
+        	if( event->key() == Qt::Key_J )
+        	{
         		cursor.movePosition( QTextCursor::StartOfLine , QTextCursor::KeepAnchor );
-        	
         	}
-        	else {
-        		
-        		cursor.movePosition( QTextCursor::EndOfLine , QTextCursor::KeepAnchor );
-        		
-        	}
-        	
+        	else {cursor.movePosition( QTextCursor::EndOfLine , QTextCursor::KeepAnchor );}
         	setTextCursor( cursor );
-        	
-        }
-        else if(event->modifiers()==Qt::AltModifier)
+        	event->accept();
+      	return;
+    	}
+    	else if(event->modifiers() == (Qt::ControlModifier) )
         {
-        		int lft=event->key() == Qt::Key_Left;                			
-                			cursor.movePosition(lft?QTextCursor::Left : QTextCursor::Right , QTextCursor::MoveAnchor,30);
-                			setTextCursor(cursor);
-                			event->accept();
-                			return;
+            cursor.movePosition(event->key() == Qt::Key_J?QTextCursor::WordLeft : QTextCursor::WordRight , QTextCursor::MoveAnchor);
+        	setTextCursor( cursor );
+        	event->accept();
+      	return;
         }
-        /* when text is selected, use arrow keys
-           to go to the start or end of the selection */
-        else if (event->modifiers() == Qt::NoModifier && cursor.hasSelection())
+      else if(event->modifiers() == (Qt::ControlModifier|Qt::ShiftModifier))
+      {
+      	cursor.movePosition(event->key() == Qt::Key_J?QTextCursor::WordLeft : QTextCursor::WordRight , QTextCursor::KeepAnchor);
+        	setTextCursor( cursor );
+        	event->accept();
+      	return;
+      }
+    }
+    else if (event->key() == Qt::Key_L || event->key() == Qt::Key_K)
+    {
+	if ((event->modifiers() == Qt::AltModifier))
         {
-            QString selTxt = cursor.selectedText();
-            if (event->key() == Qt::Key_Left)
-            {
-                if (selTxt.isRightToLeft())
-                    cursor.setPosition (cursor.selectionEnd());
-                else
-                    cursor.setPosition (cursor.selectionStart());
-            }
+            keepTxtCurHPos_ = true;
+            QTextCursor cursor = textCursor();
+            int hPos;
+            if (txtCurHPos_ >= 0)
+                hPos = txtCurHPos_;
             else
             {
-                if (selTxt.isRightToLeft())
-                    cursor.setPosition (cursor.selectionStart());
-                else
-                    cursor.setPosition (cursor.selectionEnd());
+                QTextCursor startCur = cursor;
+                startCur.movePosition (QTextCursor::StartOfLine);
+                hPos = qAbs (cursorRect().left() - cursorRect (startCur).left());
+                txtCurHPos_ = hPos;
             }
-            cursor.clearSelection();
+            QTextCursor::MoveMode mode = ((event->modifiers() & Qt::ShiftModifier)
+                                              ? QTextCursor::KeepAnchor
+                                              : QTextCursor::MoveAnchor);
+            if ((event->modifiers() & Qt::MetaModifier))
+            { // try to restore the cursor pixel position between blocks
+                cursor.movePosition (event->key() == Qt::Key_L
+                                         ? QTextCursor::EndOfBlock
+                                         : QTextCursor::StartOfBlock,
+                                     mode);
+                if (cursor.movePosition (event->key() == Qt::Key_L
+                                             ? QTextCursor::NextBlock
+                                             : QTextCursor::PreviousBlock,
+                                         mode))
+                {
+                    setTextCursor (cursor); // WARNING: This is needed because of a Qt bug.
+                    bool rtl (cursor.block().text().isRightToLeft());
+                    QPoint cc = cursorRect (cursor).center();
+                    cursor.setPosition (cursorForPosition (QPoint (cc.x() + (rtl ? -1 : 1) * hPos, cc.y())).position(), mode);
+                }
+            }
+            else
+            { // try to restore the cursor pixel position between lines
+                cursor.movePosition (event->key() == Qt::Key_L
+                                         ? QTextCursor::EndOfLine
+                                         : QTextCursor::StartOfLine,
+                                     mode);
+                if (cursor.movePosition (event->key() == Qt::Key_L
+                                             ? QTextCursor::NextCharacter
+                                             : QTextCursor::PreviousCharacter,
+                                         mode))
+                { // next/previous line or block
+                    cursor.movePosition (QTextCursor::StartOfLine, mode);
+                    setTextCursor (cursor); // WARNING: This is needed because of a Qt bug.
+                    bool rtl (cursor.block().text().isRightToLeft());
+                    QPoint cc = cursorRect (cursor).center();
+                    cursor.setPosition (cursorForPosition (QPoint (cc.x() + (rtl ? -1 : 1) * hPos, cc.y())).position(), mode);
+                }
+            }
             setTextCursor (cursor);
+            ensureCursorVisible();
             event->accept();
             return;
         }
     }
     else if (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up)
     {
-        
+        return;
         if (
         	( event->modifiers() == Qt::ControlModifier )
         	||
@@ -607,11 +679,7 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
                 return;
             }
         }
-        else if (event->modifiers() == Qt::NoModifier
-                || (!(event->modifiers() & Qt::AltModifier)
-                    && ((event->modifiers() & Qt::ShiftModifier)
-                        || (event->modifiers() & Qt::MetaModifier)
-                        || (event->modifiers() & Qt::KeypadModifier))))
+        else if ((event->modifiers() == Qt::AltModifier)||(event->modifiers()==Qt::NoModifier))
         {
             /* NOTE: This also includes a useful Qt feature with Down/Up after Backspace/Enter.
                      The feature was removed with Backspace due to a regression in Qt 5.14.1. */
@@ -673,10 +741,8 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
     }
     else if ( event->key() == Qt::Key_PageDown || event->key() == Qt::Key_PageUp )
     {
-    	
       if ( QScrollBar* vbar = verticalScrollBar() )
       {
-      	
       	if ( event->modifiers() == Qt::ControlModifier )
       	{
       		vbar->setValue( vbar->value() + ( event->key() == Qt::Key_PageDown ? 1 : -1 ) * vbar->pageStep() );
