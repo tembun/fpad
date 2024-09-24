@@ -177,13 +177,14 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     connect (ui->toolButtonAll, &QAbstractButton::clicked, this, &FPwin::replaceAll);
     connect (ui->dockReplace, &QDockWidget::visibilityChanged, this, &FPwin::closeReplaceDock);
     connect (ui->dockReplace, &QDockWidget::topLevelChanged, this, &FPwin::resizeDock);
-    connect (this, &FPwin::finishedLoading, [this]{});
+    connect (this, &FPwin::finishedLoading, []{});
     ui->toolButtonNext->setShortcut (QKeySequence (Qt::Key_F8));
     ui->toolButtonPrv->setShortcut (QKeySequence (Qt::Key_F9));
     ui->toolButtonAll->setShortcut (QKeySequence (Qt::Key_F10));
     QShortcut *fullscreen = new QShortcut (QKeySequence (Qt::Key_F11), this);
     QShortcut *defaultsize = new QShortcut (QKeySequence (Qt::CTRL + Qt::SHIFT + Qt::Key_W), this);
-    connect (fullscreen, &QShortcut::activated, [this] {setWindowState (windowState() ^ Qt::WindowFullScreen);});
+    connect (fullscreen, &QShortcut::activated,
+    	[this] {setWindowState (windowState() ^ Qt::WindowFullScreen);});
     connect (defaultsize, &QShortcut::activated, this, &FPwin::defaultSize);
     QShortcut *focus_view_hard = new QShortcut (QKeySequence (Qt::Key_Escape), this);
     connect (focus_view_hard, &QShortcut::activated, this, &FPwin::focus_view_hard);    
@@ -1503,17 +1504,6 @@ void FPwin::reload()
                   textEdit->getSaveCursor() ? 1 : 0);
     }
 }
-static inline int trailingSpaces (const QString &str)
-{
-    int i = 0;
-    while (i < str.length())
-    {
-        if (!str.at (str.length() - 1 - i).isSpace())
-            return i;
-        ++i;
-    }
-    return i;
-}
 // This is for both "Save" and "Save As"
 bool FPwin::saveFile ()
 {
@@ -2182,74 +2172,6 @@ void FPwin::prefDialog()
     PrefDialog dlg (this);
     dlg.exec();
     updateShortcuts (false);
-}
-static inline void moveToWordStart (QTextCursor& cur, bool forward)
-{
-    const QString blockText = cur.block().text();
-    const int l = blockText.length();
-    int indx = cur.positionInBlock();
-    if (indx < l)
-    {
-        QChar ch = blockText.at (indx);
-        while (!ch.isLetterOrNumber() && ch != '\'' && ch != '-'
-               && ch != QChar (QChar::Nbsp) && ch != QChar (0x200C))
-        {
-            cur.movePosition (QTextCursor::NextCharacter);
-            ++indx;
-            if (indx == l)
-            {
-                if (cur.movePosition (QTextCursor::NextBlock))
-                    moveToWordStart (cur, forward);
-                return;
-            }
-            ch = blockText.at (indx);
-        }
-    }
-    if (!forward && indx > 0)
-    {
-        QChar ch = blockText.at (indx - 1);
-        while (ch.isLetterOrNumber() || ch == '\'' || ch == '-'
-               || ch == QChar (QChar::Nbsp) || ch == QChar (0x200C))
-        {
-            cur.movePosition (QTextCursor::PreviousCharacter);
-            --indx;
-            ch = blockText.at (indx);
-            if (indx == 0) break;
-        }
-    }
-}
-
-static inline void selectWord (QTextCursor& cur)
-{
-    moveToWordStart (cur, true);
-    const QString blockText = cur.block().text();
-    const int l = blockText.length();
-    int indx = cur.positionInBlock();
-    if (indx < l)
-    {
-        QChar ch = blockText.at (indx);
-        while (ch.isLetterOrNumber() || ch == '\'' || ch == '-'
-               || ch == QChar (QChar::Nbsp) || ch == QChar (0x200C))
-        {
-            cur.movePosition (QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
-            ++indx;
-            if (indx == l) break;
-            ch = blockText.at (indx);
-        }
-    }
-    while (!cur.selectedText().isEmpty()
-           && (cur.selectedText().at (0) == '-' || cur.selectedText().at (0) == '\''
-               || cur.selectedText().at (0).isNumber()))
-    {
-        int p = cur.position();
-        cur.setPosition (cur.anchor() + 1);
-        cur.setPosition (p, QTextCursor::KeepAnchor);
-    }
-    while (!cur.selectedText().isEmpty()
-           && (cur.selectedText().endsWith ("-") || cur.selectedText().endsWith ("\'")))
-    {
-        cur.setPosition (cur.position() - 1, QTextCursor::KeepAnchor);
-    }
 }
 void FPwin::manageSessions()
 {
