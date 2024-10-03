@@ -20,7 +20,6 @@
 #include <QDir>
 #include <QApplication>
 #include "singleton.h"
-#include "snippets.h"
 
 #ifdef HAS_X11
 #include "x11.h"
@@ -45,11 +44,8 @@ void handleQuitSignals (const std::vector<int>& quitSignals)
 int main (int argc, char **argv)
 {
     
-    QApplication::setCursorFlashTime( 0 );
-    
-    parse_snippets_file();
-    
-    const QString name = "FeatherPad";
+    QApplication::setCursorFlashTime( 0 );    
+    const QString name = "fpad";
     const QString version = "0.16.0";
     const QString option = QString::fromUtf8 (argv[1]);
     if (option == "--help" || option == "-h")

@@ -31,8 +31,7 @@ SOURCES += main.cpp \
            tabpage.cpp \
            searchbar.cpp \
            session.cpp \
-           fontDialog.cpp \
-           snippets.cc
+           fontDialog.cpp
 
 HEADERS += singleton.h \
            fpwin.h \
@@ -51,8 +50,7 @@ HEADERS += singleton.h \
            searchbar.h \
            session.h \
            fontDialog.h \
-           warningbar.h \
-           snippets.h
+           warningbar.h
 
 FORMS += fp.ui \
          prefDialog.ui \
