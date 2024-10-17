@@ -11,4 +11,5 @@ $ cmake ..
 $ make
 
 also you can install it if desired:
-$ sudo make install
+$ su
+# make install
