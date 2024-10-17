@@ -17,6 +17,7 @@
  * @license GPL-3.0+ <https://spdx.org/licenses/GPL-3.0+.html>
  */
 
+#include <unistd.h>
 #include "ui_fp.h"
 #include <QDir>
 #include <QScreen>
@@ -293,15 +294,25 @@ FPwin* FPsingleton::newWin (const QStringList& filesList,
     if (!filesList.isEmpty())
     {
         bool multiple (filesList.count() > 1 || fp->isLoading());
-        for (int i = 0; i < filesList.count(); ++i)
+        for (int i = 0; i < filesList.count(); ++i){
+        	if(access( filesList.at(i).toStdString().c_str(), F_OK ) == -1) {
+        		dprintf(1,"no such file: %s.\n",filesList.at(i).toStdString().c_str());
+        		std::exit(1);
+        	}
         	fp->newTabFromName (filesList.at (i), lineNum, posInLine, multiple);
+        }
         
     }
     else if (!lastFiles_.isEmpty())
     {
         bool multiple (lastFiles_.count() > 1 || fp->isLoading());
-        for (int i = 0; i < lastFiles_.count(); ++i)
+        for (int i = 0; i < lastFiles_.count(); ++i){
+        	if(access( lastFiles_.at(i).toStdString().c_str(), F_OK ) == -1) {
+        		dprintf(1,"no such file: %s.\n",lastFiles_.at(i).toStdString().c_str());
+        		std::exit(1);
+        	}
             fp->newTabFromName (lastFiles_.at (i), -1, 0, multiple);
+         }
     }
 
     return fp;
@@ -339,11 +350,14 @@ void FPsingleton::handleMessage (const QString& message)
            	  bool multiple (filesList.count() > 1 || Wins.at (i)->isLoading());
            	  for (int j = 0; j < filesList.count(); ++j)
            	  {
-			
+				if(access( filesList.at(i).toStdString().c_str(), F_OK ) == -1) {
+					continue;
+				}
+				
                   FPwin* fp = Wins.at( i );
                  	
                  	
-                 	int exists_tab_idx = fp->already_opened_idx( filesList.at (i) );
+                	int exists_tab_idx = fp->already_opened_idx( filesList.at (i) );
                  	
                  	if( exists_tab_idx != -2 )
       			{
