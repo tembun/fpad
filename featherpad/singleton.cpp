@@ -297,7 +297,6 @@ FPwin* FPsingleton::newWin (const QStringList& filesList,
         for (int i = 0; i < filesList.count(); ++i){
         	if(access( filesList.at(i).toStdString().c_str(), F_OK ) == -1) {
         		dprintf(1,"no such file: %s.\n",filesList.at(i).toStdString().c_str());
-        		std::exit(1);
         	}
         	fp->newTabFromName (filesList.at (i), lineNum, posInLine, multiple);
         }
@@ -309,7 +308,6 @@ FPwin* FPsingleton::newWin (const QStringList& filesList,
         for (int i = 0; i < lastFiles_.count(); ++i){
         	if(access( lastFiles_.at(i).toStdString().c_str(), F_OK ) == -1) {
         		dprintf(1,"no such file: %s.\n",lastFiles_.at(i).toStdString().c_str());
-        		std::exit(1);
         	}
             fp->newTabFromName (lastFiles_.at (i), -1, 0, multiple);
          }
