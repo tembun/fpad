@@ -1063,7 +1063,6 @@ void TextEdit::resizeEvent (QResizeEvent *event)
 
     if (resizeTimerId_)
     {
-        killTimer (resizeTimerId_);
         resizeTimerId_ = 0;
     }
     resizeTimerId_ = startTimer (UPDATE_INTERVAL);
@@ -1075,13 +1074,8 @@ void TextEdit::timerEvent (QTimerEvent *event)
 
     if (event->timerId() == resizeTimerId_)
     {
-        killTimer (event->timerId());
         resizeTimerId_ = 0;
         emit resized();
-    }
-    else if (event->timerId() == selectionTimerId_)
-    {
-        killTimer (event->timerId());
     }
 }
 static void fillBackground (QPainter *p, const QRectF &rect, QBrush brush, const QRectF &gradientRect = QRectF())
