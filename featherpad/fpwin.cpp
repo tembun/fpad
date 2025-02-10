@@ -66,6 +66,20 @@ void BusyMaker::makeBusy() {
 FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidget (nullptr), ui (new Ui::FPwin)
 {
     ui->setupUi (this);
+    
+    /*
+    	Dark theme stuff.
+    */
+    ui->tabWidget->setStyleSheet(
+    	"background-color: #303030;"
+    	"color:#ffffff;"
+    );
+    ui->menuBar->setStyleSheet(
+    	"background-color: #303030;"
+    	"color: #ffffff;"
+    	"border: 0;"
+    );
+    
     standalone_ = standalone;
     loadingProcesses_ = 0;
     rightClicked_ = -1;
@@ -477,6 +491,15 @@ FPwin::DOCSTATE FPwin::savePrompt (int tabIndex, bool noToAll)
         }
         updateShortcuts (true);
         MessageBox msgBox (this);
+        msgBox.setStyleSheet(
+        	"QMessageBox {"
+        	"	background: #303030;"
+        	"}"
+        	"QPushButton {"
+        	"	background: #303030;"
+        	"	color: #ffffff;"
+        	"}"
+        );
         msgBox.setText ("<center><b><big>" + tr ("Save changes?") + "</big></b></center>");
         if (isRemoved)
             msgBox.setInformativeText ("<center><i>" + tr ("The file does not exist.") + "</i></center>");
@@ -636,6 +659,11 @@ void FPwin::editorContextMenu (const QPoint& p)
         textEdit->setTextCursor (textEdit->cursorForPosition (p));
 
     QMenu *menu = textEdit->createStandardContextMenu (p);
+    menu->setStyleSheet(
+    	"background-color: #303030;"
+    	"color: #ffffff;"
+    	"border: 0;"
+    );
     const QList<QAction*> actions = menu->actions();
     if (!actions.isEmpty())
     {
@@ -2064,6 +2092,10 @@ void FPwin::prefDialog()
     if (hasAnotherDialog()) return;
     updateShortcuts (true);
     PrefDialog dlg (this);
+    dlg.setStyleSheet(
+    	"background-color: #303030;"
+    	"color: #ffffff;"
+    );
     dlg.exec();
     updateShortcuts (false);
 }

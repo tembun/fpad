@@ -113,8 +113,8 @@ void FPwin::hlight() const
     const QString str = visCur.selection().toPlainText();
     Qt::CaseSensitivity cs = tabPage->matchCase() ? Qt::CaseSensitive : Qt::CaseInsensitive;
     
-    QColor bg = QColor( 0 , 0 , 0 );
-    QColor fg = QColor( 255 , 255 , 255 );    
+    QColor bg = QColor( 255, 255, 255 );
+    QColor fg = QColor( 0, 0, 0 );    
     if (tabPage->matchRegex() || str.contains (txt, cs))
     {
         while (!(found = textEdit->finding (txt, start, searchFlags,  tabPage->matchRegex(), endLimit)).isNull())

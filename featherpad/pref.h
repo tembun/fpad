@@ -88,7 +88,7 @@ private:
     Ui::PrefDialog *ui;
     QWidget * parent_;
     bool saveUnmodified_;
-    int lightColValue_, textTabSize_;
+    int textTabSize_;
     QHash<QString, QString> shortcuts_, newShortcuts_;
     QString prevtMsg_;
     QTimer *promptTimer_;

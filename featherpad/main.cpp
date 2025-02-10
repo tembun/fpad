@@ -90,12 +90,13 @@ int main (int argc, char **argv)
     FeatherPad::FPsingleton singleton (argc, argv, option == "--standalone" || option == "-s");
     singleton.setStyleSheet(
     	"QToolButton:checked {"
-    	"	background-color: #000000;"
-    	"	color: #ffffff;"
-	"};"
+    	"	background-color: #ffffff;"
+    	"	color: #000000;"
+    	"};"
+    	"QDialog {background-color: #303030;}"
 	"QToolButton {"
-     	"	background-color: #ffffff;"
-     	"	color: #000000;"
+     	"	background-color: #000000;"
+     	"	color: #ffffff;"
      	"};"
     );
     singleton.setApplicationName (name);

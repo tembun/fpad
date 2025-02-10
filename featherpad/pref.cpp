@@ -88,7 +88,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->tableWidget->sortByColumn (0, Qt::AscendingOrder);
     ui->tableWidget->setToolTip (tr ("Press a modifier key to clear a shortcut\nin the editing mode."));
     Config config = static_cast<FPsingleton*>(qApp)->getConfig();
-    lightColValue_ = config.getLightBgColorValue();
     textTabSize_ = config.getTextTabSize();
     saveUnmodified_ = config.getSaveUnmodified();
     ui->winSizeBox->setChecked (config.getRemSize());

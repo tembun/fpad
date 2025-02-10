@@ -71,33 +71,33 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
     setMouseTracking (true);
     setCursorWidth( 13 );
     setStyleSheet ("QPlainTextEdit {"
-                           "selection-background-color: rgb(160, 160, 160);"
-                           "selection-color: black;}"
+                           "selection-background-color: #9e9e9e;"
+                           "selection-color: #000000;}"
                            "QScrollBar {"
-                           "	background:#000000}"
+                           "	background:#303030}"
                            "QScrollBar::add-line{"
-                           "	border:#000000}"
+                           "	border:#303030}"
                            "QScrollBar::sub-line{"
-                           "	border:#000000}"
+                           "	border:#303030}"
                            "QScrollBar::add-page {"
-                           "	background:#d8d8d8}"
+                           "	background:#0b0b0b}"
                            "QScrollBar::sub-page{"
-                           "	background:#d8d8d8}"
+                           "	background:#0b0b0b}"
                            "QScrollBar::handle{"
                            "	min-height: 75px;"
-                           "	border:1px solid #000000}"
+                           "	border:1px solid #303030}"
 	);
     QPalette p = palette();
-    bgColorValue = qBound (0, bgColorValue, 255);
+    bgColorValue = qBound (0, bgColorValue, 0);
         viewport()->setStyleSheet (QString (".QWidget {"
-                                            "color: black;"
+                                            "color: white;"
                                             "background-color: rgb(%1, %1, %1);}")
                                    .arg (bgColorValue));
         QColor col = p.highlight().color();
         if (bgColorValue - qGray (col.rgb()) < 30 && col.hslSaturation() < 100)
         {
             setStyleSheet ("QPlainTextEdit {"
-                           "selection-background-color: rgb(100, 100, 100);"
+                           "selection-background-color: rgb(80, 80, 80);"
                            "selection-color: white;}");
         }
         else
@@ -111,7 +111,10 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
             }
         }
         separatorColor_ = Qt::black;
-        separatorColor_.setAlpha (2 * qRound (static_cast<qreal>(bgColorValue) / 5) - 32);
+        /*
+        it doesn't work for dark theme.
+        	separatorColor_.setAlpha (2 * qRound (static_cast<qreal>(bgColorValue) / 5) - 32);
+        */
 
 #if (QT_VERSION == QT_VERSION_CHECK(5,14,0))
     separatorColor_ = overlayColor (QColor (bgColorValue, bgColorValue, bgColorValue), separatorColor_);
@@ -1209,8 +1212,8 @@ void TextEdit::paintEvent (QPaintEvent *event)
                     QTextLayout::FormatRange o;
                     o.start = context.cursorPosition - blpos;
                     o.length = 1;
-                    o.format.setForeground (Qt::black);
-                    o.format.setBackground (Qt::white);
+                    o.format.setForeground (Qt::white);
+                    o.format.setBackground (Qt::black);
                     selections.append (o);
                 }
             }
@@ -1264,8 +1267,8 @@ void TextEdit::paintEvent (QPaintEvent *event)
 void TextEdit::lineNumberAreaPaintEvent (QPaintEvent *event)
 {
     QPainter painter (lineNumberArea_);
-    painter.fillRect (event->rect(), QColor ( 255 , 255 , 255 ));
-    painter.setPen (Qt::black);
+    painter.fillRect (event->rect(), QColor ( 0 , 0 , 0 ));
+    painter.setPen (Qt::white);
     int w = lineNumberArea_->width();
     int left = 3;
     QTextBlock block = firstVisibleBlock();
