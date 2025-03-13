@@ -7,7 +7,6 @@ find_package(Qt5Gui "${QT_MINIMUM_VERSION}" REQUIRED)
 find_package(Qt5Widgets "${QT_MINIMUM_VERSION}" REQUIRED)
 find_package(Qt5Svg "${QT_MINIMUM_VERSION}" REQUIRED)
 find_package(Qt5Network "${QT_MINIMUM_VERSION}" REQUIRED)
-find_package(Qt5PrintSupport "${QT_MINIMUM_VERSION}" REQUIRED)
 
 # optional localization
 find_package(Qt5LinguistTools QUIET)

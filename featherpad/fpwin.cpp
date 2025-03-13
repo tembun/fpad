@@ -28,13 +28,11 @@
 #include "loading.h"
 #include "warningbar.h"
 
-#include <QPrintDialog>
 #include <QToolTip>
 #include <QWindow>
 #include <QScrollBar>
 #include <QWidgetAction>
 #include <fstream>
-#include <QPrinter>
 #include <QClipboard>
 #include <QProcess>
 #include <QTextDocumentWriter>

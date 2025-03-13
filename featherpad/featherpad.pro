@@ -1,6 +1,5 @@
 QT += core gui \
       widgets \
-      printsupport \
       network \
       svg
 
