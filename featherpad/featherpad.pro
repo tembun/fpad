@@ -55,8 +55,6 @@ FORMS += fp.ui \
          sessionDialog.ui \
          fontDialog.ui
 
-RESOURCES += data/fp.qrc
-
 contains(WITHOUT_X11, YES) {
   message("Compiling without X11...")
 }
@@ -74,9 +72,6 @@ unix:!haiku:!macx {
     PREFIX = /usr/local
   }
   BINDIR = $$PREFIX/bin
-  DATADIR =$$PREFIX/share
-
-  DEFINES += DATADIR=\\\"$$DATADIR\\\" PKGDATADIR=\\\"$$PKGDATADIR\\\"
 
   #MAKE INSTALL
 
@@ -93,9 +88,6 @@ else:haiku {
     PREFIX = /boot/home/config/non-packaged/apps/FeatherPad
   }
   BINDIR = $$PREFIX
-  DATADIR =$$PREFIX/data
-
-  DEFINES += DATADIR=\\\"$$DATADIR\\\" PKGDATADIR=\\\"$$PKGDATADIR\\\"
 
   target.path =$$BINDIR
 
@@ -107,9 +99,6 @@ else:macx{
     PREFIX = /Applications
   }
   BINDIR = $$PREFIX
-  DATADIR = "$$BINDIR/$$TARGET".app
-
-  DEFINES += DATADIR=\\\"$$DATADIR\\\" PKGDATADIR=\\\"$$PKGDATADIR\\\"
 
   #MAKE INSTALL
 

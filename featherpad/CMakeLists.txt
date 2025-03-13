@@ -44,12 +44,6 @@ else()
                       ${Qt5PrintSupport_INCLUDE_DIRS})
 endif()
 
-if(HAIKU)
-  add_definitions(-DDATADIR="${CMAKE_INSTALL_PREFIX}/data")
-elseif(UNIX)
-  add_definitions(-DDATADIR="${CMAKE_INSTALL_PREFIX}/share")
-endif()
-
 set(featherpad_SRCS
     main.cpp
     singleton.cpp
@@ -108,7 +102,6 @@ elseif(UNIX)
   # make symlink
   add_custom_target(fpad_symlink ALL ${CMAKE_COMMAND} -E create_symlink featherpad fpad DEPENDS featherpad COMMENT "Creating fpad as a symlink to featherpad")
   install(TARGETS featherpad RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-  install(FILES ${ICON_FILE} DESTINATION "${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps")
   # install symlink
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/fpad DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 endif()
