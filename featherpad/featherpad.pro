@@ -1,7 +1,6 @@
 QT += core gui \
       widgets \
-      network \
-      svg
+      network
 
 haiku|macx {
   TARGET = FeatherPad
@@ -87,10 +86,7 @@ unix:!haiku:!macx {
   slink.path = $$BINDIR
   slink.extra += ln -sf $${TARGET} fpad && cp -P fpad $(INSTALL_ROOT)$$BINDIR
 
-  iconsvg.path = $$DATADIR/icons/hicolor/scalable/apps
-  iconsvg.files += ./data/$${TARGET}.svg
-
-  INSTALLS += target slink iconsvg
+  INSTALLS += target slink
 }
 else:haiku {
   isEmpty(PREFIX) {

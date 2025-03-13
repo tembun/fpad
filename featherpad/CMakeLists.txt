@@ -5,7 +5,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 find_package(Qt5Core "${QT_MINIMUM_VERSION}" REQUIRED)
 find_package(Qt5Gui "${QT_MINIMUM_VERSION}" REQUIRED)
 find_package(Qt5Widgets "${QT_MINIMUM_VERSION}" REQUIRED)
-find_package(Qt5Svg "${QT_MINIMUM_VERSION}" REQUIRED)
 find_package(Qt5Network "${QT_MINIMUM_VERSION}" REQUIRED)
 
 # optional localization
@@ -31,7 +30,6 @@ if(NOT WITHOUT_X11 AND UNIX AND NOT APPLE AND NOT HAIKU)
                       ${Qt5Core_INCLUDE_DIRS}
                       ${Qt5Gui_INCLUDE_DIRS}
                       ${Qt5Widgets_INCLUDE_DIRS}
-                      ${Qt5Svg_INCLUDE_DIRS}
                       ${Qt5X11Extras_INCLUDE_DIRS}
                       ${Qt5Network_INCLUDE_DIRS}
                       ${Qt5PrintSupport_INCLUDE_DIRS}
@@ -42,7 +40,6 @@ else()
                       ${Qt5Core_INCLUDE_DIRS}
                       ${Qt5Gui_INCLUDE_DIRS}
                       ${Qt5Widgets_INCLUDE_DIRS}
-                      ${Qt5Svg_INCLUDE_DIRS}
                       ${Qt5Network_INCLUDE_DIRS}
                       ${Qt5PrintSupport_INCLUDE_DIRS})
 endif()
@@ -77,8 +74,6 @@ if(NOT WITHOUT_X11 AND UNIX AND NOT APPLE AND NOT HAIKU)
   set(featherpad_SRCS ${featherpad_SRCS} x11.cpp)
 endif()
 
-set(ICON_FILE data/featherpad.svg)
-
 if(CMAKE_VERSION VERSION_LESS "3.10.0") # CMP0071 in 3.10: Let AUTOMOC and AUTOUIC process GENERATED files
   qt5_wrap_cpp(EXTRA_HEADERS warningbar.h messagebox.h filedialog.h)
 else()
@@ -91,7 +86,6 @@ if(NOT WITHOUT_X11 AND UNIX AND NOT APPLE AND NOT HAIKU)
   target_link_libraries(featherpad ${Qt5Core_LIBRARIES}
                                    ${Qt5Gui_LIBRARIES}
                                    ${Qt5Widgets_LIBRARIES}
-                                   ${Qt5Svg_LIBRARIES}
                                    ${Qt5X11Extras_LIBRARIES}
                                    ${Qt5Network_LIBRARIES}
                                    ${Qt5PrintSupport_LIBRARIES}
@@ -100,7 +94,6 @@ else()
   target_link_libraries(featherpad ${Qt5Core_LIBRARIES}
                                    ${Qt5Gui_LIBRARIES}
                                    ${Qt5Widgets_LIBRARIES}
-                                   ${Qt5Svg_LIBRARIES}
                                    ${Qt5Network_LIBRARIES}
                                    ${Qt5PrintSupport_LIBRARIES})
 endif()

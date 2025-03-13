@@ -267,10 +267,6 @@ void FPwin::applyConfigOnStarting()
     ui->actionWrap->setChecked( false );
     ui->tabWidget->setTabPosition(QTabWidget::North);
     ui->actionSave->setEnabled (config.getSaveUnmodified());
-    QIcon icn = QIcon::fromTheme ("featherpad");
-    if (icn.isNull())
-        icn = QIcon (":icons/featherpad.svg");
-    setWindowIcon (icn);
 
     if (!config.hasReservedShortcuts())
     {
