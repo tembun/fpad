@@ -9,7 +9,7 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   elseif(APPLE)
     set(CMAKE_INSTALL_PREFIX "/Applications")
   elseif(UNIX)
-    set(CMAKE_INSTALL_PREFIX "/usr")
+    set(CMAKE_INSTALL_PREFIX "/usr/local")
   endif()
 endif()
 

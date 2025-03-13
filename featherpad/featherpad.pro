@@ -71,7 +71,7 @@ else:unix:!macx:!haiku {
 unix:!haiku:!macx {
   #VARIABLES
   isEmpty(PREFIX) {
-    PREFIX = /usr
+    PREFIX = /usr/local
   }
   BINDIR = $$PREFIX/bin
   DATADIR =$$PREFIX/share
