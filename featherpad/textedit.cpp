@@ -384,19 +384,6 @@ QTextCursor TextEdit::backTabCursor (const QTextCursor& cursor, bool twoSpace) c
     return tmp;
 }
 
-static inline bool isOnlySpaces (const QString &str)
-{
-    int i = 0;
-    while (i < str.size())
-    { // always skip the starting spaces
-        QChar ch = str.at (i);
-        if (ch == QChar (QChar::Space) || ch == QChar (QChar::Tabulation))
-            ++i;
-        else return false;
-    }
-    return true;
-}
-
 void TextEdit::sync_cursor()
 {
 	QTextCursor cursor = textCursor();
