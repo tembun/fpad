@@ -37,5 +37,5 @@ Installing:
 and that's it.
 
 The patch that sets default PREFIX to /usr/local has been applied,
-so no need to specify it manually, your binary will go straign to
+so no need to specify it manually, your binary will go straight to
 /usr/local/bin directory.
