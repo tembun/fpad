@@ -1,0 +1,29 @@
+This is my patched trully lightweight (~546KB stripped) FeatherPad,
+which itself is a v0.16 (https://github.com/tsujan/FeatherPad/tree/V0.16.0)
+fork of this editor, but without most of its fancy bloat and unneeded features.
+
+As the result, it has only dark theme mode, a couple of basic options
+and preferences and that's it. The fucking simple visual text editor,
+not actually FeatherPad.
+
+Here you can move the cursor both with your mouse if you wish and
+with keys `j' (left), `k' (up), `;' (right) and `l' (down), while
+the `Alt' key is pressed.
+
+It also adds some features that the original editor lacks.
+For example:
+	- syncing the cursor whilst scrolling.
+	- a list of shortcuts for searching.
+	- a shortcut (`Alt + 1' for triggering the `jump-to-line'.
+	- solid block non-blinking cursor.
+	- shortcuts for text navigation:
+		- `Ctrl + Alt + j' -- select left to the start of line.
+		- `Ctrl + Alt + ;' -- select right to the end of line.
+		- `PgUp', `PgDn' -- scroll 9 lines up/down.
+		- `Ctrl + PgUp', `Ctrl + PgDn' -- go to the start/end of a file.
+and some other stuff I don't event remember, you'd better look into `git log`.		
+
+All the information you need about building & installing it, you can find
+in the INSTALL.* files:
+	INSTALL.freebsd -- instructions for FreeBSD specifically.
+	INSTALL.other -- instructions for other platforms.
