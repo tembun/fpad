@@ -1,0 +1,41 @@
+Build & install for FreeBSD.
+----------------------------
+
+Dependencies:
+-------------
+
+In order to build it, you need the following ports:
+ - devel/qt5-buildtools
+ - devel/qt5-qmake
+ - devel/qt5-core
+ - x11-toolkits/qt5-gui
+ - x11-toolkits/qt5-widgets
+ - net/qt5-network
+ - x11/qt5-x11extras
+
+Dispite of the original author's claim, it does _not_ require
+you to use gcc, clang (which is a cc here) works fine.
+
+
+Building:
+---------
+
+The following set of instructions will do the thing:
+
+ $ mkdir build && cd build && cmake ..
+ $ make
+
+If you want to strip the binary, you can either do (in build/):
+ $ llvm-strip15 ./featherpad/featherpad
+or use make(1) target `install/strip', but I'd go with the former.
+
+
+Installing:
+-----------
+
+ # make install
+and that's it.
+
+The patch that sets default PREFIX to /usr/local has been applied,
+so no need to specify it manually, your binary will go straign to
+/usr/local/bin directory.
