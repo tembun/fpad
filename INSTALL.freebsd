@@ -13,7 +13,7 @@ In order to build it, you need the following ports:
  - net/qt5-network
  - x11/qt5-x11extras
 
-Dispite of the original author's claim, it does _not_ require
+In spite of the original author's claim, it does _not_ require
 you to use gcc, clang (which is a cc here) works fine.
 
 
