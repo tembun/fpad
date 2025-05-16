@@ -45,12 +45,8 @@ signals:
 
 protected:
     void mousePressEvent (QMouseEvent *event) override;
-    void mouseReleaseEvent (QMouseEvent *event) override;
     void mouseMoveEvent (QMouseEvent *event) override;
     bool event (QEvent *event) override;
-    void wheelEvent (QWheelEvent *event) override;
-    QSize tabSizeHint (int index) const override;
-    QSize minimumTabSizeHint (int index) const override;
 
 private:
     QPoint dragStartPosition_;

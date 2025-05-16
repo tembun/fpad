@@ -47,18 +47,6 @@ void TabBar::mousePressEvent (QMouseEvent *event)
     }
     dragStarted_ = false;
 }
-void TabBar::mouseReleaseEvent (QMouseEvent *event)
-{
-    QTabBar::mouseReleaseEvent (event);
-    if (event->button() == Qt::MidButton)
-    {
-        int index = tabAt (event->pos());
-        if (index > -1)
-            emit tabCloseRequested (index);
-        else
-            emit hideTabBar();
-    }
-}
 void TabBar::mouseMoveEvent (QMouseEvent *event)
 {
     if (!dragStartPosition_.isNull()
@@ -116,10 +104,6 @@ bool TabBar::event (QEvent *event)
     return QTabBar::event (event);
 #endif
 }
-void TabBar::wheelEvent (QWheelEvent *event)
-{
-    event->ignore();
-}
 void TabBar::finishMouseMoveEvent()
 {
     QMouseEvent finishingEvent (QEvent::MouseMove, QPoint(), Qt::NoButton, Qt::NoButton, Qt::NoModifier);
@@ -129,24 +113,6 @@ void TabBar::releaseMouse()
 {
     QMouseEvent releasingEvent (QEvent::MouseButtonRelease, QPoint(), Qt::LeftButton, Qt::NoButton, Qt::NoModifier);
     mouseReleaseEvent (&releasingEvent);
-}
-QSize TabBar::tabSizeHint(int index) const
-{
-    switch (shape()) {
-    case QTabBar::RoundedWest:
-    case QTabBar::TriangularWest:
-    case QTabBar::RoundedEast:
-    case QTabBar::TriangularEast:
-        return QSize (QTabBar::tabSizeHint (index).width(),
-                      qMin (height()/2, QTabBar::tabSizeHint (index).height()));
-    default:
-        return QSize (qMin (width()/2, QTabBar::tabSizeHint (index).width()),
-                      QTabBar::tabSizeHint (index).height());
-    }
-}
-QSize TabBar::minimumTabSizeHint(int index) const
-{
-    return tabSizeHint (index);
 }
 
 }
