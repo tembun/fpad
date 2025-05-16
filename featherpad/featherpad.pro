@@ -12,24 +12,24 @@ else {
 TEMPLATE = app
 CONFIG += c++11
 
-SOURCES += main.cpp \
-           singleton.cpp \
-           fpwin.cpp \
-           encoding.cpp \
-           tabwidget.cpp \
-           lineedit.cpp \
-           textedit.cpp \
-           tabbar.cpp \
-           find.cpp \
-           replace.cpp \
-           pref.cpp \
-           config.cpp \
-           vscrollbar.cpp \
-           loading.cpp \
-           tabpage.cpp \
-           searchbar.cpp \
-           session.cpp \
-           fontDialog.cpp
+SOURCES += main.cc \
+           singleton.cc \
+           fpwin.cc \
+           encoding.cc \
+           tabwidget.cc \
+           lineedit.cc \
+           textedit.cc \
+           tabbar.cc \
+           find.cc \
+           replace.cc \
+           pref.cc \
+           config.cc \
+           vscrollbar.cc \
+           loading.cc \
+           tabpage.cc \
+           searchbar.cc \
+           session.cc \
+           fontDialog.cc
 
 HEADERS += singleton.h \
            fpwin.h \
@@ -60,7 +60,7 @@ contains(WITHOUT_X11, YES) {
 }
 else:unix:!macx:!haiku {
   QT += x11extras
-  SOURCES += x11.cpp
+  SOURCES += x11.cc
   HEADERS += x11.h
   LIBS += -lX11
   DEFINES += HAS_X11

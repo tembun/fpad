@@ -45,31 +45,31 @@ else()
 endif()
 
 set(featherpad_SRCS
-    main.cpp
-    singleton.cpp
-    fpwin.cpp
-    encoding.cpp
-    tabwidget.cpp
-    lineedit.cpp
-    textedit.cpp
-    tabbar.cpp
-    find.cpp
-    replace.cpp
-    pref.cpp
-    config.cpp
-    vscrollbar.cpp
-    loading.cpp
-    tabpage.cpp
-    searchbar.cpp
-    session.cpp
-    fontDialog.cpp)
+    main.cc
+    singleton.cc
+    fpwin.cc
+    encoding.cc
+    tabwidget.cc
+    lineedit.cc
+    textedit.cc
+    tabbar.cc
+    find.cc
+    replace.cc
+    pref.cc
+    config.cc
+    vscrollbar.cc
+    loading.cc
+    tabpage.cc
+    searchbar.cc
+    session.cc
+    fontDialog.cc)
 
 if(NOT WITHOUT_X11 AND UNIX AND NOT APPLE AND NOT HAIKU)
-  set(featherpad_SRCS ${featherpad_SRCS} x11.cpp)
+  set(featherpad_SRCS ${featherpad_SRCS} x11.cc)
 endif()
 
 if(CMAKE_VERSION VERSION_LESS "3.10.0") # CMP0071 in 3.10: Let AUTOMOC and AUTOUIC process GENERATED files
-  qt5_wrap_cpp(EXTRA_HEADERS warningbar.h messagebox.h filedialog.h)
+  qt5_wrap_cc(EXTRA_HEADERS warningbar.h messagebox.h filedialog.h)
 else()
   set(EXTRA_HEADERS warningbar.h messagebox.h filedialog.h)
 endif()

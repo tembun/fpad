@@ -100,7 +100,7 @@ long onWhichDesktop (Window window)
     return res;
 }
 /*************************/
-// The following two functions are adapted from x11tools.cpp,
+// The following two functions are adapted from x11tools.cc,
 // belonging to kadu (https://github.com/vogel/kadu).
 // They were needed because isMinimized() may not detect
 // the shaded state with all WMs.
