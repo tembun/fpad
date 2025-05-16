@@ -442,9 +442,6 @@
    <property name="text">
     <string>&amp;Wrap Lines</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+W</string>
-   </property>
   </action>
   <action name="actionIndent">
    <property name="checkable">
