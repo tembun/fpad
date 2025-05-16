@@ -26,7 +26,7 @@ The following set of instructions will do the thing:
  $ make
 
 If you want to strip the binary, you can either do (in build/):
- $ llvm-strip ./featherpad/featherpad
+ $ llvm-strip ./fpad/fpad
 or use make(1) target `install/strip', but I'd go with the former.
 
 

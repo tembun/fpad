@@ -1,4 +1,4 @@
-SUBDIRS += featherpad
+SUBDIRS += fpad
 
 TEMPLATE = subdirs 
 

@@ -2,7 +2,7 @@
 *   Compilation And Installation   *
 ************************************
 
-To compile FeatherPad from its source, first install build dependencies. In Debian-based systems, they are:
+To compile fpad from its source, first install build dependencies. In Debian-based systems, they are:
 
  * g++ >= 5
  * libx11-dev and libxext-dev (for X11)
@@ -47,7 +47,7 @@ If you prefer qmake, use these commands instead:
 	qmake && make
 	sudo make install
 
-You might need to put the full path of qmake in the first command and also the full path of Qt5's "lrelease" binary in 'featherpad/featherpad.pro' (only one place). After a qmake compilation, you could clean the source directory with this command:
+You might need to put the full path of qmake in the first command and also the full path of Qt5's "lrelease" binary in 'fpad/fpad.pro' (only one place). After a qmake compilation, you could clean the source directory with this command:
 
 	make distclean
 
@@ -65,6 +65,6 @@ Or, if you use qmake:
 
 The result will have all features except for virtual desktop awareness and tab DND.
 
-Please also note that, on Linux, FeatherPad works under Wayland and you do not need to disable its X11 support for that.
+Please also note that, on Linux, fpad works under Wayland and you do not need to disable its X11 support for that.
 
 Compilation on Haiku OS or macOS does not require "WITHOUT_X11" either.
