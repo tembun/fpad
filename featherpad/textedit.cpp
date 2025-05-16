@@ -1243,6 +1243,26 @@ void TextEdit::paintEvent (QPaintEvent *event)
         if (offset.y() > viewportRect.height())
             break;
         block = block.next();
+        
+        /**
+         * Draw a ruler (a vertical line) that allows to not
+         * exceed the certain number of characters in width.
+         */
+        
+        /* How much characters does ruler limit. */
+        #define RULER_W 80
+        
+        /* Size of a single character of current font. */
+        int char_w = QFontMetrics(font()).maxWidth();
+        /*
+         * An x coordinate within the text widget, where the ruler appears.
+         * Add a half of a character width to it in order to make violating
+         * the ruler more clearly visible.
+         */
+        int ruler_x = (char_w * RULER_W) + (char_w / 2);
+        QLine ruler = QLine(ruler_x, 0, ruler_x, viewport()->height());
+        painter.drawLine(ruler);
+        
     }
     if (backgroundVisible() && !block.isValid() && offset.y() <= er.bottom()
         && (centerOnScroll() || verticalScrollBar()->maximum() == verticalScrollBar()->minimum()))
