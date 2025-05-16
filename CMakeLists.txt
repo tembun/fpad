@@ -1,6 +1,7 @@
 project(fpad)
 cmake_minimum_required(VERSION 3.0)
 set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_CXX_FLAGS_RELEASE "-Oz")
 add_definitions(-Wall)
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
