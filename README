@@ -14,6 +14,7 @@ It also adds some features that the original editor lacks.
 For example:
 	- syncing the cursor whilst scrolling.
 	- a list of shortcuts for searching.
+	- a vertical 80-characters long ruler.
 	- a shortcut (`Alt + 1' for triggering the `jump-to-line'.
 	- solid block non-blinking cursor.
 	- shortcuts for text navigation:
