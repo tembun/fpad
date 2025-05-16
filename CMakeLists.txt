@@ -15,4 +15,4 @@ endif()
 
 option(WITHOUT_X11 "Compiling without X11..." OFF)
 
-add_subdirectory(fpad)
+add_subdirectory(src)

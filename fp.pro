@@ -1,4 +1,4 @@
-SUBDIRS += fpad
+SUBDIRS += src
 
 TEMPLATE = subdirs 
 

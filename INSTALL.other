@@ -47,7 +47,7 @@ If you prefer qmake, use these commands instead:
 	qmake && make
 	sudo make install
 
-You might need to put the full path of qmake in the first command and also the full path of Qt5's "lrelease" binary in 'fpad/fpad.pro' (only one place). After a qmake compilation, you could clean the source directory with this command:
+You might need to put the full path of qmake in the first command and also the full path of Qt5's "lrelease" binary in 'src/fpad.pro' (only one place). After a qmake compilation, you could clean the source directory with this command:
 
 	make distclean
 
