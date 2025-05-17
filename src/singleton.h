@@ -58,6 +58,7 @@ signals:
 
 private:
     bool cursorInfo (const QString &commndOpt, int& lineNum, int& posInLine);
+    bool check_file_exists(QString filename);
     QStringList processInfo (const QString& message,
                              long &desktop, int& lineNum, int& posInLine,
                              bool *newWindow);

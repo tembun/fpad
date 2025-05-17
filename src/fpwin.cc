@@ -1310,54 +1310,43 @@ void FPwin::fileOpen()
         dialog.setDirectory (path.section ("/", 0, -2));
         dialog.selectFile (path);
     }
-    if (dialog.exec())
-    {
-        const QStringList files = dialog.selectedFiles();
-        bool multiple (files.count() > 1 || isLoading());
-        for (const QString &file : files)
-        {
-        	int exists_tab_idx = already_opened_idx( file );
-        	if( exists_tab_idx != -2 )
-        	{
-        		ui->tabWidget->setCurrentIndex(  exists_tab_idx  );
-        	}
-        	
-        	else
-        	{
-        		newTabFromName (file, 0, 0, multiple);
-        	}
-        }
-    }
-    updateShortcuts (false);
+	if (dialog.exec()) {
+		const QStringList files = dialog.selectedFiles();
+		bool multiple (files.count() > 1 || isLoading());
+		for (const QString &file:files) {
+			int exists_tab_idx = already_opened_idx(file);
+			if (exists_tab_idx != -2)
+				ui->tabWidget->setCurrentIndex(exists_tab_idx);
+			else
+				newTabFromName(file, 0, 0, multiple);
+		}
+	}
+    updateShortcuts(false);
 }
 int FPwin::already_opened_idx (const QString& fileName) const
 {
-    int res = -2;
-
-    QFileInfo info (fileName);
-    QString target = info.isSymLink() ? info.symLinkTarget()
-                                      : fileName;
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    for (int i = 0; i < singleton->Wins.count(); ++i)
-    {
-        FPwin *thisOne = singleton->Wins.at (i);
-        for (int j = 0; j < thisOne->ui->tabWidget->count(); ++j)
-        {
-            TabPage *thisTabPage = qobject_cast<TabPage*>(thisOne->ui->tabWidget->widget (j));
-            TextEdit *thisTextEdit = thisTabPage->textEdit();
-            if (thisTextEdit->isReadOnly())
-                continue;
-            QFileInfo thisInfo (thisTextEdit->getFileName());
-            QString thisTarget = thisInfo.isSymLink() ? thisInfo.symLinkTarget()
-                                                      : thisTextEdit->getFileName();
-            if (thisTarget == target)
-            {
-                res = j;
-                break;
-            }
-        }
-        if (res!=-2) break;
-    }
+	int res = -2;
+	
+	QFileInfo info (fileName);
+	QString target = info.isSymLink() ? info.symLinkTarget()
+	    : fileName;
+	FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
+	FPwin *thisOne = singleton->Wins.at(0);
+	for (int j = 0; j < thisOne->ui->tabWidget->count(); ++j)
+	{
+		TabPage *thisTabPage = qobject_cast<TabPage*>(
+		    thisOne->ui->tabWidget->widget(j));
+		TextEdit *thisTextEdit = thisTabPage->textEdit();
+		if (thisTextEdit->isReadOnly())
+			continue;
+		QFileInfo thisInfo(thisTextEdit->getFileName());
+		QString thisTarget = thisInfo.isSymLink() ?
+		    thisInfo.symLinkTarget() : thisTextEdit->getFileName();
+		if (thisTarget == target) {
+			res = j;
+			break;
+		}
+	}
     return res;
 }
 void FPwin::enforceEncoding (QAction*)

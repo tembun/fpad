@@ -253,9 +253,21 @@ void FPsingleton::firstWin (const QString& message)
     int lineNum = 0, posInLine = 0;
     long d = -1;
     bool openNewWin;
-    const QStringList filesList = processInfo (message, d, lineNum, posInLine, &openNewWin);
-    newWin (filesList, lineNum, posInLine);
+    const QStringList filesList = processInfo (message, d, lineNum, posInLine,
+        &openNewWin);
+    newWin(filesList, lineNum, posInLine);
     lastFiles_ = QStringList();
+}
+
+bool
+FPsingleton::check_file_exists(QString filename) {
+	bool res = (access(filename.toStdString().c_str(), F_OK) != -1);
+	if (!res) {
+		QTextStream err(stderr);
+		err << "[fpad]: File doesn't exist: " <<
+		    filename << Qt::endl;
+	}
+	return res;
 }
 
 FPwin* FPsingleton::newWin (const QStringList& filesList,
@@ -269,31 +281,35 @@ FPwin* FPsingleton::newWin (const QStringList& filesList,
     else if (geteuid() == 0)
         fp->showRootWarning();
 #endif
-    Wins.append (fp);
+    Wins.append(fp);
 
-    if (!filesList.isEmpty())
-    {
-        bool multiple (filesList.count() > 1 || fp->isLoading());
-        for (int i = 0; i < filesList.count(); ++i){
-        	if(access( filesList.at(i).toStdString().c_str(), F_OK ) == -1) {
-        		dprintf(1,"no such file: %s.\n",filesList.at(i).toStdString().c_str());
-        	}
-        	fp->newTabFromName (filesList.at (i), lineNum, posInLine, multiple);
+	const QStringList* files = NULL;
+	int line_num = 0, pos_in_line = 0;
+	bool multiple = false;
+	
+	if (!filesList.isEmpty()) {
+		files = &filesList;
+		line_num = lineNum;
+		pos_in_line = posInLine;
+	}
+	else if (!lastFiles_.isEmpty()) {
+		files = &lastFiles_;
+		line_num = -1;
+		pos_in_line = 0;
+	}
+	else
+		goto end;
+	
+	multiple = files->count() > 1 || fp->isLoading();
+	for (int i = 0; i < files->count(); ++i){
+        	QString filename = files->at(i);
+        	if (!check_file_exists(filename))
+        		continue;
+        	fp->newTabFromName(filename, line_num, pos_in_line, multiple);
         }
-        
-    }
-    else if (!lastFiles_.isEmpty())
-    {
-        bool multiple (lastFiles_.count() > 1 || fp->isLoading());
-        for (int i = 0; i < lastFiles_.count(); ++i){
-        	if(access( lastFiles_.at(i).toStdString().c_str(), F_OK ) == -1) {
-        		dprintf(1,"no such file: %s.\n",lastFiles_.at(i).toStdString().c_str());
-        	}
-            fp->newTabFromName (lastFiles_.at (i), -1, 0, multiple);
-         }
-    }
 
-    return fp;
+end:
+    return (fp);
 }
 
 void FPsingleton::removeWin (FPwin *win)
@@ -302,61 +318,54 @@ void FPsingleton::removeWin (FPwin *win)
     win->deleteLater();
 }
 
-void FPsingleton::handleMessage (const QString& message)
+void
+FPsingleton::handleMessage(const QString& message)
 {
-    int lineNum = 0, posInLine = 0;
-    long d = -1;
-    bool openNewWin;
-    const QStringList filesList = processInfo (message, d, lineNum, posInLine, &openNewWin);
-    if (openNewWin)
-    {
-        newWin (filesList, lineNum, posInLine);
-        return;
-    }
-    bool found = false;
-        QRect sr;
-        if (QScreen *pScreen = QApplication::primaryScreen())
-            sr = pScreen->virtualGeometry();
-        for (int i = 0; i < Wins.count(); ++i)
-        {
-           if (filesList.isEmpty())
-           {
-          	 Wins.at (i)->newTab();
-           }
-           else
-           {
-           	  bool multiple (filesList.count() > 1 || Wins.at (i)->isLoading());
-           	  for (int j = 0; j < filesList.count(); ++j)
-           	  {
-				if(access( filesList.at(i).toStdString().c_str(), F_OK ) == -1) {
-					continue;
-				}
-				
-                  FPwin* fp = Wins.at( i );
-                 	
-                 	
-                	int exists_tab_idx = fp->already_opened_idx( filesList.at (i) );
-                 	
-                 	if( exists_tab_idx != -2 )
-      			{
-        				fp->ui->tabWidget->setCurrentIndex(  exists_tab_idx  );
-        				
-        				fp->stealFocus();
-      			}
-        			
-        			else
-        			{
-                        	fp->newTabFromName (filesList.at (j), lineNum, posInLine, multiple);
-                  	}
-            }
-        }
-        found = true;
-        break;
-    }
-    if (!found)
-    {
-        newWin (filesList, lineNum, posInLine);
-    }
+	int lineNum = 0, posInLine = 0;
+	long d = -1;
+	bool openNewWin;
+	FPwin* fpw = Wins.at(0);
+	
+	const QStringList filesList = processInfo(message, d, lineNum,
+	    posInLine, &openNewWin);
+	
+	if (openNewWin) {
+		newWin(filesList, lineNum, posInLine);
+		return;
+	}
+	
+        if (filesList.isEmpty())
+		fpw->newTab();
+        else {
+		bool multiple (filesList.count() > 1 || fpw->isLoading());
+		
+		for (int i = 0; i < filesList.count(); ++i) {
+			QString filename = filesList.at(i);
+			if (!check_file_exists(filename))
+				continue;
+			
+			/*
+			 * If this file is already opened in a tab, switch
+			 * to this tab (make it active).
+			 */
+			int exists_idx = fpw->already_opened_idx(filename);
+			if (exists_idx != -2) {
+				fpw->ui->tabWidget->setCurrentIndex(exists_idx);
+				/*
+				 * Because we don't actually open a _new_
+				 * tab, the window, by default, will not
+				 * be focused, so we force this action.
+				 */
+				fpw->stealFocus();
+			}
+			/*
+			 * Otherwise, open a new tab with this file.
+			 */
+			else
+				fpw->newTabFromName(filename, lineNum,
+				    posInLine, multiple);
+		}
+	}
 }
 
 

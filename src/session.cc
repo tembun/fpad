@@ -230,10 +230,7 @@ void SessionDialog::openSessions()
                     ++broken;
                     continue;
                 }
-                win->newTabFromName (files.at (i),
-                                     1,
-                                     0,
-                                     multiple);
+                win->newTabFromName(files.at (i), 1, 0, multiple);
             }
             if (broken == files.count())
                 showPrompt (tr ("No file exists or can be opened."));
