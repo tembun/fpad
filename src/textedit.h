@@ -22,7 +22,6 @@
 
 #include <QPlainTextEdit>
 #include <QUrl>
-#include <QMimeData>
 #include <QDateTime>
 #include <QElapsedTimer>
 
@@ -146,13 +145,8 @@ public:
     }
 
 signals:
-    void fileDropped (const QString& localFile,
-                      int restoreCursor,
-                      int posInLine,
-                      bool multiple);
     void resized();
     void updateRect();
-    void zoomedOut (TextEdit *textEdit);
 
 public slots:
     void copy();
@@ -180,26 +174,6 @@ protected:
     void mouseDoubleClickEvent (QMouseEvent *event);
     bool event (QEvent *event);
     bool eventFilter (QObject *watched, QEvent *event);
-    bool canInsertFromMimeData (const QMimeData* source) const {
-        return source->hasUrls() || QPlainTextEdit::canInsertFromMimeData (source);
-    }
-    void insertFromMimeData (const QMimeData* source) {
-        keepTxtCurHPos_ = false;
-        if (source->hasUrls())
-        {
-            txtCurHPos_ = -1;
-            const QList<QUrl> urlList = source->urls();
-            bool multiple (urlList.count() > 1);
-            for (const QUrl &url : urlList)
-                emit fileDropped (url.adjusted (QUrl::NormalizePathSegments)
-                                     .toLocalFile(),
-                                  0,
-                                  0,
-                                  multiple);
-        }
-        else
-            QPlainTextEdit::insertFromMimeData (source);
-    }
 
 private slots:
     void updateLineNumberAreaWidth (int newBlockCount);
@@ -265,12 +239,6 @@ public:
 protected:
     void paintEvent (QPaintEvent *event) {
         editor->lineNumberAreaPaintEvent (event);
-    }
-
-    void mouseDoubleClickEvent (QMouseEvent *event) {
-        if (rect().contains (event->pos()))
-            editor->centerCursor();
-        QWidget::mouseDoubleClickEvent (event);
     }
 
 private:
