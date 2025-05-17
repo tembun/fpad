@@ -7,17 +7,10 @@ find_package(Qt5Gui "${QT_MINIMUM_VERSION}" REQUIRED)
 find_package(Qt5Widgets "${QT_MINIMUM_VERSION}" REQUIRED)
 find_package(Qt5Network "${QT_MINIMUM_VERSION}" REQUIRED)
 
-# optional localization
-find_package(Qt5LinguistTools QUIET)
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# for the old code; not needed anymore
-#find_package(MAGIC_INCLUDE_DIR magic.h)
-#find_library(MAGIC_LIBRARY magic $ENV{MAGIC_LIB_PATH})
 
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
                       ${Qt5Core_INCLUDE_DIRS}
