@@ -62,8 +62,6 @@ FPsingleton::FPsingleton (int &argc, char **argv, bool standalone) : QApplicatio
         {
             if (localServer_->removeServer (uniqueKey_))
                 localServer_->listen (uniqueKey_);
-            else
-                qDebug ("Unable to remove server instance (from a previous crash).");
         }
     }
     else
@@ -90,14 +88,8 @@ void FPsingleton::quitting()
 void FPsingleton::receiveMessage()
 {
     QLocalSocket *localSocket = localServer_->nextPendingConnection();
-    if (!localSocket)
+    if (!localSocket || !localSocket->waitForReadyRead (timeout_))
     {
-        qDebug ("Unable to find local socket.");
-        return;
-    }
-    if (!localSocket->waitForReadyRead (timeout_))
-    {
-        qDebug ("%s", (const char *) localSocket->errorString().toLatin1());
         return;
     }
     QByteArray byteArray = localSocket->readAll();
@@ -125,7 +117,6 @@ bool FPsingleton::sendMessage (const QString& message)
     if (waiting == 5 && !localSocket.waitForConnected (timeout_))
     {
         socketFailure_ = true;
-        qDebug ("%s", (const char *) localSocket.errorString().toLatin1());
         return false;
     }
 
@@ -133,7 +124,6 @@ bool FPsingleton::sendMessage (const QString& message)
     if (!localSocket.waitForBytesWritten (timeout_))
     {
         socketFailure_ = true;
-        qDebug ("%s", (const char *) localSocket.errorString().toLatin1());
         return false;
     }
     localSocket.disconnectFromServer();
@@ -243,8 +233,6 @@ QStringList FPsingleton::processInfo (const QString& message,
             filesList << QDir::cleanPath (realPath);
         }
     }
-    if (filesList.isEmpty() && hasCurInfo)
-        qDebug ("fpad: File path/name is missing.");
     return filesList;
 }
 
