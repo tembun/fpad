@@ -180,9 +180,6 @@ private:
     void closeEvent (QCloseEvent *event);
     void apply_snippet(QString snip,int off_vert, int off_hor);
     bool closeTabs (int first, int last, bool saveFilesList = false);
-    void dragEnterEvent (QDragEnterEvent *event);
-    void dropEvent (QDropEvent *event);
-    void dropTab (const QString& str);
     void changeEvent (QEvent *event);
     bool event (QEvent *event);
     QTextDocument::FindFlags getSearchFlags() const;

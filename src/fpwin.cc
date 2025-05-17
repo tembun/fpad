@@ -198,7 +198,7 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     );
     connect( focus_view_soft , &QShortcut::activated , this, &FPwin::focus_view_soft );
     dummyWidget = new QWidget();
-    setAcceptDrops (true);
+    setAcceptDrops(false);
     setAttribute (Qt::WA_AlwaysShowToolTips);
     setAttribute (Qt::WA_DeleteOnClose, false);    
 }
@@ -431,35 +431,6 @@ void FPwin::closeOtherTabs()
     closeTabs( cur , -1 );
     closeTabs( -1 , cur );
 }
-void FPwin::dragEnterEvent (QDragEnterEvent *event)
-{
-    if (findChildren<QDialog *>().count() > 0)
-        return;
-    if (event->mimeData()->hasUrls())
-        event->acceptProposedAction();
-    else if (event->mimeData()->hasFormat ("application/fpad-tab")
-             && event->source() != nullptr)
-    {
-        event->acceptProposedAction();
-    }
-}
-void FPwin::dropEvent (QDropEvent *event)
-{
-    if (event->mimeData()->hasFormat ("application/fpad-tab"))
-        dropTab (QString::fromUtf8 (event->mimeData()->data ("application/fpad-tab").constData()));
-    else
-    {
-        const QList<QUrl> urlList = event->mimeData()->urls();
-        bool multiple (urlList.count() > 1 || isLoading());
-        for (const QUrl &url : urlList)
-            newTabFromName (url.adjusted (QUrl::NormalizePathSegments)
-                               .toLocalFile(),
-                            0,
-                            0,
-                            multiple);
-    }
-    event->acceptProposedAction();
-}
 FPwin::DOCSTATE FPwin::savePrompt (int tabIndex, bool noToAll)
 {
     DOCSTATE state = SAVED;
@@ -623,7 +594,6 @@ TabPage* FPwin::createEmptyTab (bool setCurrent)
     if (!config.getSaveUnmodified())
         connect (textEdit->document(), &QTextDocument::modificationChanged, this, &FPwin::enableSaving);
     connect (textEdit->document(), &QTextDocument::modificationChanged, this, &FPwin::asterisk);
-    connect (textEdit, &TextEdit::fileDropped, this, &FPwin::newTabFromName);
     connect (tabPage, &TabPage::find, this, &FPwin::find);
     connect (tabPage, &TabPage::searchFlagChanged, this, &FPwin::searchFlagChanged);
     if (setCurrent)
@@ -1935,125 +1905,6 @@ void FPwin::previousTab()
             if (count > 0)
                 ui->tabWidget->setCurrentIndex (count - 1);
         }
-}
-void FPwin::dropTab (const QString& str)
-{
-#if (QT_VERSION >= QT_VERSION_CHECK(5,15,0))
-    QStringList list = str.split ("+", Qt::SkipEmptyParts);
-#else
-    QStringList list = str.split ("+", QString::SkipEmptyParts);
-#endif
-    if (list.count() != 2)
-    {
-        ui->tabWidget->tabBar()->finishMouseMoveEvent();
-        return;
-    }
-    int index = list.at (1).toInt();
-    if (index <= -1)
-    {
-        ui->tabWidget->tabBar()->finishMouseMoveEvent();
-        return;
-    }
-
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    FPwin *dragSource = nullptr;
-    for (int i = 0; i < singleton->Wins.count(); ++i)
-    {
-        if (singleton->Wins.at (i)->winId() == list.at (0).toULongLong())
-        {
-            dragSource = singleton->Wins.at (i);
-            break;
-        }
-    }
-    if (dragSource == this
-        || dragSource == nullptr)
-    {
-        ui->tabWidget->tabBar()->finishMouseMoveEvent();
-        return;
-    }
-
-    Config config = static_cast<FPsingleton*>(qApp)->getConfig();
-
-    closeWarningBar();
-    dragSource->closeWarningBar();
-
-    QString tooltip = dragSource->ui->tabWidget->tabToolTip (index);
-    QString tabText = dragSource->ui->tabWidget->tabText (index);
-    bool spin = false;
-    bool ln = true;
-    if (dragSource->ui->spinBox->isVisible())
-        spin = true;
-
-    TabPage *tabPage = qobject_cast< TabPage *>(dragSource->ui->tabWidget->widget (index));
-    if (tabPage == nullptr)
-    {
-        ui->tabWidget->tabBar()->finishMouseMoveEvent();
-        return;
-    }
-    TextEdit *textEdit = tabPage->textEdit();
-    disconnect (textEdit, &QWidget::customContextMenuRequested, dragSource, &FPwin::editorContextMenu);
-    disconnect (textEdit, &TextEdit::fileDropped, dragSource, &FPwin::newTabFromName);
-    disconnect (textEdit->document(), &QTextDocument::blockCountChanged, dragSource, &FPwin::setMax);
-    disconnect (textEdit->document(), &QTextDocument::modificationChanged, dragSource, &FPwin::asterisk);
-    if (!config.getSaveUnmodified())
-    {
-        disconnect (textEdit->document(), &QTextDocument::modificationChanged, dragSource, &FPwin::enableSaving);
-    }
-    disconnect (tabPage, &TabPage::find, dragSource, &FPwin::find);
-    disconnect (tabPage, &TabPage::searchFlagChanged, dragSource, &FPwin::searchFlagChanged);
-    dragSource->ui->tabWidget->tabBar()->releaseMouse();
-    dragSource->ui->tabWidget->removeTab (index);
-    int count = dragSource->ui->tabWidget->count();
-    int insertIndex = ui->tabWidget->currentIndex() + 1;
-    lastFile_ = textEdit->getFileName();
-    textEdit->setGreenSel (QList<QTextEdit::ExtraSelection>());
-    textEdit->setRedSel (QList<QTextEdit::ExtraSelection>());
-    if (!textEdit->getSearchedText().isEmpty())
-    {
-        if (insertIndex == 0
-            || !qobject_cast< TabPage *>(ui->tabWidget->widget (insertIndex - 1))->isSearchBarVisible())
-        {
-            for (int i = 0; i < ui->tabWidget->count(); ++i)
-                qobject_cast< TabPage *>(ui->tabWidget->widget (i))->setSearchBarVisible (true);
-        }
-    }
-    else if (insertIndex > 0)
-    {
-        tabPage->setSearchBarVisible (qobject_cast< TabPage *>(ui->tabWidget->widget (insertIndex - 1))
-                                      ->isSearchBarVisible());
-    }
-    if (ui->tabWidget->count() == 0)
-        enableWidgets (true);
-    ui->tabWidget->setCurrentIndex (insertIndex);
-    QList<QTextEdit::ExtraSelection> es;
-    if ((ln || spin)
-        && (ui->spinBox->isVisible()))
-    {
-        es.prepend (textEdit->currentLineSelection());
-    }
-    textEdit->setExtraSelections (es);
-    ui->tabWidget->setTabToolTip (insertIndex, tooltip);
-    if (ui->spinBox->isVisible())
-        connect (textEdit->document(), &QTextDocument::blockCountChanged, this, &FPwin::setMax);
-    if (ui->actionWrap->isChecked() && textEdit->lineWrapMode() == QPlainTextEdit::NoWrap)
-        textEdit->setLineWrapMode (QPlainTextEdit::WidgetWidth);
-    else if (!ui->actionWrap->isChecked() && textEdit->lineWrapMode() == QPlainTextEdit::WidgetWidth)
-        textEdit->setLineWrapMode (QPlainTextEdit::NoWrap);
-    if (ui->actionIndent->isChecked() && textEdit->getAutoIndentation() == false)
-        textEdit->setAutoIndentation (true);
-    else if (!ui->actionIndent->isChecked() && textEdit->getAutoIndentation() == true)
-        textEdit->setAutoIndentation (false);
-    if (!config.getSaveUnmodified())
-        connect (textEdit->document(), &QTextDocument::modificationChanged, this, &FPwin::enableSaving);
-    connect (textEdit->document(), &QTextDocument::modificationChanged, this, &FPwin::asterisk);
-    connect (tabPage, &TabPage::find, this, &FPwin::find);
-    connect (tabPage, &TabPage::searchFlagChanged, this, &FPwin::searchFlagChanged);
-    connect (textEdit, &TextEdit::fileDropped, this, &FPwin::newTabFromName);
-    connect (textEdit, &QWidget::customContextMenuRequested, this, &FPwin::editorContextMenu);
-    textEdit->setFocus();
-    stealFocus();
-    if (count == 0)
-        QTimer::singleShot (0, dragSource, &QWidget::close);
 }
 void FPwin::prefDialog()
 {
