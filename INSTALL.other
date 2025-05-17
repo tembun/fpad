@@ -6,20 +6,19 @@ To compile fpad from its source, first install build dependencies. In Debian-bas
 
  * g++ >= 5
  * libx11-dev and libxext-dev (for X11)
- * qtbase5-dev and libqt5x11extras5-dev (for Qt5)
+ * qtbase5-dev (for Qt5)
 
 In Arch-based systems, the required package are:
 
  * gcc (or gcc-multilib for multilib systems)
  * libx11 and libxext (for X11)
- * qt5-base and qt5-x11extras (for Qt5)
+ * qt5-base (for Qt5)
 
 In Red Hat based systems like Fedora:
 
  * gcc-c++
  * libX11-devel
  * libXext-devel
- * qt5-qtx11extras-devel
  * qt5-qtbase-devel
 
 And, finally, in OpenSUSE:
@@ -27,7 +26,6 @@ And, finally, in OpenSUSE:
  * gcc-c++
  * libX11-devel
  * libXext-devel
- * libqt5-qtx11extras-devel
  * libqt5-qtbase-devel
 
 
@@ -51,20 +49,3 @@ You might need to put the full path of qmake in the first command and also the f
 
 	make distclean
 
-*******************************
-*   Compilation without X11   *
-*******************************
-
-If, for whatever reason, you do not want the X11 support, you could first turn on the option "WITHOUT_X11" with cmake:
-
-	cmake .. -DWITHOUT_X11=ON
-
-Or, if you use qmake:
-
-	qmake WITHOUT_X11=YES
-
-The result will have all features except for virtual desktop awareness and tab DND.
-
-Please also note that, on Linux, fpad works under Wayland and you do not need to disable its X11 support for that.
-
-Compilation on Haiku OS or macOS does not require "WITHOUT_X11" either.

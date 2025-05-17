@@ -31,32 +31,12 @@
 #include <unistd.h>
 #endif
 
-#ifdef HAS_X11
-#if defined Q_WS_X11 || defined Q_OS_LINUX || defined Q_OS_FREEBSD || defined Q_OS_OPENBSD || defined Q_OS_NETBSD || defined Q_OS_HURD
-#include <QX11Info>
-#endif
-#endif
-
 #include "singleton.h"
-
-#ifdef HAS_X11
-#include "x11.h"
-#endif
 
 namespace fpad {
 
 FPsingleton::FPsingleton (int &argc, char **argv, bool standalone) : QApplication (argc, argv)
 {
-#ifdef HAS_X11
-#if defined Q_WS_X11 || defined Q_OS_LINUX || defined Q_OS_FREEBSD || defined Q_OS_OPENBSD || defined Q_OS_NETBSD || defined Q_OS_HURD
-    isX11_ = QX11Info::isPlatformX11();
-#else
-    isX11_ = false;
-#endif
-#else
-    isX11_ = false;
-#endif
-
     standalone_ = standalone;
     socketFailure_ = false;
     config_.readConfig();

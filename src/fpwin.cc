@@ -43,11 +43,6 @@
 #include <QDesktopServices>
 #include <QPushButton>
 
-
-#ifdef HAS_X11
-#include "x11.h"
-#endif
-
 namespace fpad {
 QString modified_prefix = QString("[ * ]");
 QString noname = QString("[ noname ]");
@@ -133,8 +128,7 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     ui->actionCyrillic_KOI8_U->setActionGroup (aGroup_);
     ui->actionCyrillic_ISO_8859_5->setActionGroup (aGroup_);
     ui->actionUTF_8->setChecked (true);
-    if (standalone_
-        || !static_cast<FPsingleton*>(qApp)->isX11())
+    if (standalone_)
     {
         ui->tabWidget->noTabDND();
     }
@@ -637,10 +631,6 @@ TabPage* FPwin::createEmptyTab (bool setCurrent)
         ui->tabWidget->setCurrentWidget (tabPage);
         textEdit->setFocus();
     }
-#ifdef HAS_X11
-    if (static_cast<FPsingleton*>(qApp)->isX11() && isWindowShaded (winId()))
-        unshadeWindow (winId());
-#endif
     if (setCurrent) stealFocus();
 
     return tabPage;
@@ -994,10 +984,6 @@ void FPwin::addText (const QString& text, const QString& fileName, const QString
     }
     else
     {
-#ifdef HAS_X11
-        if (static_cast<FPsingleton*>(qApp)->isX11() && isWindowShaded (winId()))
-            unshadeWindow (winId());
-#endif
         stealFocus();
     }
     textEdit->setSaveCursor (restoreCursor == 1);

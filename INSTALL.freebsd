@@ -11,7 +11,6 @@ In order to build it, you need the following ports:
  - x11-toolkits/qt5-gui
  - x11-toolkits/qt5-widgets
  - net/qt5-network
- - x11/qt5-x11extras
 
 In spite of the original author's claim, it does _not_ require
 you to use gcc, clang (which is a cc(1) here) works fine.

@@ -55,17 +55,6 @@ FORMS += fp.ui \
          sessionDialog.ui \
          fontDialog.ui
 
-contains(WITHOUT_X11, YES) {
-  message("Compiling without X11...")
-}
-else:unix:!macx:!haiku {
-  QT += x11extras
-  SOURCES += x11.cc
-  HEADERS += x11.h
-  LIBS += -lX11
-  DEFINES += HAS_X11
-}
-
 unix:!haiku:!macx {
   #VARIABLES
   isEmpty(PREFIX) {

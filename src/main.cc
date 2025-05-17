@@ -21,10 +21,6 @@
 #include <QApplication>
 #include "singleton.h"
 
-#ifdef HAS_X11
-#include "x11.h"
-#endif
-
 #include <signal.h>
 #include <QLibraryInfo>
 
@@ -108,11 +104,7 @@ int main (int argc, char **argv)
     if (!langs.isEmpty())
         lang = langs.first().replace ('-', '_');
     QString info;
-#ifdef HAS_X11
-    int d = singleton.isX11() ? static_cast<int>(fpad::fromDesktop()) : -1;
-#else
     int d = -1;
-#endif
     info.setNum (d);
     info += "\n\r";
     info += QDir::currentPath();

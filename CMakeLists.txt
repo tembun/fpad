@@ -14,6 +14,4 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   endif()
 endif()
 
-option(WITHOUT_X11 "Compiling without X11..." OFF)
-
 add_subdirectory(src)

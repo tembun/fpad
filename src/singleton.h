@@ -47,9 +47,6 @@ public:
     Config& getConfig() {
         return config_;
     }
-    bool isX11() const {
-      return isX11_;
-    }
 
 public slots:
     void receiveMessage();
@@ -71,7 +68,6 @@ private:
     static const int timeout_ = 1000;
     Config config_;
     QStringList lastFiles_;
-    bool isX11_;
     bool socketFailure_;
     bool standalone_;
 };
