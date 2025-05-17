@@ -46,7 +46,7 @@ namespace fpad {
 QString modified_prefix = QString("[*]");
 QString noname = QString("<Anonymous>");
 QString program_name = QString( "fpad" );
-QString title_prefix = program_name + QString( " - " );
+QString title_suffix = QString( " - " ) + program_name;
 void BusyMaker::waiting() {
     QTimer::singleShot (timeout, this, &BusyMaker::makeBusy);
 }
@@ -812,8 +812,8 @@ void FPwin::setTitle (const QString& fileName, int tabIndex)
     {
         QFileInfo fInfo (fileName);
         if (tabIndex < 0)
-            setWindowTitle (title_prefix + (fileName.contains ("/") ? fileName
-                                                    : fInfo.absolutePath() + "/" + fileName));
+            setWindowTitle ((fileName.contains ("/") ? fileName :
+                fInfo.absolutePath() + "/" + fileName) + title_suffix);
         shownName = fileName.section ('/', -1);
         shownName.replace ("\n", " ");
     }
@@ -834,25 +834,30 @@ void FPwin::asterisk (bool modified)
     TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->widget (index));
     if (tabPage == nullptr) return;
     QString fname = tabPage->textEdit()->getFileName();
-    QString shownName;
-    if (fname.isEmpty())
-    {
-        shownName = noname;
-        setWindowTitle ((modified ? modified_prefix : QString()) + title_prefix + shownName);
+    
+    QString title_filename, tab_name;
+    
+    if (fname.isEmpty()) {
+    	title_filename = noname;
+    	tab_name = noname;
     }
-    else
-    {
-        shownName = fname.section ('/', -1);
-        setWindowTitle ((modified ? modified_prefix : QString())
-                        + title_prefix + (fname.contains ("/") ? fname
-                                                : QFileInfo (fname).absolutePath() + "/" + fname));
+    else {
+    	title_filename = fname.contains ("/") ? fname :
+            QFileInfo(fname).absolutePath() + "/" + fname;
+        tab_name = fname.section ('/', -1);
     }
-    shownName.replace ("\n", " ");
-    if (modified)
-        shownName.prepend ( modified_prefix );
-    shownName.replace ("&", "&&");
-    shownName.replace ('\t', ' ');
-    ui->tabWidget->setTabText (index, shownName);
+    
+    if (modified) {
+        title_filename.prepend(modified_prefix);
+        tab_name.prepend(modified_prefix);
+    }
+    tab_name.replace("\n", " ");
+    tab_name.replace("&", "&&");
+    tab_name.replace('\t', ' ');
+    
+    setWindowTitle((modified ? modified_prefix : QString()) + title_filename +
+        title_suffix);
+    ui->tabWidget->setTabText(index, tab_name);
 }
 void FPwin::waitToMakeBusy()
 {
@@ -1243,7 +1248,7 @@ void FPwin::fileOpen()
     QString filter = "All Files (*)";
     FileDialog dialog (this);
     dialog.setAcceptMode (QFileDialog::AcceptOpen);
-    dialog.setWindowTitle (title_prefix + QString("Open file..."));
+    dialog.setWindowTitle (title_suffix + QString("Open file..."));
     dialog.setFileMode (QFileDialog::ExistingFiles);
     dialog.setNameFilter (filter);
     if (QFileInfo (path).isDir())
@@ -1391,7 +1396,7 @@ bool FPwin::saveFile ()
             updateShortcuts (true);
             FileDialog dialog (this);
             dialog.setAcceptMode (QFileDialog::AcceptSave);
-            dialog.setWindowTitle (title_prefix + QString("Save as..."));
+            dialog.setWindowTitle (QString("Save as...") + title_suffix);
             dialog.setFileMode (QFileDialog::AnyFile);
             dialog.setNameFilter (filter);
             dialog.setDirectory (fname.section ("/", 0, -2));
@@ -1420,7 +1425,7 @@ bool FPwin::saveFile ()
         updateShortcuts (true);
         FileDialog dialog (this);
         dialog.setAcceptMode (QFileDialog::AcceptSave);
-        dialog.setWindowTitle (title_prefix + QString("Save as..."));
+        dialog.setWindowTitle (QString("Save as...") + title_suffix);
         dialog.setFileMode (QFileDialog::AnyFile);
         dialog.setNameFilter (filter);
         dialog.setDirectory (fname.section ("/", 0, -2));
@@ -1555,7 +1560,7 @@ void FPwin::tabSwitch (int index)
     }
     if (modified)
         shownName.prepend (modified_prefix);
-    setWindowTitle (title_prefix + shownName);
+    setWindowTitle (shownName + title_suffix);
     encodingToCheck (textEdit->getEncoding());
     Config config = static_cast<FPsingleton*>(qApp)->getConfig();
     bool readOnly = textEdit->isReadOnly();
