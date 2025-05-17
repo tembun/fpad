@@ -1333,48 +1333,16 @@ void TextEdit::showEvent (QShowEvent *event)
     QPlainTextEdit::showEvent (event);
     emit updateRect();
 }
-QString TextEdit::getUrl (const int pos) const
-{
-    static const QRegularExpression urlPattern ("[A-Za-z0-9_\\-]+://((?!&quot;|&gt;|&lt;)[A-Za-z0-9_.+/\\?\\=~&%#,;!@\\*\'\\-:\\(\\)\\[\\]])+(?<!\\.|\\?|!|:|;|,|\\(|\\)|\\[|\\]|\')|([A-Za-z0-9_.\\-]+@[A-Za-z0-9_\\-]+\\.[A-Za-z0-9.]+)(?<!\\.)");
-
-    QString url;
-    QTextBlock block = document()->findBlock (pos);
-    QString text = block.text();
-    if (text.length() <= 10000)
-    {
-        int cursorIndex = pos - block.position();
-        QRegularExpressionMatch match;
-        int indx = text.lastIndexOf (urlPattern, cursorIndex, &match);
-        if (indx > -1 && indx + match.capturedLength() > cursorIndex)
-        {
-            url = match.captured();
-            if (!match.captured (2).isEmpty())
-                url = "mailto:" + url;
-        }
-    }
-    return url;
-}
 
 void TextEdit::mouseMoveEvent (QMouseEvent *event)
 {
-    if (event->buttons() == Qt::LeftButton
-        && (event->globalPos() - selectionPressPoint_).manhattanLength() <= qApp->startDragDistance())
-    {
-        return;
-    }
-
-    QPlainTextEdit::mouseMoveEvent (event);
-
-    if (!(qApp->keyboardModifiers() & Qt::ControlModifier))
-    {
-        viewport()->setCursor (Qt::IBeamCursor);
-        return;
-    }
-
-    if (getUrl (cursorForPosition (event->pos()).position()).isEmpty())
-        viewport()->setCursor (Qt::IBeamCursor);
-    else
-        viewport()->setCursor (Qt::PointingHandCursor);
+	if (event->buttons() == Qt::LeftButton
+	    && (event->globalPos() - selectionPressPoint_).manhattanLength() <=
+	    qApp->startDragDistance())
+		return;
+	
+	QPlainTextEdit::mouseMoveEvent (event);
+	viewport()->setCursor (Qt::IBeamCursor);
 }
 
 void TextEdit::mousePressEvent (QMouseEvent *event)

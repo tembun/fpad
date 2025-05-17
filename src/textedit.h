@@ -21,7 +21,6 @@
 #define TEXTEDIT_H
 
 #include <QPlainTextEdit>
-#include <QUrl>
 #include <QDateTime>
 #include <QElapsedTimer>
 
@@ -44,7 +43,6 @@ public:
     void adjustScrollbars();
     void lineNumberAreaPaintEvent (QPaintEvent *event);
     int lineNumberAreaWidth();
-    QString getUrl (const int pos) const;
     QFont getDefaultFont() const {
         return font_;
     }

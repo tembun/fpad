@@ -227,8 +227,6 @@ QStringList FPsingleton::processInfo (const QString& message,
         if (!path.isEmpty())
         {
             QString realPath = path;
-            if (realPath.startsWith ("file://"))
-                realPath = QUrl (realPath).toLocalFile();
             realPath = curDir.absoluteFilePath (realPath);
             filesList << QDir::cleanPath (realPath);
         }

@@ -38,8 +38,6 @@
 #include <QTextCodec>
 #include <QTextBlock>
 #include <QFileInfo>
-#include <QStandardPaths>
-#include <QDesktopServices>
 #include <QPushButton>
 
 namespace fpad {
@@ -650,28 +648,6 @@ void FPwin::editorContextMenu (const QPoint& p)
                 disconnect (thisAction, &QAction::triggered, nullptr, nullptr);
                 connect (thisAction, &QAction::triggered, textEdit, &TextEdit::selectAll);
             }
-        }
-        QString str = textEdit->getUrl (textEdit->textCursor().position());
-        if (!str.isEmpty())
-        {
-            QAction *sep = menu->insertSeparator (actions.first());
-            QAction *openLink = new QAction ("Open Link", menu);
-            menu->insertAction (sep, openLink);
-            connect (openLink, &QAction::triggered, [str] {
-                QUrl url (str);
-                if (url.isRelative())
-                    url = QUrl::fromUserInput (str, "/");
-                if (!QProcess::startDetached ("gio", QStringList() << "open" << url.toString()))
-                    QDesktopServices::openUrl (url);
-            });
-            if (str.startsWith ("mailto:"))
-                str.remove (0, 7);
-            QAction *copyLink = new QAction ("Copy Link", menu);
-            menu->insertAction (sep, copyLink);
-            connect (copyLink, &QAction::triggered, [str] {
-                QApplication::clipboard()->setText (str);
-            });
-
         }
         menu->addSeparator();
     }
