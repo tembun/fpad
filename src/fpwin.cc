@@ -43,7 +43,7 @@
 #include <QPushButton>
 
 namespace fpad {
-QString modified_prefix = QString("[ * ]");
+QString modified_prefix = QString("[*]");
 QString noname = QString("<Anonymous>");
 QString program_name = QString( "fpad" );
 QString title_prefix = program_name + QString( " - " );
