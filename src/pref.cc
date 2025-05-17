@@ -27,9 +27,6 @@
 #include <QScreen>
 #include <QWindow>
 #include <QWhatsThis>
-#include <QFileInfo>
-#include <QFileDialog>
-#include <QColorDialog>
 
 namespace fpad {
 

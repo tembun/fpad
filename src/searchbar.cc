@@ -18,7 +18,6 @@
  */
 
 #include <QGridLayout>
-#include <QCompleter>
 #include <QTimer>
 #include "searchbar.h"
 

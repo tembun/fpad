@@ -17,12 +17,9 @@
  * @license GPL-3.0+ <https://spdx.org/licenses/GPL-3.0+.html>
  */
 
-#include <unistd.h>
 #include "ui_fp.h"
 #include <QDir>
-#include <QScreen>
 #include <QLocalSocket>
-#include <QDialog>
 #include <QStandardPaths>
 #include <QCryptographicHash>
 #include <QThread>

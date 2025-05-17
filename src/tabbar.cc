@@ -18,7 +18,6 @@
  */
 
 #include <QMouseEvent>
-#include <QDrag>
 #include <QApplication>
 #include "tabbar.h"
 

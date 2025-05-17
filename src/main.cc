@@ -22,7 +22,6 @@
 #include "singleton.h"
 
 #include <signal.h>
-#include <QLibraryInfo>
 
 
 void handleQuitSignals (const std::vector<int>& quitSignals)

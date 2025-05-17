@@ -32,10 +32,7 @@
 #include <QScrollBar>
 #include <QWidgetAction>
 #include <fstream>
-#include <QClipboard>
-#include <QProcess>
 #include <QTextDocumentWriter>
-#include <QTextCodec>
 #include <QTextBlock>
 #include <QFileInfo>
 #include <QPushButton>

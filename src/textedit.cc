@@ -20,11 +20,7 @@
 #include <QApplication>
 #include <QTimer>
 #include <QTextBlock>
-#include <QDateTime>
 #include <QPainter>
-#include <QMenu>
-#include <QDesktopServices>
-#include <QProcess>
 #include <QRegularExpression>
 #include <QClipboard>
 #include <QTextDocumentFragment>
