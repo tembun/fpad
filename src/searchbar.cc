@@ -85,7 +85,7 @@ SearchBar::SearchBar(QWidget *parent,
     
     lineEdit_->setFont( font_bold );
     
-    lineEdit_->setPlaceholderText (tr ("Search..."));
+    lineEdit_->setPlaceholderText("Search...");
     combo_->setLineEdit (lineEdit_);
     combo_->setInsertPolicy (QComboBox::NoInsert);
     combo_->setCompleter (nullptr);
@@ -104,8 +104,10 @@ SearchBar::SearchBar(QWidget *parent,
     toolButton_prv_->setAutoRaise (true);
     toolButton_nxt_->setShortcut (nxtShortcut);
     toolButton_prv_->setShortcut (prevShortcut);
-    toolButton_nxt_->setToolTip (tr ("Next") + " (" + nxtShortcut.toString (QKeySequence::NativeText) + ")");
-    toolButton_prv_->setToolTip (tr ("Previous") + " (" + prevShortcut.toString (QKeySequence::NativeText) + ")");
+    toolButton_nxt_->setToolTip("Next (" + nxtShortcut.toString(
+        QKeySequence::NativeText) + ")");
+    toolButton_prv_->setToolTip("Previous (" + prevShortcut.toString(
+        QKeySequence::NativeText) + ")");
     button_case_ = new QToolButton (this);
     QFont _font = button_case_->font();
     _font.setPointSize( 27 );
@@ -154,9 +156,9 @@ SearchBar::SearchBar(QWidget *parent,
     connect (button_regex_, &QAbstractButton::clicked, [this] (bool checked) {
         button_whole_->setEnabled (!checked);
         if (checked)
-            lineEdit_->setPlaceholderText (tr ("Search with regex..."));
+            lineEdit_->setPlaceholderText("Search with regex...");
         else
-            lineEdit_->setPlaceholderText (tr ("Search..."));
+            lineEdit_->setPlaceholderText("Search...");
         emit searchFlagChanged();
     });
     connect (lineEdit_, &LineEdit::showComboPopup, [this] {

@@ -149,7 +149,7 @@ void SessionDialog::saveSession()
     }
 
     if (!hasFile)
-        showPrompt (tr ("Nothing saved.<br>No file was opened."));
+        showPrompt("Nothing saved.<br>No file was opened.");
     else if (allItems_.contains (ui->lineEdit->text()))
         showPrompt (NAME);
     else
@@ -233,12 +233,12 @@ void SessionDialog::openSessions()
                 win->newTabFromName(files.at (i), 1, 0, multiple);
             }
             if (broken == files.count())
-                showPrompt (tr ("No file exists or can be opened."));
+                showPrompt("No file exists or can be opened.");
             else
             {
                 connect (win, &FPwin::finishedLoading, this, &SessionDialog::activate);
                 if (broken > 0)
-                    showPrompt (tr ("Not all files exist or can be opened."));
+                    showPrompt("Not all files exist or can be opened.");
             }
         }
     }
@@ -273,7 +273,7 @@ void SessionDialog::showPrompt (const QString& message)
     disconnect (ui->confirmBtn, &QAbstractButton::clicked, this, &SessionDialog::reallyRenameSession);
     if (message.isEmpty()) return;
     QTimer::singleShot (0, this, &SessionDialog::showPromptPage);
-    ui->confirmBtn->setText (tr ("&OK"));
+    ui->confirmBtn->setText("&OK");
     ui->cancelBtn->setVisible (false);
     ui->promptLabel->setText ("<b>" + message + "</b>");
 }
@@ -286,29 +286,36 @@ void SessionDialog::showPrompt (PROMPT prompt)
 
     QTimer::singleShot (0, this, &SessionDialog::showPromptPage);
 
-    ui->confirmBtn->setText (tr ("&Yes"));
+    ui->confirmBtn->setText("&Yes");
     ui->cancelBtn->setVisible (true);
 
     if (prompt == CLEAR)
     {
-        ui->promptLabel->setText ("<b>" + tr ("Do you really want to remove all saved sessions?") + "</b>");
-        connect (ui->confirmBtn, &QAbstractButton::clicked, this, &SessionDialog::removeAll);
+        ui->promptLabel->setText(
+            "<b>Do you really want to remove all saved sessions?</b>");
+        connect (ui->confirmBtn, &QAbstractButton::clicked, this,
+            &SessionDialog::removeAll);
     }
     else if (prompt == REMOVE)
     {
         if (ui->listWidget->selectedItems().count() > 1)
-            ui->promptLabel->setText ("<b>" + tr ("Do you really want to remove the selected sessions?") + "</b>");
+            ui->promptLabel->setText(
+                "<b>Do you really want to remove the selected sessions?</b>");
         else
-            ui->promptLabel->setText ("<b>" + tr ("Do you really want to remove the selected session?") + "</b>");
-        connect (ui->confirmBtn, &QAbstractButton::clicked, this, &SessionDialog::removeSelected);
+            ui->promptLabel->setText(
+                "<b>Do you really want to remove the selected session?</b>");
+        connect (ui->confirmBtn, &QAbstractButton::clicked, this,
+            &SessionDialog::removeSelected);
     }
-    else
-    {
-        ui->promptLabel->setText ("<b>" + tr ("A session with the same name exists.<br>Do you want to overwrite it?") + "</b>");
+    else {
+        ui->promptLabel->setText(
+"<b>A session with the same name exists.<br>Do you want to overwrite it?</b>");
         if (prompt == NAME)
-            connect (ui->confirmBtn, &QAbstractButton::clicked, this, &SessionDialog::reallySaveSession);
+            connect (ui->confirmBtn, &QAbstractButton::clicked, this,
+                &SessionDialog::reallySaveSession);
         else
-            connect (ui->confirmBtn, &QAbstractButton::clicked, this, &SessionDialog::reallyRenameSession);
+            connect (ui->confirmBtn, &QAbstractButton::clicked, this,
+                &SessionDialog::reallyRenameSession);
     }
 }
 void SessionDialog::closePrompt()

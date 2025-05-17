@@ -86,14 +86,16 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     wordButton->setFocusPolicy (Qt::NoFocus);
     wordButton->setAutoRaise (true);
     wordButton->setToolButtonStyle (Qt::ToolButtonIconOnly);
-    wordButton->setToolTip ("<p style='white-space:pre'>"
-                            + tr ("Calculate number of words\n(For huge texts, this may be CPU-intensive.)")
-                            + "</p>");
+    wordButton->setToolTip(QString("<p style='white-space:pre'>") +
+QString("Calculate number of words\n(For huge texts, this may be CPU-intensive.)</p>"));
     QWidget::setTabOrder (ui->lineEditFind, ui->lineEditReplace);
     QWidget::setTabOrder (ui->lineEditReplace, ui->toolButtonNext);
-    ui->toolButtonNext->setToolTip (tr ("Next") + " (" + QKeySequence (Qt::Key_F8).toString (QKeySequence::NativeText) + ")");
-    ui->toolButtonPrv->setToolTip (tr ("Previous") + " (" + QKeySequence (Qt::Key_F9).toString (QKeySequence::NativeText) + ")");
-    ui->toolButtonAll->setToolTip (tr ("Replace all") + " (" + QKeySequence (Qt::Key_F10).toString (QKeySequence::NativeText) + ")");
+    ui->toolButtonNext->setToolTip("Next (" +
+        QKeySequence(Qt::Key_F8).toString(QKeySequence::NativeText) + ")");
+    ui->toolButtonPrv->setToolTip("Previous (" +
+        QKeySequence(Qt::Key_F9).toString(QKeySequence::NativeText) + ")");
+    ui->toolButtonAll->setToolTip("Replace all (" +
+        QKeySequence(Qt::Key_F10).toString(QKeySequence::NativeText) + ")");
     ui->dockReplace->setVisible (false);
     const auto allMenus = ui->menuBar->findChildren<QMenu*>();
     for (const auto &thisMenu : allMenus)
@@ -314,11 +316,9 @@ bool FPwin::hasAnotherDialog()
             if (res) break;
         }
     }
-    if (res)
-    {
-        showWarningBar ("<center><b><big>" + tr ("Another fpad window has a modal dialog!") + "</big></b></center>"
-                        + "<center><i>" + tr ("Please attend to that window or just close its dialog!") + "</i></center>");
-    }
+    if (res) 
+        showWarningBar(QString("<center>Another fpad window has a modal dialog!") +
+            QString("</center><center>Please attend to that window or just close its dialog!</center>"));
     return res;
 }
 void FPwin::deleteTabPage (int tabIndex, bool saveToList)
@@ -459,11 +459,11 @@ FPwin::DOCSTATE FPwin::savePrompt (int tabIndex, bool noToAll)
         	"	color: #ffffff;"
         	"}"
         );
-        msgBox.setText ("<center><b><big>" + tr ("Save changes?") + "</big></b></center>");
+        msgBox.setText("<center>Save changes?</center>");
         if (isRemoved)
-            msgBox.setInformativeText ("<center><i>" + tr ("The file does not exist.") + "</i></center>");
+            msgBox.setInformativeText("<center>The file does not exist</center>");
         else
-            msgBox.setInformativeText ("<center><i>" + tr ("The document has been modified.") + "</i></center>");
+            msgBox.setInformativeText("<center>The document has been modified</center>");
         if (noToAll && ui->tabWidget->count() > 1)
             msgBox.setStandardButtons (QMessageBox::Save
                                        | QMessageBox::Discard
@@ -473,11 +473,11 @@ FPwin::DOCSTATE FPwin::savePrompt (int tabIndex, bool noToAll)
             msgBox.setStandardButtons (QMessageBox::Save
                                        | QMessageBox::Discard
                                        | QMessageBox::Cancel);
-        msgBox.changeButtonText (QMessageBox::Save, tr ("&Save"));
-        msgBox.changeButtonText (QMessageBox::Discard, tr ("&Discard changes"));
-        msgBox.changeButtonText (QMessageBox::Cancel, tr ("&Cancel"));
+        msgBox.changeButtonText (QMessageBox::Save, "&Save");
+        msgBox.changeButtonText (QMessageBox::Discard, "&Discard changes");
+        msgBox.changeButtonText (QMessageBox::Cancel, "&Cancel");
         if (noToAll)
-            msgBox.changeButtonText (QMessageBox::NoToAll, tr ("&No to all"));
+            msgBox.changeButtonText (QMessageBox::NoToAll, "&No to all");
         msgBox.setDefaultButton (QMessageBox::Save);
         msgBox.setWindowModality (Qt::WindowModal);
         switch (msgBox.exec()) {
@@ -584,7 +584,7 @@ TabPage* FPwin::createEmptyTab (bool setCurrent)
     if (index == -1) enableWidgets (true);
     tabPage->setSearchBarVisible (false);
     ui->tabWidget->insertTab (index + 1, tabPage, noname);
-    ui->tabWidget->setTabToolTip (index + 1, tr ("Unsaved"));
+    ui->tabWidget->setTabToolTip (index + 1, "Unsaved");
     if (!ui->actionWrap->isChecked())
         textEdit->setLineWrapMode (QPlainTextEdit::NoWrap);
     if (!ui->actionIndent->isChecked())
@@ -663,7 +663,7 @@ void FPwin::editorContextMenu (const QPoint& p)
         if (!str.isEmpty())
         {
             QAction *sep = menu->insertSeparator (actions.first());
-            QAction *openLink = new QAction (tr ("Open Link"), menu);
+            QAction *openLink = new QAction ("Open Link", menu);
             menu->insertAction (sep, openLink);
             connect (openLink, &QAction::triggered, [str] {
                 QUrl url (str);
@@ -674,7 +674,7 @@ void FPwin::editorContextMenu (const QPoint& p)
             });
             if (str.startsWith ("mailto:"))
                 str.remove (0, 7);
-            QAction *copyLink = new QAction (tr ("Copy Link"), menu);
+            QAction *copyLink = new QAction ("Copy Link", menu);
             menu->insertAction (sep, copyLink);
             connect (copyLink, &QAction::triggered, [str] {
                 QApplication::clipboard()->setText (str);
@@ -1131,32 +1131,31 @@ void FPwin::onOpeningHugeFiles()
 {
     disconnect (this, &FPwin::finishedLoading, this, &FPwin::onOpeningHugeFiles);
     QTimer::singleShot (0, this, [=]() {
-        showWarningBar ("<center><b><big>" + tr ("Huge file(s) not opened!") + "</big></b></center>\n"
-                        + "<center>" + tr ("fpad does not open files larger than 100 MiB.") + "</center>");
+        showWarningBar(QString("<center>Huge file(s) not opened!</center>\n") +
+            QString("<center>fpad does not open files larger than 100 MiB</center>"));
     });
 }
 void FPwin::onOpeninNonTextFiles()
 {
     disconnect (this, &FPwin::finishedLoading, this, &FPwin::onOpeninNonTextFiles);
     QTimer::singleShot (0, this, [=]() {
-        showWarningBar ("<center><b><big>" + tr ("Non-text file(s) not opened!") + "</big></b></center>\n"
-                        + "<center><i>" + tr ("See Preferences → Files → Do not permit opening of non-text files") + "</i></center>");
+        showWarningBar ("<center>Non-text file(s) not opened!</center>\n");
     });
 }
 void FPwin::onPermissionDenied()
 {
     disconnect (this, &FPwin::finishedLoading, this, &FPwin::onPermissionDenied);
     QTimer::singleShot (0, this, [=]() {
-        showWarningBar ("<center><b><big>" + tr ("Some file(s) could not be opened!") + "</big></b></center>\n"
-                        + "<center>" + tr ("You may not have the permission to read.") + "</center>");
+        showWarningBar(QString("<center>Some file(s) could not be opened!</center>\n") +
+            QString("<center>You may not have the permission to read</center>"));
     });
 }
 void FPwin::onOpeningUneditable()
 {
     disconnect (this, &FPwin::finishedLoading, this, &FPwin::onOpeningUneditable);
     QTimer::singleShot (0, this, [=]() {
-        showWarningBar ("<center><b><big>" + tr ("Uneditable file(s)!") + "</big></b></center>\n"
-                        + "<center>" + tr ("Non-text files or files with huge lines cannot be edited.") + "</center>");
+        showWarningBar(QString("<center>Uneditable file(s)!</center>\n") +
+            QString("<center>Non-text files or files with huge lines cannot be edited</center>"));
     });
 }
 void FPwin::onOpeningNonexistent()
@@ -1167,7 +1166,7 @@ void FPwin::onOpeningNonexistent()
         {
             QString fname = tabPage->textEdit()->getFileName();
             if (!fname.isEmpty() && !QFile::exists (fname))
-                showWarningBar ("<center><b><big>" + tr ("The file does not exist.") + "</big></b></center>");
+                showWarningBar("<center>The file does not exist</center>");
         }
     });
 }
@@ -1196,14 +1195,15 @@ void FPwin::showWarningBar (const QString& message, bool startupBar)
 void FPwin::showCrashWarning()
 {
     QTimer::singleShot (0, this, [=]() {
-        showWarningBar ("<center><b><big>" + tr ("A previous crash detected!") + "</big></b></center>"
-                        + "<center><i>" + tr ("Preferably, close all fpad windows and start again!") + "</i></center>", true);
+        showWarningBar(QString("<center>A previous crash detected!</center>") +
+            QString("<center>Close all fpad windows and start again!</center>"),
+            true);
     });
 }
 void FPwin::showRootWarning()
 {
     QTimer::singleShot (0, this, [=]() {
-        showWarningBar ("<center><b><big>" + tr ("Root Instance") + "</big></b></center>", true);
+        showWarningBar("<center>Root Instance</center>", true);
     });
 }
 void FPwin::closeWarningBar (bool keepOnStartup)
@@ -1262,12 +1262,7 @@ void FPwin::fileOpen()
 
     if (hasAnotherDialog()) return;
     updateShortcuts (true);
-    QString filter = tr ("All Files (*)");
-    if (!fname.isEmpty()
-        && QFileInfo (fname).fileName().contains ('.'))
-    {
-        filter = tr ("All Files (*);;.%1 Files (*.%1)").arg (fname.section ('.', -1, -1));
-    }
+    QString filter = "All Files (*)";
     FileDialog dialog (this);
     dialog.setAcceptMode (QFileDialog::AcceptOpen);
     dialog.setWindowTitle (title_prefix + QString("Open file..."));
@@ -1374,12 +1369,13 @@ bool FPwin::saveFile ()
     if (tabPage == nullptr) return false;
     TextEdit *textEdit = tabPage->textEdit();
     QString fname = textEdit->getFileName();
-    QString filter = tr ("All Files (*)");
+    QString filter = QString("All Files (*)");
     if (fname.isEmpty())
         fname = lastFile_;
     else if (QFileInfo (fname).fileName().contains ('.'))
     {
-        filter = tr (".%1 Files (*.%1);;All Files (*)").arg (fname.section ('.', -1, -1));
+        filter = QString(".%1 Files (*.%1);;All Files (*)").arg(
+            fname.section('.', -1, -1));
     }
     if (fname.isEmpty()
         || !QFile::exists (fname)
@@ -1398,7 +1394,7 @@ bool FPwin::saveFile ()
             {
                 dir = QDir::home();
                 if (textEdit->getFileName().isEmpty())
-                    filter = tr ("All Files (*)");
+                    filter = QString("All Files (*)");
             }
             else if (!textEdit->getFileName().isEmpty())
                 restorable = true;
@@ -1503,8 +1499,7 @@ bool FPwin::saveFile ()
     else
     {
         QString str = writer.device()->errorString();
-        showWarningBar ("<center><b><big>" + tr ("Cannot be saved!") + "</big></b></center>\n"
-                        + "<center><i>" + QString ("<center><i>%1.</i></center>").arg (str) + "<i/></center>");
+        showWarningBar(QString("<center>Cannot be saved!</center>\n"));
     }
     return success;
 }
@@ -1590,8 +1585,9 @@ void FPwin::tabSwitch (int index)
         if (!QFile::exists (fname))
             onOpeningNonexistent();
         else if (textEdit->getLastModified() != info.lastModified())
-            showWarningBar ("<center><b><big>" + tr ("This file has been modified elsewhere or in another way!") + "</big></b></center>\n"
-                            + "<center>" + tr ("Please be careful about reloading or saving this document!") + "</center>");
+            showWarningBar(QString("<center>This file has been modified elsewhere!") +
+                QString("</center>\n<center>Please be careful about reloading") +
+                QString(" or saving this document!</center>"));
     }
     if (modified)
         shownName.prepend (modified_prefix);
@@ -1622,7 +1618,7 @@ void FPwin::tabSwitch (int index)
         if (!title.isEmpty())
             ui->dockReplace->setWindowTitle (title);
         else
-            ui->dockReplace->setWindowTitle (tr ("Replacement"));
+            ui->dockReplace->setWindowTitle(QString("Replacement"));
     }
     else
         textEdit->setReplaceTitle (QString());
@@ -1710,8 +1706,9 @@ bool FPwin::event (QEvent *event)
                         onOpeningNonexistent();
                 }
                 else if (textEdit->getLastModified() != QFileInfo (fname).lastModified())
-                    showWarningBar ("<center><b><big>" + tr ("This file has been modified elsewhere or in another way!") + "</big></b></center>\n"
-                                    + "<center>" + tr ("Please be careful about reloading or saving this document!") + "</center>");
+                    showWarningBar(QString("<center>This file has been modified elsewhere!") +
+                        QString("</center>\n<center>Please be careful about") +
+                        QString(" reloading or saving this document!</center>"));
             }
         }
     }
@@ -1970,7 +1967,7 @@ void FPwin::saveAllFiles (bool showWarning)
         else error = true;
     }
     if (showWarning && error)
-        showWarningBar ("<center><b><big>" + tr ("Some files cannot be saved!") + "</big></b></center>");
+        showWarningBar("<center>Some files cannot be saved!</center>");
 }
 void FPwin::stealFocus()
 {

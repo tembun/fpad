@@ -55,7 +55,7 @@ void FPwin::replaceDock()
     for (int i = 0; i < count; ++i)
     {
         qobject_cast< TabPage *>(ui->tabWidget->widget (i))->setSearchBarVisible (true);
-        ui->dockReplace->setWindowTitle (tr ("Replacement"));
+        ui->dockReplace->setWindowTitle("Replacement");
 
         QFont font_bold = ui->dockReplace->font();
         QFont font_demi = ui->dockReplace->font();
@@ -106,7 +106,7 @@ void FPwin::replace()
     if (textEdit->isReadOnly()) return;
 
     textEdit->setReplaceTitle (QString());
-    ui->dockReplace->setWindowTitle (tr ("Replacement"));
+    ui->dockReplace->setWindowTitle("Replacement");
 
     QString txtFind = ui->lineEditFind->text();
     if (txtFind.isEmpty()) return;
@@ -216,15 +216,13 @@ void FPwin::replaceAll()
 
     QString title;
     if (count == 0)
-        title = tr ("No Replacement");
+        title = QString("No Replacement");
     else if (count == 1)
-        title =  tr ("One Replacement");
+        title = QString("One Replacement");
     else
-        title = tr("%Ln Replacements", "", count);
+        title = QString("%1 Replacements").arg(count);
     ui->dockReplace->setWindowTitle (title);
     textEdit->setReplaceTitle (title);
-    if (count > 1000 && !txtReplace_.isEmpty())
-        showWarningBar ("<center><b><big>" + tr ("The first 1000 replacements are highlighted.") + "</big></b></center>");
 }
 
 }

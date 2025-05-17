@@ -136,7 +136,7 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
 #endif
 
     lineNumberArea_ = new LineNumberArea (this);
-    lineNumberArea_->setToolTip (tr ("Double click to center current line"));
+    lineNumberArea_->setToolTip("Double click to center current line");
     lineNumberArea_->show();
     connect (this, &QPlainTextEdit::blockCountChanged, this, &TextEdit::updateLineNumberAreaWidth);
     connect (this, &QPlainTextEdit::updateRequest, this, &TextEdit::updateLineNumberArea);

@@ -86,7 +86,7 @@ PrefDialog::PrefDialog (QWidget *parent)
     ui->tableWidget->horizontalHeader()->setSectionResizeMode (QHeaderView::Stretch);
     ui->tableWidget->horizontalHeader()->setSectionsClickable (true);
     ui->tableWidget->sortByColumn (0, Qt::AscendingOrder);
-    ui->tableWidget->setToolTip (tr ("Press a modifier key to clear a shortcut\nin the editing mode."));
+    ui->tableWidget->setToolTip(QString("Press a modifier key to clear a shortcut\nin the editing mode."));
     Config config = static_cast<FPsingleton*>(qApp)->getConfig();
     textTabSize_ = config.getTextTabSize();
     saveUnmodified_ = config.getSaveUnmodified();
@@ -153,7 +153,7 @@ PrefDialog::PrefDialog (QWidget *parent)
     {
         if (!val.at (i).isEmpty() && val.indexOf (val.at (i), i + 1) > -1)
         {
-            showPrompt (tr ("Warning: Ambiguous shortcut detected!"), false);
+            showPrompt(QString("Warning: Ambiguous shortcut detected!"), false);
             break;
         }
     }
@@ -336,7 +336,7 @@ void PrefDialog::onShortcutChange (QTableWidgetItem *item)
     if (!txt.isEmpty() && config.reservedShortcuts().contains (txt)
         && DEFAULT_SHORTCUTS.value (OBJECT_NAMES.value (desc)) != txt)
     {
-        showPrompt (tr ("The typed shortcut was reserved."), true);
+        showPrompt(QString("The typed shortcut was reserved."), true);
         disconnect (ui->tableWidget, &QTableWidget::itemChanged, this, &PrefDialog::onShortcutChange);
         item->setText (shortcuts_.value (desc));
         connect (ui->tableWidget, &QTableWidget::itemChanged, this, &PrefDialog::onShortcutChange);
@@ -351,7 +351,7 @@ void PrefDialog::onShortcutChange (QTableWidgetItem *item)
         {
             if (!val.at (i).isEmpty() && val.indexOf (val.at (i), i + 1) > -1)
             {
-                showPrompt (tr ("Warning: Ambiguous shortcut detected!"), false);
+                showPrompt(QString("Warning: Ambiguous shortcut detected!"), false);
                 ambiguous = true;
                 break;
             }
