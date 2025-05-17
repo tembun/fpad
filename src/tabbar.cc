@@ -17,11 +17,8 @@
  * @license GPL-3.0+ <https://spdx.org/licenses/GPL-3.0+.html>
  */
 
-#include <QPointer>
 #include <QMouseEvent>
 #include <QDrag>
-#include <QMimeData>
-#include <QIcon>
 #include <QApplication>
 #include <QToolTip>
 #include "tabbar.h"
@@ -47,52 +44,17 @@ void TabBar::mousePressEvent (QMouseEvent *event)
     }
     dragStarted_ = false;
 }
-void TabBar::mouseMoveEvent (QMouseEvent *event)
-{
-    if (!dragStartPosition_.isNull()
-        && (event->pos() - dragStartPosition_).manhattanLength() >= QApplication::startDragDistance())
-    {
-      dragStarted_ = true;
-    }
 
-    if (!noTabDND_
-        && (event->buttons() & Qt::LeftButton)
-        && dragStarted_
-        && !window()->geometry().contains (event->globalPos()))
-    {
-        int index = currentIndex();
-        if (index == -1)
-        {
-            event->accept();
-            return;
-        }
-        QPointer<QDrag> drag = new QDrag (this);
-        QMimeData *mimeData = new QMimeData;
-        QByteArray array = (QString::number(window()->winId()) + "+" + QString::number(index)).toUtf8();
-        mimeData->setData ("application/fpad-tab", array);
-        drag->setMimeData (mimeData);
-        int N = count();
-        Qt::DropAction dragged = drag->exec (Qt::MoveAction);
-        if (dragged != Qt::MoveAction)
-        {
-            if (N > 1)
-                emit tabDetached();
-            else
-                finishMouseMoveEvent();
-        }
-        else
-        {
-            if (count() == N)
-                releaseMouse();
-        }
-        event->accept();
-        drag->deleteLater();
-    }
-    else
-    {
-        QTabBar::mouseMoveEvent (event);
-    }
+void
+TabBar::mouseMoveEvent(QMouseEvent *event)
+{
+	if (!dragStartPosition_.isNull()
+	    && (event->pos() - dragStartPosition_).manhattanLength() >=
+	    QApplication::startDragDistance())
+		dragStarted_ = true;
+	QTabBar::mouseMoveEvent (event);
 }
+
 bool TabBar::event (QEvent *event)
 {
 #ifndef QT_NO_TOOLTIP
