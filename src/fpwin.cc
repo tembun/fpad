@@ -28,7 +28,6 @@
 #include "loading.h"
 #include "warningbar.h"
 
-#include <QToolTip>
 #include <QWindow>
 #include <QScrollBar>
 #include <QWidgetAction>
@@ -81,13 +80,6 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     ui->spinBox->hide();
     ui->label->hide();
     ui->checkBox->hide();
-    QToolButton *wordButton = new QToolButton();
-    wordButton->setObjectName ("wordButton");
-    wordButton->setFocusPolicy (Qt::NoFocus);
-    wordButton->setAutoRaise (true);
-    wordButton->setToolButtonStyle (Qt::ToolButtonIconOnly);
-    wordButton->setToolTip(QString("<p style='white-space:pre'>") +
-QString("Calculate number of words\n(For huge texts, this may be CPU-intensive.)</p>"));
     QWidget::setTabOrder (ui->lineEditFind, ui->lineEditReplace);
     QWidget::setTabOrder (ui->lineEditReplace, ui->toolButtonNext);
     ui->toolButtonNext->setToolTip("Next (" +
@@ -1062,20 +1054,6 @@ void FPwin::addText (const QString& text, const QString& fileName, const QString
                         ui->tabWidget->indexOf (tabPage) : -1);
     QString tip (fInfo.absolutePath());
     if (!tip.endsWith ("/")) tip += "/";
-    QFontMetrics metrics (QToolTip::font());
-    QString elidedTip = "<p style='white-space:pre'>"
-#if (QT_VERSION >= QT_VERSION_CHECK(5,11,0))
-                        + metrics.elidedText (tip, Qt::ElideMiddle, 200 * metrics.horizontalAdvance (' '))
-#else
-                        + metrics.elidedText (tip, Qt::ElideMiddle, 200 * metrics.width (' '))
-#endif
-                        + "</p>";
-    ui->tabWidget->setTabToolTip (ui->tabWidget->indexOf (tabPage), elidedTip);
-    if (!sideItems_.isEmpty())
-    {
-        if (QListWidgetItem *wi = sideItems_.key (tabPage))
-            wi->setToolTip (elidedTip);
-    }
     
     if (uneditable)
     {
@@ -1480,20 +1458,6 @@ bool FPwin::saveFile ()
         setTitle (fname);
         QString tip (fInfo.absolutePath());
         if (!tip.endsWith ("/")) tip += "/";
-        QFontMetrics metrics (QToolTip::font());
-        QString elidedTip = "<p style='white-space:pre'>"
-#if (QT_VERSION >= QT_VERSION_CHECK(5,11,0))
-                            + metrics.elidedText (tip, Qt::ElideMiddle, 200 * metrics.horizontalAdvance (' '))
-#else
-                            + metrics.elidedText (tip, Qt::ElideMiddle, 200 * metrics.width (' '))
-#endif
-                            + "</p>";
-        ui->tabWidget->setTabToolTip (index, elidedTip);
-        if (!sideItems_.isEmpty())
-        {
-            if (QListWidgetItem *wi = sideItems_.key (tabPage))
-                wi->setToolTip (elidedTip);
-        }
         lastFile_ = fname;
     }
     else

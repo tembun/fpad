@@ -20,7 +20,6 @@
 #include <QMouseEvent>
 #include <QDrag>
 #include <QApplication>
-#include <QToolTip>
 #include "tabbar.h"
 
 namespace fpad {
@@ -57,14 +56,7 @@ TabBar::mouseMoveEvent(QMouseEvent *event)
 
 bool TabBar::event (QEvent *event)
 {
-#ifndef QT_NO_TOOLTIP
-    if (event->type() == QEvent::ToolTip)
-        return QWidget::event (event);
-    else
-       return QTabBar::event (event);
-#else
     return QTabBar::event (event);
-#endif
 }
 void TabBar::finishMouseMoveEvent()
 {
