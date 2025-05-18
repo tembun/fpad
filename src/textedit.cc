@@ -1290,35 +1290,6 @@ void TextEdit::mousePressEvent (QMouseEvent *event)
 {
     keepTxtCurHPos_ = false;
     txtCurHPos_ = -1;
-    if (tripleClickTimer_.isValid())
-    {
-        if (!tripleClickTimer_.hasExpired (qApp->doubleClickInterval())
-            && event->buttons() == Qt::LeftButton)
-        {
-            tripleClickTimer_.invalidate();
-            QTextCursor txtCur = textCursor();
-            const QString txt = txtCur.block().text();
-            const int l = txt.length();
-            if (l > 10000) return;
-            txtCur.movePosition (QTextCursor::StartOfBlock);
-            int i = 0;
-            while (i < l && txt.at (i).isSpace())
-                ++i;
-            if (i < l)
-            {
-                txtCur.setPosition (txtCur.position() + i);
-                int j = l;
-                while (j > i && txt.at (j -  1).isSpace())
-                    --j;
-                txtCur.setPosition (txtCur.position() + j - i, QTextCursor::KeepAnchor);
-            }
-            else
-                txtCur.setPosition (txtCur.position() + i, QTextCursor::KeepAnchor);
-            setTextCursor (txtCur);
-            return;
-        }
-        tripleClickTimer_.invalidate();
-    }
     if (event->buttons() == Qt::LeftButton
         && qApp->keyboardModifiers() == Qt::NoModifier)
     {
@@ -1357,7 +1328,6 @@ void TextEdit::mouseReleaseEvent (QMouseEvent *event)
 
 void TextEdit::mouseDoubleClickEvent (QMouseEvent *event)
 {
-    tripleClickTimer_.start();
     QPlainTextEdit::mouseDoubleClickEvent (event);
 }
 

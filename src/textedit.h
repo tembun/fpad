@@ -22,7 +22,6 @@
 
 #include <QPlainTextEdit>
 #include <QDateTime>
-#include <QElapsedTimer>
 
 namespace fpad {
 class TextEdit : public QPlainTextEdit
@@ -192,7 +191,6 @@ private:
     QPoint selectionPressPoint_;
     QFont font_;
     QString textTab_;
-    QElapsedTimer tripleClickTimer_;
     bool keepTxtCurHPos_;
     int txtCurHPos_;
     qint64 size_;
