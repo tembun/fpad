@@ -47,73 +47,22 @@ enum
 enum
 {
     LATIN1 = 0,
-    LATIN2,
-    LATIN3,
-    LATIN4,
-    LATINC,
     LATINC_UA,
-    LATINC_TJ,
-    LATINA,
-    LATING,
-    LATINH,
-    LATIN5,
-    CHINESE_CN,
-    CHINESE_TW,
-    CHINESE_HK,
-    JAPANESE,
-    KOREAN,
-    VIETNAMESE,
-    THAI,
-    GEORGIAN,
-    TOTAL_NUM // 19
+    TOTAL_NUM /* 2. */
 };
 /*------------------------*/
 static const std::string countryTable[TOTAL_NUM][MAX_COUNTRY_NUM] =
 {
                         /* list of countries using each encoding set */
     /* LATIN1 */        {""  ,    "",   "",   "",   "",   "",   "",   "",   "",   ""  },
-    /* LATIN2 */        {"cs",    "hr", "hu", "pl", "ro", "sk", "sl", "sq", "sr", "uz"},
-    /* LATIN3 */        {"eo",    "mt", "",   "",   "",   "",   "",   "",   "",   ""  },
-    /* LATIN4 */        {"et",    "lt", "lv", "mi", "",   "",   "",   "",   "",   ""  },
-    /* LATINC */        {"be",    "bg", "ky", "mk", "mn", "ru", "tt", "",   "",   ""  },
     /* LATINC_UA */     {"uk",    "",   "",   "",   "",   "",   "",   "",   "",   ""  },
-    /* LATINC_TJ */     {"tg",    "",   "",   "",   "",   "",   "",   "",   "",   ""  },
-    /* LATINA */        {"ar",    "fa", "ur", "",   "",   "",   "",   "",   "",   ""  },
-    /* LATING */        {"el",    "",   "",   "",   "",   "",   "",   "",   "",   ""  },
-    /* LATINH */        {"he",    "yi", "",   "",   "",   "",   "",   "",   "",   ""  },
-    /* LATIN5 */        {"az",    "tr", "",   "",   "",   "",   "",   "",   "",   ""  },
-    /* CHINESE_CN */    {"zh_CN", "",   "",   "",   "",   "",   "",   "",   "",   ""  },
-    /* CHINESE_TW */    {"zh_TW", "",   "",   "",   "",   "",   "",   "",   "",   ""  },
-    /* CHINESE_HK */    {"zh_HK", "",   "",   "",   "",   "",   "",   "",   "",   ""  },
-    /* JAPANESE */      {"ja",    "",   "",   "",   "",   "",   "",   "",   "",   ""  },
-    /* KOREAN */        {"ko",    "",   "",   "",   "",   "",   "",   "",   "",   ""  },
-    /* VIETNAMESE */    {"vi",    "",   "",   "",   "",   "",   "",   "",   "",   ""  },
-    /* THAI */          {"th",    "",   "",   "",   "",   "",   "",   "",   "",   ""  },
-    /* GEORGIAN */      {"ka",    "",   "",   "",   "",   "",   "",   "",   "",   ""  }
 };
 /*------------------------*/
 static const std::string encodingTable[TOTAL_NUM][ENCODING_MAX_ITEM_NUM] =
 {
                         /*  IANA            OpenI18N            CODEPAGE */
     /* LATIN1 */        { "ISO-8859-1",     "ISO-8859-15",      "CP1252" },
-    /* LATIN2 */        { "ISO-8859-2",     "ISO-8859-16",      "CP1250" },
-    /* LATIN3 */        { "ISO-8859-3",     "",                 ""       },
-    /* LATIN4 */        { "ISO-8859-4",     "ISO-8859-13",      "CP1257" },
-    /* LATINC */        { "ISO-8859-5",     "KOI8-R",           "CP1251" },
     /* LATINC_UA */     { "ISO-8859-5",     "KOI8-U",           "CP1251" },
-    /* LATINC_TJ */     { "ISO-8859-5",     "KOI8-T",           "CP1251" },
-    /* LATINA */        { "ISO-8859-6",     "",                 "CP1256" },
-    /* LATING */        { "ISO-8859-7",     "",                 "CP1253" },
-    /* LATINH */        { "ISO-8859-8",     "",                 "CP1255" },
-    /* LATIN5 */        { "ISO-8859-9",     "",                 "CP1254" },
-    /* CHINESE_CN */    { "GB2312",         "GB18030",          "CP936"  },
-    /* CHINESE_TW */    { "BIG5",           "EUC-TW",           "CP950"  },
-    /* CHINESE_HK */    { "BIG5",           "BIG5-HKSCS",       "CP950"  },
-    /* JAPANESE */      { "ISO-2022-JP",    "EUC-JP",           "CP932"  },
-    /* KOREAN */        { "ISO-2022-KR",    "EUC-KR",           "CP949"  },
-    /* VIETNAMESE */    { "",               "VISCII",           "CP1258" },
-    /* THAI */          { "",               "TIS-620",          "CP874"  },
-    /* GEORGIAN */      { "",               "GEORGIAN-PS",      ""       }
 };
 /*************************/
 static unsigned int getLocaleNum()
@@ -135,7 +84,8 @@ static unsigned int getLocaleNum()
                     {
                         if (countryTable[j][i].empty())
                             break;
-                        if (env.compare (0, countryTable[j][i].length(), countryTable[j][i]) == 0)
+                        if (env.compare (0, countryTable[j][i].length(),
+                            countryTable[j][i]) == 0)
                         {
                             code = j;
                             break;
@@ -297,201 +247,7 @@ static const std::string detectCharsetCyrillic (const char *text)
 
     return charset;
 }
-/*************************/
-static const std::string detectCharsetWinArabic (const char *text)
-{
-    uint8_t c = *text;
-    uint32_t xl = 0, xa = 0;
-    std::string charset = encodingItem[IANA];
 
-    while (c != '\0')
-    {
-        if (c >= 0x41 && c <= 0x7A)
-            xl ++;
-        else if (c >= 0xC0)
-            xa ++;
-        c = *text++;
-    }
-
-    if (xl < xa)
-        charset = "CP1256";
-
-    return charset;
-}
-/*************************/
-static const std::string detectCharsetChinese (const char *text)
-{
-    uint8_t c = *text;
-    std::string charset = encodingItem[IANA];
-
-    while ((c = *text++) != '\0')
-    {
-        if (c >= 0x81 && c <= 0x87)
-        {
-            charset = "GB18030";
-            break;
-        }
-        else if (c >= 0x88 && c <= 0xA0)
-        {
-            c = *text++;
-            if ((c >= 0x30 && c <= 0x39) || (c >= 0x80 && c <= 0xA0))
-            {
-                charset = "GB18030";
-                break;
-            } //else GBK/Big5-HKSCS cannot determine
-        }
-        else if ((c >= 0xA1 && c <= 0xC6) || (c >= 0xC9 && c <= 0xF9))
-        {
-            c = *text++;
-            if (c >= 0x40 && c <= 0x7E)
-                charset = "BIG5";
-            else if ((c >= 0x30 && c <= 0x39) || (c >= 0x80 && c <= 0xA0))
-            {
-                charset = "GB18030";
-                break;
-            }
-        }
-        else if (c >= 0xC7)
-        {
-            c = *text++;
-            if ((c >= 0x30 && c <= 0x39) || (c >= 0x80 && c <= 0xA0))
-            {
-                charset = "GB18030";
-                break;
-            }
-        }
-    }
-
-    return charset;
-}
-/*************************/
-static const std::string detectCharsetJapanese (const char *text)
-{
-    uint8_t c = *text;
-    std::string charset = "";
-
-    while (charset.empty() && (c = *text++) != '\0')
-    {
-        if (c >= 0x81 && c <= 0x9F)
-        {
-            if (c == 0x8E) /* SS2 */
-            {
-                c = *text++;
-                if ((c >= 0x40 && c <= 0xA0) || (c >= 0xE0 && c <= 0xFC))
-                    charset = "CP932";
-            }
-            else if (c == 0x8F) /* SS3 */
-            {
-                c = *text++;
-                if (c >= 0x40 && c <= 0xA0)
-                    charset = "CP932";
-                else if (c >= 0xFD)
-                    break;
-            }
-            else
-                charset = "CP932";
-        }
-        else if (c >= 0xA1 && c <= 0xDF)
-        {
-            c = *text++;
-            if (c <= 0x9F)
-                charset = "CP932";
-            else if (c >= 0xFD)
-                break;
-        }
-        else if (c >= 0xE0 && c <= 0xEF)
-        {
-            c = *text++;
-            if (c >= 0x40 && c <= 0xA0)
-                charset = "CP932";
-            else if (c >= 0xFD)
-                break;
-        }
-        else if (c >= 0xF0)
-            break;
-    }
-
-    if (charset.empty())
-        charset = "EUC-JP";
-
-    return charset;
-}
-/*************************/
-static const std::string detectCharsetKorean (const char *text)
-{
-    uint8_t c = *text;
-    bool noneuc = false;
-    bool nonjohab = false;
-    std::string charset = "";
-
-    while (charset.empty() && (c = *text++) != '\0')
-    {
-        if (c >= 0x81 && c < 0x84)
-        {
-            charset = "CP949";
-        }
-        else if (c >= 0x84 && c < 0xA1)
-        {
-            noneuc = true;
-            c = *text++;
-            if ((c > 0x5A && c < 0x61) || (c > 0x7A && c < 0x81))
-                charset = "CP1361";
-            else if (c == 0x52 || c == 0x72 || c == 0x92 || (c > 0x9D && c < 0xA1)
-                     || c == 0xB2 || (c > 0xBD && c < 0xC1) || c == 0xD2
-                     || (c > 0xDD && c < 0xE1) || c == 0xF2 || c == 0xFE)
-            {
-                charset = "CP949";
-            }
-        }
-        else if (c >= 0xA1 && c <= 0xC6)
-        {
-            c = *text++;
-            if (c < 0xA1)
-            {
-                noneuc = true;
-                if ((c > 0x5A && c < 0x61) || (c > 0x7A && c < 0x81))
-                    charset = "CP1361";
-                else if (c == 0x52 || c == 0x72 || c == 0x92 || (c > 0x9D && c < 0xA1))
-                    charset = "CP949";
-                else if (c == 0xB2 || (c > 0xBD && c < 0xC1) || c == 0xD2
-                         || (c > 0xDD && c < 0xE1) || c == 0xF2 || c == 0xFE)
-                {
-                    nonjohab = true;
-                }
-            }
-        }
-        else if (c > 0xC6 && c <= 0xD3)
-        {
-            c = *text++;
-            if (c < 0xA1)
-                charset = "CP1361";
-        }
-        else if (c > 0xD3 && c < 0xD8)
-        {
-            nonjohab = true;
-            c = *text++;
-        }
-        else if (c >= 0xD8)
-        {
-            c = *text++;
-            if (c < 0xA1)
-                charset = "CP1361";
-        }
-        if (noneuc && nonjohab)
-            charset = "CP949";
-    }
-
-    if (charset.empty())
-    {
-        if (noneuc)
-            charset = "CP949";
-        else
-            charset = "EUC-KR";
-    }
-
-    return charset;
-
-}
 /*************************/
 // The character set of the locale
 // ("UTF-8" for me)
@@ -642,31 +398,9 @@ const QString detectCharset (const QByteArray& byteArray)
                 /* Windows-1252 */
                 charset = detectCharsetLatin (text);
                 break;
-            case LATINC:
             case LATINC_UA:
-            case LATINC_TJ:
                 /* Cyrillic */
                 charset = detectCharsetCyrillic (text);
-                break;
-            case LATINA:
-                /* MS Windows Arabic */
-                charset = detectCharsetWinArabic (text);
-                break;
-            case CHINESE_CN:
-            case CHINESE_TW:
-            case CHINESE_HK:
-                charset = detectCharsetChinese (text);
-                break;
-            case JAPANESE:
-                charset = detectCharsetJapanese (text);
-                break;
-            case KOREAN:
-                charset = detectCharsetKorean (text);
-                break;
-            case VIETNAMESE:
-            case THAI:
-            case GEORGIAN:
-                charset = encodingItem[OPENI18N];
                 break;
             default:
                 if (getDefaultCharset() != "UTF-8")
