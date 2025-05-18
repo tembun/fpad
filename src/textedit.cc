@@ -18,7 +18,6 @@
  */
 
 #include <QApplication>
-#include <QTimer>
 #include <QTextBlock>
 #include <QPainter>
 #include <QRegularExpression>
@@ -39,7 +38,6 @@ TextEdit::TextEdit (QWidget *parent) : QPlainTextEdit (parent)
     widestDigit_ = 0;
     autoIndentation_ = true;
     saveCursor_ = false;
-    scrollTimer_ = nullptr;
     keepTxtCurHPos_ = false;
     txtCurHPos_ = -1;
     textTab_ = "    ";
@@ -68,7 +66,6 @@ TextEdit::TextEdit (QWidget *parent) : QPlainTextEdit (parent)
     separatorColor_ = Qt::black;
 
     resizeTimerId_ = 0;
-    selectionTimerId_ = 0;
     size_ = 0;
     encoding_= "UTF-8";
     uneditable_ = false;
@@ -149,12 +146,6 @@ void TextEdit::setEditorFont (const QFont &f, bool setDefault)
 }
 TextEdit::~TextEdit()
 {
-    if (scrollTimer_)
-    {
-        disconnect (scrollTimer_, &QTimer::timeout, this, &TextEdit::scrollWithInertia);
-        scrollTimer_->stop();
-        delete scrollTimer_;
-    }
     delete lineNumberArea_;
 }
 int TextEdit::lineNumberAreaWidth()
@@ -927,62 +918,6 @@ void TextEdit::wheelEvent (QWheelEvent *event)
     updateMicroFocus();
 }
 
-void TextEdit::scrollWithInertia()
-{
-    if (!verticalScrollBar()) return;
-
-    int totalDelta = 0;
-    for (QList<scrollData>::iterator it = queuedScrollSteps_.begin(); it != queuedScrollSteps_.end(); ++it)
-    {
-        totalDelta += qRound (static_cast<qreal>(it->delta) / static_cast<qreal>(it->totalSteps));
-        -- it->leftSteps;
-    }
-    while (!queuedScrollSteps_.empty())
-    {
-        int t = queuedScrollSteps_.begin()->totalSteps;
-        int l = queuedScrollSteps_.begin()->leftSteps;
-        if ((t > 10 && l <= 0)
-            || (t > 5 && t <= 10 && l <= -3)
-            || (t <= 5 && l <= -6))
-        {
-            queuedScrollSteps_.removeFirst();
-        }
-        else break;
-    }
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5,12,0))
-    QWheelEvent e (QPointF(),
-                   QPointF(),
-                   QPoint(),
-                   QPoint (0, totalDelta),
-                   Qt::NoButton,
-                   Qt::NoModifier,
-                   Qt::NoScrollPhase,
-                   false);
-#else
-    QWheelEvent e (QPointF(),
-                   QPointF(),
-                   totalDelta,
-                   Qt::NoButton,
-                   Qt::NoModifier,
-                   Qt::Vertical);
-#endif
-    QCoreApplication::sendEvent (verticalScrollBar(), &e);
-
-    /* update text selection if the left mouse button is pressed (-> QPlainTextEdit::timerEvent) */
-    if (QApplication::mouseButtons() & Qt::LeftButton)
-    {
-        const QPoint globalPos = QCursor::pos();
-        QPoint pos = viewport()->mapFromGlobal (globalPos);
-        QMouseEvent ev (QEvent::MouseMove, pos, viewport()->mapTo (viewport()->topLevelWidget(), pos), globalPos,
-                        Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-        mouseMoveEvent (&ev);
-    }
-
-    if (queuedScrollSteps_.empty())
-        scrollTimer_->stop();
-}
-
 void TextEdit::resizeEvent (QResizeEvent *event)
 {
     QPlainTextEdit::resizeEvent (event);
@@ -1262,12 +1197,6 @@ void TextEdit::onSelectionChanged()
         prevAnchor_ = cur.anchor();
         prevPos_ = cur.position();
     }
-    if (selectionTimerId_)
-    {
-        killTimer (selectionTimerId_);
-        selectionTimerId_ = 0;
-    }
-    selectionTimerId_ = startTimer (UPDATE_INTERVAL);
 }
 void TextEdit::showEvent (QShowEvent *event)
 {

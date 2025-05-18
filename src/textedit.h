@@ -171,7 +171,6 @@ private slots:
     void updateLineNumberArea (const QRect &rect, int dy);
     void onUpdateRequesting (const QRect&, int dy);
     void onSelectionChanged();
-    void scrollWithInertia();
 
 private:
     QString computeIndentation (const QTextCursor &cur) const;
@@ -186,7 +185,7 @@ private:
     bool autoIndentation_;
     QColor separatorColor_;
     QColor lineHColor_;
-    int resizeTimerId_, selectionTimerId_;
+    int resizeTimerId_;
     QPoint pressPoint_;
     QPoint selectionPressPoint_;
     QFont font_;
@@ -209,8 +208,6 @@ private:
       int leftSteps;
       int totalSteps;
     };
-    QList<scrollData> queuedScrollSteps_;
-    QTimer *scrollTimer_;
 };
 class LineNumberArea : public QWidget
 {
