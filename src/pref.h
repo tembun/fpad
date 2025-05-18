@@ -90,7 +90,6 @@ private:
     int textTabSize_;
     QHash<QString, QString> shortcuts_, newShortcuts_;
     QString prevtMsg_;
-    QTimer *promptTimer_;
 };
 
 }

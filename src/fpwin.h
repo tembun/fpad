@@ -21,13 +21,11 @@
 #define FPWIN_H
 
 #include <QListWidget>
-#include <QTimer>
 #include <QEvent>
 #include <QCollator>
 #include "lineedit.h"
 #include <QMainWindow>
 #include <QActionGroup>
-#include <QElapsedTimer>
 #include "textedit.h"
 #include "tabpage.h"
 #include "config.h"

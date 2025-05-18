@@ -156,7 +156,6 @@ protected:
     void keyReleaseEvent (QKeyEvent *event);
     void wheelEvent (QWheelEvent *event);
     void resizeEvent (QResizeEvent *event);
-    void timerEvent (QTimerEvent *event);
     void paintEvent (QPaintEvent *event);
     void showEvent (QShowEvent *event);
     void mouseMoveEvent (QMouseEvent *event);
@@ -185,7 +184,6 @@ private:
     bool autoIndentation_;
     QColor separatorColor_;
     QColor lineHColor_;
-    int resizeTimerId_;
     QPoint pressPoint_;
     QPoint selectionPressPoint_;
     QFont font_;

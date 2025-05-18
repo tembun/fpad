@@ -22,7 +22,6 @@
 
 #include <QFileDialog>
 #include <QTreeView>
-#include <QTimer>
 #include <QShortcut>
 
 namespace fpad {

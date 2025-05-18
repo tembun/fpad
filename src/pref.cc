@@ -76,7 +76,6 @@ PrefDialog::PrefDialog (QWidget *parent)
     setWindowModality (Qt::WindowModal);
     ui->promptLabel->setStyleSheet ("QLabel {background-color: #7d0000; color: white; border-radius: 3px; margin: 2px; padding: 5px;}");
     ui->promptLabel->hide();
-    promptTimer_ = nullptr;
 
     Delegate *del = new Delegate (ui->tableWidget);
     ui->tableWidget->setItemDelegate (del);
@@ -200,11 +199,6 @@ PrefDialog::PrefDialog (QWidget *parent)
 }
 PrefDialog::~PrefDialog()
 {
-    if (promptTimer_)
-    {
-        promptTimer_->stop();
-        delete promptTimer_;
-    }
     delete ui; ui = nullptr;
 }
 void PrefDialog::closeEvent (QCloseEvent *event)
@@ -228,24 +222,7 @@ void PrefDialog::showPrompt (const QString& str, bool temporary)
     if (!str.isEmpty())
     {
         ui->promptLabel->setText ("<b>" + str + "</b>");
-        if (temporary)
-        {
-            if (!promptTimer_)
-            {
-                promptTimer_ = new QTimer();
-                promptTimer_->setSingleShot (true);
-                connect (promptTimer_, &QTimer::timeout, [this] {
-                    if (!prevtMsg_.isEmpty()
-                        && ui->tabWidget->currentIndex() == 3)
-                    {
-                        ui->promptLabel->setText (prevtMsg_);
-                    }
-                    else showPrompt();
-                });
-            }
-            promptTimer_->start (3300);
-        }
-        else
+        if (!temporary)
             prevtMsg_ = "<b>" + str + "</b>";
     }
     else

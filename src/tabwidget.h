@@ -21,7 +21,6 @@
 #define TABWIDGET_H
 
 #include <QTabWidget>
-#include <QTimerEvent>
 #include "tabbar.h"
 
 namespace fpad {
@@ -44,15 +43,11 @@ public:
 signals:
     void currentTabChanged (int curIndx);
 
-protected:
-    void timerEvent (QTimerEvent *event);
-
 private slots:
     void tabSwitch (int index);
 
 private:
     TabBar *tb_;
-    int timerId_;
     int curIndx_;
     /* This is the list of activated tabs, in the order of activation,
        and is used for finding the last active tab: */

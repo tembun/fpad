@@ -65,7 +65,6 @@ TextEdit::TextEdit (QWidget *parent) : QPlainTextEdit (parent)
         "background-color: rgb(0, 0, 0);}"));
     separatorColor_ = Qt::black;
 
-    resizeTimerId_ = 0;
     size_ = 0;
     encoding_= "UTF-8";
     uneditable_ = false;
@@ -925,24 +924,8 @@ void TextEdit::resizeEvent (QResizeEvent *event)
     QRect cr = contentsRect();
     lineNumberArea_->setGeometry (QRect (QApplication::layoutDirection() == Qt::RightToLeft ? cr.width() - lineNumberAreaWidth() : cr.left(),
                                          cr.top(), lineNumberAreaWidth(), cr.height()));
-
-    if (resizeTimerId_)
-    {
-        resizeTimerId_ = 0;
-    }
-    resizeTimerId_ = startTimer (UPDATE_INTERVAL);
 }
 
-void TextEdit::timerEvent (QTimerEvent *event)
-{
-    QPlainTextEdit::timerEvent (event);
-
-    if (event->timerId() == resizeTimerId_)
-    {
-        resizeTimerId_ = 0;
-        emit resized();
-    }
-}
 static void fillBackground (QPainter *p, const QRectF &rect, QBrush brush, const QRectF &gradientRect = QRectF())
 {
     p->save();
