@@ -1385,18 +1385,6 @@ static bool findBackwardInBlock (const QTextBlock &block, const QString &str, in
         idx = text.lastIndexOf (str, offset, cs);
         if (idx == -1)
             return false;
-        if (flags & QTextDocument::FindWholeWords)
-        {
-            const int start = idx;
-            const int end = start + str.length();
-            if ((start != 0 && text.at (start - 1).isLetterOrNumber())
-                || (end != text.length() && text.at (end).isLetterOrNumber()))
-            {
-                offset = idx - 1;
-                idx = -1;
-                continue;
-            }
-        }
         cursor.setPosition (block.position() + idx);
         cursor.setPosition (cursor.position() + str.length(), QTextCursor::KeepAnchor);
         return true;
@@ -1572,34 +1560,19 @@ QTextCursor TextEdit::finding (const QString& str, const QTextCursor& start, QTe
                 else
                 {
                     subStr = sl.at (i);
-                    if (subStr.isEmpty()) break;
-                    if (!(flags & QTextDocument::FindWholeWords))
+                    if (subStr.isEmpty())
+                    	break;
+                    if ((found = document()->find(subStr, cursor, flags)).isNull()
+                        || found.anchor() != cursor.position())
                     {
-                        if (!cursor.block().text().startsWith (subStr, cs))
-                        {
-                            cursor.setPosition (res.position());
-                            if (!cursor.movePosition (QTextCursor::NextBlock))
-                                return QTextCursor();
-                            i = 0;
-                            continue;
-                        }
-                        cursor.setPosition (cursor.anchor() + subStr.count());
-                        break;
+                        cursor.setPosition (res.position());
+                        if (!cursor.movePosition (QTextCursor::NextBlock))
+                        return QTextCursor();
+                        i = 0;
+                        continue;
                     }
-                    else
-                    {
-                        if ((found = document()->find (subStr, cursor, flags)).isNull()
-                            || found.anchor() != cursor.position())
-                        {
-                            cursor.setPosition (res.position());
-                            if (!cursor.movePosition (QTextCursor::NextBlock))
-                                return QTextCursor();
-                            i = 0;
-                            continue;
-                        }
-                        cursor.setPosition (found.position());
-                        break;
-                    }
+                cursor.setPosition (found.position());
+                break;
                 }
             }
             res.setPosition (cursor.position(), QTextCursor::KeepAnchor);
@@ -1660,37 +1633,18 @@ QTextCursor TextEdit::finding (const QString& str, const QTextCursor& start, QTe
                 else
                 {
                     subStr = sl.at (0);
-                    if (subStr.isEmpty()) break;
-                    if (!(flags & QTextDocument::FindWholeWords))
-                    {
-                        if (!cursor.block().text().endsWith (subStr, cs))
-                        {
-                            cursor.setPosition (endPos);
-                            if (!cursor.movePosition (QTextCursor::PreviousBlock))
-                                return QTextCursor();
-                            cursor.movePosition (QTextCursor::EndOfBlock);
-                            i = 0;
-                            continue;
-                        }
-                        cursor.setPosition (cursor.anchor() - subStr.count());
-                        break;
+                    if (subStr.isEmpty())
+                    	break;
+                    if (!cursor.block().text().endsWith (subStr, cs)) {
+                        cursor.setPosition (endPos);
+                        if (!cursor.movePosition (QTextCursor::PreviousBlock))
+                        	return QTextCursor();
+                        cursor.movePosition (QTextCursor::EndOfBlock);
+                        i = 0;
+                        continue;
                     }
-                    else
-                    {
-                        found = cursor;
-                        if (!findBackward (document(), subStr, found, flags)
-                            || found.position() != cursor.position())
-                        {
-                            cursor.setPosition (endPos);
-                            if (!cursor.movePosition (QTextCursor::PreviousBlock))
-                                return QTextCursor();
-                            cursor.movePosition (QTextCursor::EndOfBlock);
-                            i = 0;
-                            continue;
-                        }
-                        cursor.setPosition (found.anchor());
-                        break;
-                    }
+                    cursor.setPosition (cursor.anchor() - subStr.count());
+                    break;
                 }
             }
             res.setPosition (cursor.anchor());

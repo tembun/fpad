@@ -64,7 +64,6 @@ public:
     void clearSearchEntry();
 
     bool matchCase() const;
-    bool matchWhole() const;
     bool matchRegex() const;
 
     bool hasPopup() const;
@@ -85,7 +84,6 @@ private:
     QPointer<QToolButton> toolButton_nxt_;
     QPointer<QToolButton> toolButton_prv_;
     QPointer<QToolButton> button_case_;
-    QPointer<QToolButton> button_whole_;
     QPointer<QToolButton> button_regex_;
     QList<QKeySequence> shortcuts_;
     bool searchStarted_;

@@ -116,13 +116,6 @@ SearchBar::SearchBar(QWidget *parent,
     button_case_->setShortcut (QKeySequence(Qt::ALT + Qt::Key_I));
     button_case_->setCheckable (true);
     button_case_->setFocusPolicy (Qt::NoFocus);
-    button_whole_ = new QToolButton (this);
-    button_whole_->setText( "W" );
-    button_whole_->setFont(_font);
-    button_whole_->setToolTip ("Whole Word ALT+W");
-    button_whole_->setShortcut (QKeySequence(Qt::ALT + Qt::Key_W));
-    button_whole_->setCheckable (true);
-    button_whole_->setFocusPolicy (Qt::NoFocus);
     button_regex_ = new QToolButton (this);
     button_regex_->setText( "R" );
     button_regex_->setFont(_font);
@@ -140,7 +133,6 @@ SearchBar::SearchBar(QWidget *parent,
     mainGrid->addWidget (toolButton_prv_, 0, 2);
     mainGrid->addItem (new QSpacerItem (6, 3), 0, 3);
     mainGrid->addWidget (button_case_, 0, 4);
-    mainGrid->addWidget (button_whole_, 0, 5);
     mainGrid->addWidget (button_regex_, 0, 6);
     setLayout (mainGrid);
     connect (lineEdit_, &QLineEdit::returnPressed, this, &SearchBar::findForward);
@@ -148,12 +140,7 @@ SearchBar::SearchBar(QWidget *parent,
     connect (toolButton_nxt_, &QAbstractButton::clicked, this, &SearchBar::findForward);
     connect (toolButton_prv_, &QAbstractButton::clicked, this, &SearchBar::findBackward);
     connect (button_case_, &QAbstractButton::clicked, this, &SearchBar::searchFlagChanged);
-    connect (button_whole_, &QAbstractButton::clicked, [this] (bool checked) {
-        button_regex_->setEnabled (!checked);
-        emit searchFlagChanged();
-    });
     connect (button_regex_, &QAbstractButton::clicked, [this] (bool checked) {
-        button_whole_->setEnabled (!checked);
         if (checked)
             lineEdit_->setPlaceholderText("Search with regex...");
         else
@@ -235,11 +222,6 @@ bool SearchBar::matchCase() const
     return button_case_->isChecked();
 }
 
-bool SearchBar::matchWhole() const
-{
-    return button_whole_->isChecked();
-}
-
 bool SearchBar::matchRegex() const
 {
     return button_regex_->isChecked();
@@ -258,7 +240,6 @@ void SearchBar::updateShortcuts (bool disable)
         toolButton_nxt_->setShortcut (QKeySequence());
         toolButton_prv_->setShortcut (QKeySequence());
         button_case_->setShortcut (QKeySequence());
-        button_whole_->setShortcut (QKeySequence());
         button_regex_->setShortcut (QKeySequence());
     }
     else if (shortcuts_.size() >= 5)
@@ -266,7 +247,6 @@ void SearchBar::updateShortcuts (bool disable)
         toolButton_nxt_->setShortcut (shortcuts_.at (0));
         toolButton_prv_->setShortcut (shortcuts_.at (1));
         button_case_->setShortcut (shortcuts_.at (2));
-        button_whole_->setShortcut (shortcuts_.at (3));
         button_regex_->setShortcut (shortcuts_.at (4));
     }
 }

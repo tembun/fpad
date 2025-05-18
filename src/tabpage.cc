@@ -66,10 +66,6 @@ bool TabPage::matchCase() const
 {
     return searchBar_->matchCase();
 }
-bool TabPage::matchWhole() const
-{
-    return searchBar_->matchWhole();
-}
 bool TabPage::matchRegex() const
 {
     return searchBar_->matchRegex();

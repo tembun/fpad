@@ -45,7 +45,6 @@ public:
     void clearSearchEntry();
 
     bool matchCase() const;
-    bool matchWhole() const;
     bool matchRegex() const;
 
     bool hasPopup() const;

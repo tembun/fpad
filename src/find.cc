@@ -153,8 +153,6 @@ QTextDocument::FindFlags FPwin::getSearchFlags() const
     QTextDocument::FindFlags searchFlags = QTextDocument::FindFlags();
     if (tabPage != nullptr)
     {
-        if (tabPage->matchWhole())
-            searchFlags = QTextDocument::FindWholeWords;
         if (tabPage->matchCase())
             searchFlags |= QTextDocument::FindCaseSensitively;
     }
