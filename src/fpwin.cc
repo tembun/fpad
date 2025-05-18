@@ -1019,7 +1019,6 @@ void FPwin::addText (const QString& text, const QString& fileName, const QString
     textEdit->setLastModified (fInfo.lastModified());
     lastFile_ = fileName;
     textEdit->setEncoding (charset);
-    textEdit->setWordNumber (-1);
     if (uneditable)
     {
         connect (this, &FPwin::finishedLoading, this, &FPwin::onOpeningUneditable, Qt::UniqueConnection);

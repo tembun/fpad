@@ -70,7 +70,6 @@ TextEdit::TextEdit (QWidget *parent) : QPlainTextEdit (parent)
     resizeTimerId_ = 0;
     selectionTimerId_ = 0;
     size_ = 0;
-    wordNumber_ = -1;
     encoding_= "UTF-8";
     uneditable_ = false;
     setFrameShape (QFrame::NoFrame);

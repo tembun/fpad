@@ -76,12 +76,6 @@ public:
     void setLastModified (const QDateTime& m) {
         lastModified_ = m;
     }
-    int getWordNumber() const {
-        return wordNumber_;
-    }
-    void setWordNumber (int n) {
-        wordNumber_ = n;
-    }
     QString getSearchedText() const {
         return searchedText_;
     }
@@ -203,7 +197,6 @@ private:
     int txtCurHPos_;
     qint64 size_;
     QDateTime lastModified_;
-    int wordNumber_;
     QString searchedText_;
     QString replaceTitle_;
     QString fileName_;
