@@ -71,13 +71,6 @@ public:
         remPos_ = rem;
     }
 
-    bool getRemSplitterPos() const {
-        return remSplitterPos_;
-    }
-    void setRemSplitterPos (bool rem) {
-        remSplitterPos_ = rem;
-    }
-
     bool getIsMaxed() const {
         return isMaxed_;
     }
@@ -122,12 +115,6 @@ public:
         winPos_ = p;
     }
 
-    int getSplitterPos() const {
-        return splitterPos_;
-    }
-    void setSplitterPos (int pos) {
-        splitterPos_ = pos;
-    }
     QFont getFont() const {
         return font_;
     }
@@ -200,14 +187,13 @@ private:
     void readCursorPos();
     void writeCursorPos();
 
-    bool remSize_, remPos_, remSplitterPos_,
+    bool remSize_, remPos_,
          isMaxed_, isFull_,
          saveUnmodified_;
     int maxSHSize_,
         textTabSize_;
     QSize winSize_, startSize_, prefSize_;
     QPoint winPos_;
-    int splitterPos_;
     QFont font_;
     QHash<QString, QString> actions_;
     QStringList removedActions_, reservedShortcuts_;

@@ -308,15 +308,7 @@ void PrefDialog::prefStartSize (int value)
         startSize.setHeight (value);
     config.setStartSize (startSize);
 }
-void PrefDialog::prefSplitterPos (int checked)
-{
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    Config& config = singleton->getConfig();
-    if (checked == Qt::Checked)
-        config.setRemSplitterPos (true);
-    else if (checked == Qt::Unchecked)
-        config.setRemSplitterPos (false);
-}
+
 // NOTE: Custom shortcuts will be saved in the PortableText format.
 void PrefDialog::onShortcutChange (QTableWidgetItem *item)
 {

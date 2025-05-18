@@ -25,7 +25,6 @@ namespace fpad {
 Config::Config():
     remSize_ (true),
     remPos_ (false),
-    remSplitterPos_ (true),
     isMaxed_ (false),
     isFull_ (false),
     saveUnmodified_ (false),
@@ -34,7 +33,6 @@ Config::Config():
     winSize_ (QSize (700, 500)),
     startSize_ (QSize (700, 500)),
     winPos_ (QPoint (0, 0)),
-    splitterPos_ (20),
     font_ (QFont ("Monospace")),
     cursorPosRetrieved_ (false) {}
 
@@ -65,11 +63,6 @@ void Config::readConfig()
         remPos_ = true; // false by default
         winPos_ = settings.value ("position", QPoint (0, 0)).toPoint();
     }
-
-    if (settings.value ("splitterPos") == "none")
-        remSplitterPos_ = false; // true by default
-    else
-        splitterPos_ = qMin (qMax (settings.value ("splitterPos", 20).toInt(), 0), 100);
 
     prefSize_ = settings.value ("prefSize").toSize();
 
@@ -156,11 +149,6 @@ void Config::writeConfig()
         settings.setValue ("position", winPos_);
     else
         settings.setValue ("position", "none");
-
-    if (remSplitterPos_)
-        settings.setValue ("splitterPos", splitterPos_);
-    else
-        settings.setValue ("splitterPos", "none");
 
     settings.setValue ("prefSize", prefSize_);
     settings.setValue ("startSize", startSize_);

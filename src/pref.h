@@ -72,7 +72,6 @@ private slots:
     void prefStartSize (int value);
     void prefPos (int checked);
     void prefMaxSHSize (int value);
-    void prefSplitterPos (int checked);
     void showWhatsThis();
     void prefShortcuts();
     void restoreDefaultShortcuts();
