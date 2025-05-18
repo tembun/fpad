@@ -87,12 +87,12 @@ int main (int argc, char **argv)
     	"QToolButton:checked {"
     	"	background-color: #ffffff;"
     	"	color: #000000;"
-    	"};"
+    	"}"
     	"QDialog {background-color: #303030;}"
 	"QToolButton {"
      	"	background-color: #000000;"
      	"	color: #ffffff;"
-     	"};"
+     	"}"
     );
     singleton.setApplicationName (name);
     singleton.setApplicationVersion (version);
