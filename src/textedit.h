@@ -173,7 +173,6 @@ private slots:
 
 private:
     QString computeIndentation (const QTextCursor &cur) const;
-    QString remainingSpaces (const QString& spaceTab, const QTextCursor& cursor) const;
     QTextCursor backTabCursor(const QTextCursor& cursor, bool twoSpace) const;
 
     int prevAnchor_, prevPos_;

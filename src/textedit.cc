@@ -234,33 +234,7 @@ QString TextEdit::computeIndentation (const QTextCursor &cur) const
     }
     return str;
 }
-QString TextEdit::remainingSpaces (const QString& spaceTab, const QTextCursor& cursor) const
-{
-    QTextCursor tmp = cursor;
-    QString txt = cursor.block().text().left (cursor.positionInBlock());
-    QFontMetricsF fm = QFontMetricsF (document()->defaultFont());
-#if (QT_VERSION >= QT_VERSION_CHECK(5,11,0))
-    qreal spaceL = fm.horizontalAdvance (" ");
-#else
-    qreal spaceL = fm.width (" ");
-#endif
-    int n = 0, i = 0;
-    while ((i = txt.indexOf("\t", i)) != -1)
-    {
-        tmp.setPosition (tmp.block().position() + i);
-        qreal x = static_cast<qreal>(cursorRect (tmp).right());
-        tmp.setPosition (tmp.position() + 1);
-        x = static_cast<qreal>(cursorRect (tmp).right()) - x;
-        n += qMax (qRound (qAbs (x) / spaceL) - 1, 0);
-        ++i;
-    }
-    n += txt.count();
-    n = spaceTab.count() - n % spaceTab.count();
-    QString res;
-    for (int i = 0 ; i < n; ++i)
-        res += " ";
-    return res;
-}
+
 QTextCursor TextEdit::backTabCursor (const QTextCursor& cursor, bool twoSpace) const
 {
     QTextCursor tmp = cursor;
@@ -713,13 +687,7 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
                 if (cursor.block().text().indexOf (QRegularExpression ("^\\s+"), 0, &match) > -1)
                     indx = match.capturedLength();
                 cursor.setPosition (cursor.block().position() + indx);
-                if (event->modifiers() & Qt::ControlModifier)
-                {
-                    cursor.insertText (remainingSpaces (event->modifiers() & Qt::MetaModifier
-                                                        ? "  " : textTab_, cursor));
-                }
-                else
-                    cursor.insertText ("\t");
+                cursor.insertText ("\t");
                 if (!cursor.movePosition (QTextCursor::NextBlock))
                     break;
             }
@@ -732,8 +700,6 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
         {
             QTextCursor tmp (cursor);
             tmp.setPosition (qMin (tmp.anchor(), tmp.position()));
-            cursor.insertText (remainingSpaces (event->modifiers() & Qt::MetaModifier
-                                                ? "  " : textTab_, tmp));
             ensureCursorVisible();
             event->accept();
             return;
