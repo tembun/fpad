@@ -30,7 +30,7 @@ Config::Config():
     isFull_ (false),
     saveUnmodified_ (false),
     maxSHSize_ (2),
-    textTabSize_ (6),
+    textTabSize_(8),
     winSize_ (QSize (700, 500)),
     startSize_ (QSize (700, 500)),
     winPos_ (QPoint (0, 0)),
@@ -93,7 +93,7 @@ void Config::readConfig()
         saveUnmodified_ = true; // false by default
     maxSHSize_ = qBound (1, settings.value ("maxSHSize", 2).toInt(), 10);
     v = settings.value ("appendEmptyLine");
-    textTabSize_ = qBound (2, settings.value ("textTabSize", 4).toInt(), 10);
+    textTabSize_ = qBound (2, settings.value ("textTabSize", 8).toInt(), 10);
     settings.endGroup();
 }
 void Config::resetFont()
