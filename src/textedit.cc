@@ -235,6 +235,9 @@ QString TextEdit::computeIndentation (const QTextCursor &cur) const
     return str;
 }
 
+/*
+ * It does un-indentation of a current string of selected block.
+ */
 QTextCursor TextEdit::backTabCursor (const QTextCursor& cursor, bool twoSpace) const
 {
     QTextCursor tmp = cursor;
