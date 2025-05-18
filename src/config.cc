@@ -30,7 +30,6 @@ Config::Config():
     isFull_ (false),
     saveUnmodified_ (false),
     maxSHSize_ (2),
-    lightBgColorValue_ (255),
     textTabSize_ (6),
     winSize_ (QSize (700, 500)),
     startSize_ (QSize (700, 500)),
@@ -93,7 +92,6 @@ void Config::readConfig()
     if (settings.value ("saveUnmodified").toBool())
         saveUnmodified_ = true; // false by default
     maxSHSize_ = qBound (1, settings.value ("maxSHSize", 2).toInt(), 10);
-    lightBgColorValue_ = qBound (230, settings.value ("lightBgColorValue", 255).toInt(), 255);
     v = settings.value ("appendEmptyLine");
     textTabSize_ = qBound (2, settings.value ("textTabSize", 4).toInt(), 10);
     settings.endGroup();
@@ -171,7 +169,6 @@ void Config::writeConfig()
     settings.setValue ("font", font_.toString());
     settings.setValue ("saveUnmodified", saveUnmodified_);
     settings.setValue ("maxSHSize", maxSHSize_);
-    settings.setValue ("lightBgColorValue", lightBgColorValue_);
     settings.setValue ("textTabSize", textTabSize_);
     settings.endGroup();
     settings.beginGroup ("shortcuts");

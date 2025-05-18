@@ -30,9 +30,8 @@ class TabPage : public QWidget
 {
     Q_OBJECT
 public:
-    TabPage (int bgColorValue = 255,
-             const QList<QKeySequence>& searchShortcuts = QList<QKeySequence>(),
-             QWidget *parent = nullptr);
+    TabPage (const QList<QKeySequence>& searchShortcuts = QList<QKeySequence>(),
+        QWidget *parent = nullptr);
 
     QPointer<TextEdit> textEdit() const {
         return textEdit_;

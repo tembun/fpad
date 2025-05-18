@@ -559,9 +559,7 @@ TabPage* FPwin::createEmptyTab (bool setCurrent)
     Config config = singleton->getConfig();
 
     static const QList<QKeySequence> searchShortcuts = {QKeySequence (Qt::Key_F3), QKeySequence (Qt::Key_F4), QKeySequence (Qt::Key_F5), QKeySequence (Qt::Key_F6), QKeySequence (Qt::Key_F7)};
-    TabPage *tabPage = new TabPage (config.getLightBgColorValue(),
-                                    searchShortcuts,
-                                    nullptr);
+    TabPage *tabPage = new TabPage(searchShortcuts, nullptr);
     TextEdit *textEdit = tabPage->textEdit();
     connect (textEdit, &QWidget::customContextMenuRequested, this, &FPwin::editorContextMenu);
     textEdit->setTtextTab (config.getTextTabSize());

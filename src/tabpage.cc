@@ -22,12 +22,10 @@
 
 namespace fpad {
 
-TabPage::TabPage (int bgColorValue,
-                  const QList<QKeySequence> &searchShortcuts,
-                  QWidget *parent)
-    : QWidget (parent)
+TabPage::TabPage(const QList<QKeySequence> &searchShortcuts,
+    QWidget *parent): QWidget (parent)
 {
-    textEdit_ = new TextEdit (this, bgColorValue);
+    textEdit_ = new TextEdit (this);
     searchBar_ = new SearchBar (this, searchShortcuts);
 
     QGridLayout *mainGrid = new QGridLayout;

@@ -33,28 +33,7 @@
 
 namespace fpad {
 
-#if (QT_VERSION == QT_VERSION_CHECK(5,14,0))
-static QColor overlayColor (const QColor& bgCol, const QColor& overlayCol)
-{
-    if (!overlayCol.isValid()) return QColor(0,0,0);
-    if (!bgCol.isValid()) return overlayCol;
-
-    qreal a1 = overlayCol.alphaF();
-    if (a1 == 1.0) return overlayCol;
-    qreal a0  = bgCol.alphaF();
-    qreal a = (1.0 - a1) * a0 + a1;
-
-    QColor res;
-    res.setAlphaF(a);
-    res.setRedF (((1.0 - a1) * a0 * bgCol.redF() + a1 * overlayCol.redF()) / a);
-    res.setGreenF (((1.0 - a1) * a0 *bgCol.greenF() + a1 * overlayCol.greenF()) / a);
-    res.setBlueF (((1.0 - a1) * a0 * bgCol.blueF() + a1 * overlayCol.blueF()) / a);
-
-    return res;
-}
-#endif
-
-TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
+TextEdit::TextEdit (QWidget *parent) : QPlainTextEdit (parent)
 {
     prevAnchor_ = prevPos_ = -1;
     widestDigit_ = 0;
@@ -64,8 +43,8 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
     keepTxtCurHPos_ = false;
     txtCurHPos_ = -1;
     textTab_ = "    ";
-    setMouseTracking (true);
-    setCursorWidth( 13 );
+    setMouseTracking(true);
+    setCursorWidth(13);
     setStyleSheet ("QPlainTextEdit {"
                            "selection-background-color: #9e9e9e;"
                            "selection-color: #000000;}"
@@ -83,38 +62,10 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
                            "	min-height: 75px;"
                            "	border:1px solid #303030}"
 	);
-    QPalette p = palette();
-    bgColorValue = qBound (0, bgColorValue, 0);
-        viewport()->setStyleSheet (QString (".QWidget {"
-                                            "color: white;"
-                                            "background-color: rgb(%1, %1, %1);}")
-                                   .arg (bgColorValue));
-        QColor col = p.highlight().color();
-        if (bgColorValue - qGray (col.rgb()) < 30 && col.hslSaturation() < 100)
-        {
-            setStyleSheet ("QPlainTextEdit {"
-                           "selection-background-color: rgb(80, 80, 80);"
-                           "selection-color: white;}");
-        }
-        else
-        {
-            col = p.color (QPalette::Inactive, QPalette::Highlight);
-            if (bgColorValue - qGray (col.rgb()) < 30 && col.hslSaturation() < 100)
-            {
-                p.setColor (QPalette::Inactive, QPalette::Highlight, p.highlight().color());
-                p.setColor (QPalette::Inactive, QPalette::HighlightedText, p.highlightedText().color());
-                setPalette (p);
-            }
-        }
-        separatorColor_ = Qt::black;
-        /*
-        it doesn't work for dark theme.
-        	separatorColor_.setAlpha (2 * qRound (static_cast<qreal>(bgColorValue) / 5) - 32);
-        */
-
-#if (QT_VERSION == QT_VERSION_CHECK(5,14,0))
-    separatorColor_ = overlayColor (QColor (bgColorValue, bgColorValue, bgColorValue), separatorColor_);
-#endif
+    viewport()->setStyleSheet(QString(".QWidget {"
+        "color: white;"
+        "background-color: rgb(0, 0, 0);}")
+    separatorColor_ = Qt::black;
 
     resizeTimerId_ = 0;
     selectionTimerId_ = 0;
@@ -125,11 +76,6 @@ TextEdit::TextEdit (QWidget *parent, int bgColorValue) : QPlainTextEdit (parent)
     setFrameShape (QFrame::NoFrame);
     VScrollBar *vScrollBar = new VScrollBar;
     setVerticalScrollBar (vScrollBar);
-
-#if (QT_VERSION == QT_VERSION_CHECK(5,14,0))
-    HScrollBar *hScrollBar = new HScrollBar;
-    setHorizontalScrollBar (hScrollBar);
-#endif
 
     lineNumberArea_ = new LineNumberArea (this);
     lineNumberArea_->show();

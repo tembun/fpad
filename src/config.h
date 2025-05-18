@@ -85,12 +85,6 @@ public:
     void setIsFull (bool isFull) {
         isFull_ = isFull;
     }
-    int getLightBgColorValue() const {
-        return lightBgColorValue_;
-    }
-    void setLightBgColorValue (int lightness) {
-        lightBgColorValue_ = lightness;
-    }
     int getTextTabSize() const {
         return textTabSize_;
     }
@@ -204,7 +198,6 @@ private:
          isMaxed_, isFull_,
          saveUnmodified_;
     int maxSHSize_,
-        lightBgColorValue_,
         textTabSize_;
     QSize winSize_, startSize_, prefSize_;
     QPoint winPos_;
