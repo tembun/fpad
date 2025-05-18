@@ -35,7 +35,6 @@ set(fpad_SRCS
     loading.cc
     tabpage.cc
     searchbar.cc
-    session.cc
     fontDialog.cc)
 
 if(CMAKE_VERSION VERSION_LESS "3.10.0") # CMP0071 in 3.10: Let AUTOMOC and AUTOUIC process GENERATED files

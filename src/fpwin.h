@@ -137,7 +137,6 @@ private slots:
     void defaultSize();
     void focus_view_soft();
     void focus_view_hard();
-    void manageSessions();
     void nextTab();
     void previousTab();
     void editorContextMenu (const QPoint& p);

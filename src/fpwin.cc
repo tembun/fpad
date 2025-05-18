@@ -23,7 +23,6 @@
 #include "filedialog.h"
 #include "messagebox.h"
 #include "pref.h"
-#include "session.h"
 #include "fontDialog.h"
 #include "loading.h"
 #include "warningbar.h"
@@ -1857,29 +1856,6 @@ void FPwin::prefDialog()
     );
     dlg.exec();
     updateShortcuts (false);
-}
-void FPwin::manageSessions()
-{
-    if (!isReady()) return;
-    FPsingleton *singleton = static_cast<FPsingleton*>(qApp);
-    for (int i = 0; i < singleton->Wins.count(); ++i)
-    {
-        QList<QDialog*> dialogs  = singleton->Wins.at (i)->findChildren<QDialog*>();
-        for (int j = 0; j < dialogs.count(); ++j)
-        {
-            if (dialogs.at (j)->objectName() == "sessionDialog")
-            {
-                dialogs.at (j)->raise();
-                dialogs.at (j)->activateWindow();
-                return;
-            }
-        }
-    }
-    SessionDialog *dlg = new SessionDialog (this);
-    dlg->setAttribute (Qt::WA_DeleteOnClose);
-    dlg->show();
-    dlg->raise();
-    dlg->activateWindow();
 }
 void FPwin::saveAllFiles (bool showWarning)
 {

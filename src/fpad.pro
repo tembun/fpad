@@ -28,7 +28,6 @@ SOURCES += main.cc \
            loading.cc \
            tabpage.cc \
            searchbar.cc \
-           session.cc \
            fontDialog.cc
 
 HEADERS += singleton.h \
@@ -46,13 +45,11 @@ HEADERS += singleton.h \
            messagebox.h \
            tabpage.h \
            searchbar.h \
-           session.h \
            fontDialog.h \
            warningbar.h
 
 FORMS += fp.ui \
          prefDialog.ui \
-         sessionDialog.ui \
          fontDialog.ui
 
 unix:!haiku:!macx {
