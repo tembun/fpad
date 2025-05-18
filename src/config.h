@@ -50,14 +50,20 @@ public:
     void readConfig();
     void readShortcuts();
     void writeConfig();
-
+    
+    /*
+     * Remember the window size on close.
+     */
     bool getRemSize() const {
         return remSize_;
     }
     void setRemSize (bool rem) {
         remSize_ = rem;
     }
-
+    
+    /*
+     * Remember window position on close.
+     */
     bool getRemPos() const {
         return remPos_;
     }
