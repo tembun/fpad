@@ -64,7 +64,7 @@ TextEdit::TextEdit (QWidget *parent) : QPlainTextEdit (parent)
 	);
     viewport()->setStyleSheet(QString(".QWidget {"
         "color: white;"
-        "background-color: rgb(0, 0, 0);}")
+        "background-color: rgb(0, 0, 0);}"));
     separatorColor_ = Qt::black;
 
     resizeTimerId_ = 0;
