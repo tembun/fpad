@@ -1,5 +1,5 @@
-Build & install for FreeBSD.
-----------------------------
+Build & install for FreeBSD
+===========================
 
 Dependencies:
 -------------
@@ -21,7 +21,7 @@ Building:
 
 The following set of instructions will do the thing:
 
- $ mkdir build && cd build && cmake ..
+ $ mkdir build && cd build && cmake ../
  $ make
 
 If you want to strip the binary, you can either do (in build/):
