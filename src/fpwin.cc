@@ -54,8 +54,8 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     ui->setupUi (this);
     
     /*
-    	Dark theme stuff.
-    */
+     * Dark theme stuff.
+     */
     ui->tabWidget->setStyleSheet(
     	"background-color: #303030;"
     	"color:#ffffff;"
@@ -64,6 +64,11 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     	"background-color: #303030;"
     	"color: #ffffff;"
     	"border: 0;"
+    );
+    /* Go-to widget. */
+    ui->centralWidget->setStyleSheet(
+    	"background-color: #303030;"
+    	"color: #ffffff;"
     );
     
     standalone_ = standalone;
@@ -1672,52 +1677,49 @@ void FPwin::showHideSearch()
 void FPwin::jumpTo()
 {
     if (!isReady()) return;
-
-    bool visibility = ui->spinBox->isVisible();    
     
+    bool visibility = ui->spinBox->isVisible();
     
     QFont font_bold = ui->spinBox->font();
     QFont font_demi = ui->spinBox->font();
     
-    font_bold.setPointSize( 20 );
-    font_bold.setWeight( QFont::Black );
-    font_demi.setPointSize( 20 );
-    font_demi.setWeight( QFont::DemiBold );
+    font_bold.setPointSize(20);
+    font_bold.setWeight(QFont::Black);
+    font_demi.setPointSize(20);
+    font_demi.setWeight(QFont::DemiBold);
     
-    ui->spinBox->setFont( font_bold );
-    ui->label->setFont( font_demi );
-    ui->checkBox->setFont( font_demi );
-    
-    
+    ui->spinBox->setFont(font_bold);
+    ui->label->setFont(font_demi);
+    ui->checkBox->setFont(font_demi);
+        
     for (int i = 0; i < ui->tabWidget->count(); ++i)
     {
-        TextEdit *thisTextEdit = qobject_cast< TabPage *>(ui->tabWidget->widget (i))->textEdit();
-        if (!visibility)
-        {
-            connect (thisTextEdit->document(),
+        TextEdit *thisTextEdit = qobject_cast<TabPage*>(ui->tabWidget->widget(i))->textEdit();
+        if (!visibility) {
+            connect(thisTextEdit->document(),
                      &QTextDocument::blockCountChanged,
                      this,
                      &FPwin::setMax);
         }
         else
-            disconnect (thisTextEdit->document(),
+            disconnect(thisTextEdit->document(),
                         &QTextDocument::blockCountChanged,
                         this,
                         &FPwin::setMax);
     }
 
-    TabPage *tabPage = qobject_cast< TabPage *>(ui->tabWidget->currentWidget());
+    TabPage *tabPage = qobject_cast<TabPage*>(ui->tabWidget->currentWidget());
     if (tabPage)
     {
         if (!visibility && ui->tabWidget->count() > 0)
-            ui->spinBox->setMaximum (tabPage->textEdit()
-                                     ->document()
-                                     ->blockCount());
+            ui->spinBox->setMaximum(tabPage->textEdit()
+                                    ->document()
+                                    ->blockCount());
     }
     
-    ui->spinBox->setVisible (true);
-    ui->label->setVisible (true);
-    ui->checkBox->setVisible (true);
+    ui->spinBox->setVisible(true);
+    ui->label->setVisible(true);
+    ui->checkBox->setVisible(true);
     ui->spinBox->setFocus();
     ui->spinBox->selectAll();
 }
