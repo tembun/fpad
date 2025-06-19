@@ -4,7 +4,7 @@ Build & install for FreeBSD
 Dependencies:
 -------------
 
-In order to build it, you need the following ports:
+In order to build it, you need the following ports(7):
  - devel/qt5-buildtools
  - devel/qt5-qmake
  - devel/qt5-core
@@ -13,7 +13,7 @@ In order to build it, you need the following ports:
  - net/qt5-network
 
 In spite of the original author's claim, it does _not_ require
-you to use gcc, clang (which is a cc(1) here) works fine.
+you to use gcc(1), clang(1) (which is a cc(1) here) works fine.
 
 
 Building:
