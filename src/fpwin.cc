@@ -65,8 +65,18 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
     	"color: #ffffff;"
     	"border: 0;"
     );
-    /* Go-to widget. */
+    /* `Go-to' widget. */
     ui->centralWidget->setStyleSheet(
+    	"background-color: #303030;"
+    	"color: #ffffff;"
+    );
+    /*
+     * `Replace' widget.
+     *
+     * Background for this widget's title is set in global `setStyleSheet' in
+     * main.cc.
+     */
+    ui->dockReplace->setStyleSheet(
     	"background-color: #303030;"
     	"color: #ffffff;"
     );

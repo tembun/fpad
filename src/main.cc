@@ -83,14 +83,26 @@ int main (int argc, char **argv)
         return 0;
     }
     fpad::FPsingleton singleton (argc, argv, option == "--standalone" || option == "-s");
+    
+    /*
+     * Global style overrides (mostly, for dark theme).
+     *
+     * `QDockWidget::title' is for title of `Replace' widget.
+     */
     singleton.setStyleSheet(
     	"QToolButton:checked {"
     	"	background-color: #ffffff;"
     	"	color: #000000;"
     	"}"
-    	"QDialog {background-color: #303030;}"
+    	"QDialog {"
+    	"	background-color: #303030;"
+    	"}"
 	"QToolButton {"
      	"	background-color: #000000;"
+     	"	color: #ffffff;"
+     	"}"
+     	"QDockWidget::title {"
+     	"	background-color: #303030;"
      	"	color: #ffffff;"
      	"}"
     );
