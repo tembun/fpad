@@ -57,7 +57,7 @@ signals:
     void messageReceived (const QString& message);
 
 private:
-    bool cursorInfo (const QString &commndOpt, int& lineNum, int& posInLine);
+    bool cursorInfo (QString path, int& lineNum, int& posInLine, QString& realPath);
     bool check_file_exists(QString filename);
     QStringList processInfo (const QString& message,
                              long &desktop, int& lineNum, int& posInLine,

@@ -127,47 +127,39 @@ bool FPsingleton::sendMessage (const QString& message)
     return true;
 }
 
-bool FPsingleton::cursorInfo (const QString& commndOpt, int& lineNum, int& posInLine)
+bool FPsingleton::cursorInfo (QString path, int& lineNum, int& posInLine, QString& realPath)
 {
-    if (commndOpt.isEmpty()) return false;
-    lineNum = 0;
-    posInLine = 0;
-    if (commndOpt == "+")
-    {
-        lineNum = -2;
-        posInLine = 0;
-        return true;
+    QString lineNumSep = ":";
+    QString lineNumEndMarker = "+";
+    QString lineNumPosSep = ",";
+    int lineNumSepIdx = path.indexOf(lineNumSep);
+    realPath = path;
+    if (lineNumSepIdx == -1)
+    	return false;
+    QString _realPath = path.left(lineNumSepIdx);
+    QString lineNumStr = path.right(path.length() - lineNumSepIdx - 1);
+    if (lineNumStr == lineNumEndMarker) {
+    	lineNum = -2;
+    	realPath = _realPath;
+    	return true;
     }
-    else if (commndOpt.startsWith ("+"))
-    {
-        bool ok;
-        lineNum = commndOpt.toInt (&ok);
-        if (ok)
-        {
-            if (lineNum > 0)
-                lineNum += 1;
-            return true;
-        }
-        else
-        {
-            QStringList l = commndOpt.split (",");
-            if (l.count() == 2)
-            {
-                lineNum = l.at (0).toInt (&ok);
-                if (ok)
-                {
-                    posInLine = l.at (1).toInt (&ok);
-                    if (ok)
-                    {
-                        if (lineNum > 0)
-                            lineNum += 1;
-                        return true;
-                    }
-                }
-            }
-        }
+    int _lineNum, _posInLine;
+    bool lineNumOk, posInLineOk;
+    QStringList numList = lineNumStr.split(lineNumPosSep);
+    if (numList.count() == 2) {
+    	_lineNum = numList.at(0).toInt(&lineNumOk);
+    	_posInLine = numList.at(1).toInt(&posInLineOk);
+    	if (!posInLineOk)
+    		return false;
+    	posInLine = _posInLine;
     }
-    return false;
+    else
+    	_lineNum = lineNumStr.toInt(&lineNumOk);
+    if (!lineNumOk || _lineNum <= 0)
+    	return false;
+    lineNum = _lineNum + 1;
+    realPath = _realPath;
+    return true;
 }
 
 QStringList FPsingleton::processInfo (const QString& message,
@@ -196,34 +188,22 @@ QStringList FPsingleton::processInfo (const QString& message,
     }
     else
         *newWindow = false;
-    bool hasCurInfo = cursorInfo (sl.at (0), lineNum, posInLine);
-    if (hasCurInfo)
-    {
-        sl.removeFirst();
-        if (!sl.isEmpty())
-        {
-            if (sl.at (0) == "--win" || sl.at (0) == "-w")
-            {
-                *newWindow = true;
-                sl.removeFirst();
-            }
-        }
-    }
-    else if (sl.at (0) == "--win" || sl.at (0) == "-w")
+    if (sl.at (0) == "--win" || sl.at (0) == "-w")
     {
         *newWindow = true;
         sl.removeFirst();
-        if (!sl.isEmpty())
-            hasCurInfo = cursorInfo (sl.at (0), lineNum, posInLine);
-        if (hasCurInfo)
-            sl.removeFirst();
     }
     QStringList filesList;
     for (const auto &path : qAsConst (sl))
     {
         if (!path.isEmpty())
         {
-            QString realPath = path;
+            QString realPath;
+            bool hasCurInfo = cursorInfo(path, lineNum, posInLine, realPath);
+            if (hasCurInfo) {
+            }
+            else {
+            }
             realPath = curDir.absoluteFilePath (realPath);
             filesList << QDir::cleanPath (realPath);
         }
@@ -311,7 +291,6 @@ FPsingleton::handleMessage(const QString& message)
 	
 	const QStringList filesList = processInfo(message, d, lineNum,
 	    posInLine, &openNewWin);
-	
 	if (openNewWin) {
 		newWin(filesList, lineNum, posInLine);
 		return;
