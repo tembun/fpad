@@ -20,6 +20,7 @@
 #include <QDir>
 #include <QApplication>
 #include "singleton.h"
+#include "theme.h"
 
 #include <signal.h>
 
@@ -105,6 +106,16 @@ int main (int argc, char **argv)
      	"	background-color: #303030;"
      	"	color: #ffffff;"
      	"}"
+	"QTabBar::tab {"
+	"	background: " STR(TAB_BG) ";"
+	"	color: " STR(TAB_FG) ";"
+	"	padding: 2px;"
+	"	border: 1px solid " STR(TAB_BORDER) ";"
+	"}"
+	"QTabBar::tab:selected {"
+	"	background: " STR(TAB_SELECTED_BG) ";"
+	"	color: " STR(TAB_SELECTED_FG) ";"
+	"}"
     );
     singleton.setApplicationName (name);
     singleton.setApplicationVersion (version);

@@ -26,6 +26,7 @@
 #include "fontDialog.h"
 #include "loading.h"
 #include "warningbar.h"
+#include <theme.h>
 
 #include <QWindow>
 #include <QScrollBar>
@@ -57,18 +58,18 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
      * Dark theme stuff.
      */
     ui->tabWidget->setStyleSheet(
-    	"background-color: #303030;"
-    	"color:#ffffff;"
+    	"background-color: " STR(WIDGETS_BG) ";"
+    	"color: " STR(WIDGETS_FG) ";"
     );
     ui->menuBar->setStyleSheet(
-    	"background-color: #303030;"
-    	"color: #ffffff;"
+    	"background-color: " STR(WIDGETS_BG) ";"
+    	"color: " STR(WIDGETS_FG) ";"
     	"border: 0;"
     );
     /* `Go-to' widget. */
     ui->centralWidget->setStyleSheet(
-    	"background-color: #303030;"
-    	"color: #ffffff;"
+    	"background-color: " STR(WIDGETS_BG) ";"
+    	"color: " STR(WIDGETS_FG) ";"
     );
     /*
      * `Replace' widget.
@@ -77,8 +78,8 @@ FPwin::FPwin (QWidget *parent, bool standalone):QMainWindow (parent), dummyWidge
      * main.cc.
      */
     ui->dockReplace->setStyleSheet(
-    	"background-color: #303030;"
-    	"color: #ffffff;"
+    	"background-color: " STR(WIDGETS_BG) ";"
+    	"color: " STR(WIDGETS_FG) ";"
     );
     
     standalone_ = standalone;

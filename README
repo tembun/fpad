@@ -24,6 +24,9 @@ For example:
 		- `Ctrl + PgUp', `Ctrl + PgDn' -- go to the start/end of a file.
 and some other stuff I don't event remember, you'd better look into `git log'.
 
+The color-theme customization is done via editing src/theme.h and recompiling
+the editor.
+
 All the information you need about building & installing it, you can find
 in the INSTALL.* files:
 	INSTALL.freebsd -- instructions for FreeBSD specifically.
