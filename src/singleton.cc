@@ -137,7 +137,7 @@ bool FPsingleton::cursorInfo (QString pwd, QString path, int& lineNum, int& posI
 {
     QString lineNumSep = ":";
     QString lineNumEndMarker = "+";
-    QString lineNumPosSep = ",";
+    QString lineNumPosSep = ":";
     int lineNumSepIdx = path.indexOf(lineNumSep);
     realPath = makeRealPath(pwd, path);
     if (lineNumSepIdx == -1)
