@@ -227,8 +227,7 @@ FPsingleton::check_file_exists(QString filename) {
 	bool res = (access(filename.toStdString().c_str(), F_OK) != -1);
 	if (!res) {
 		QTextStream err(stderr);
-		err << "[fpad]: File doesn't exist: " <<
-		    filename << Qt::endl;
+		err << "File doesn't exist: " << filename << Qt::endl;
 	}
 	return res;
 }
