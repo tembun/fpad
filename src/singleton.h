@@ -38,8 +38,7 @@ public:
 
     bool sendMessage (const QString& message);
     void firstWin(const QString& message);
-    FPwin* newWin (const QStringList &filesList = QStringList(),
-                   int lineNum = 0, int posInLine = 0);
+    FPwin* newWin (QString pwd, const QStringList &filesList = QStringList());
     void removeWin (FPwin *win);
 
     QList<FPwin*> Wins; // All fpad windows.
@@ -57,11 +56,12 @@ signals:
     void messageReceived (const QString& message);
 
 private:
-    bool cursorInfo (QString path, int& lineNum, int& posInLine, QString& realPath);
+    QString makeRealPath(QString pwd, QString path);
+    bool cursorInfo (QString pwd, QString path, int& lineNum, int& posInLine, QString& realPath);
     bool check_file_exists(QString filename);
     QStringList processInfo (const QString& message,
-                             long &desktop, int& lineNum, int& posInLine,
-                             bool *newWindow);
+                             long &desktop, bool *newWindow);
+    void switchToExistingTab(FPwin* fpw, int idx, int lineNum, int posInLine, bool hasCursorInfo);
 
     QString uniqueKey_;
     QLockFile *lockFile_;

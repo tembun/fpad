@@ -154,7 +154,7 @@ private slots:
 public:
     QWidget *dummyWidget;
     Ui::FPwin *ui;
-    int already_opened_idx (const QString& fileName) const;
+    int already_opened_idx (const QString& fileName, bool& modified) const;
     void stealFocus();
 
 private:

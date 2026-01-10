@@ -1247,16 +1247,18 @@ void FPwin::fileOpen()
 		const QStringList files = dialog.selectedFiles();
 		bool multiple (files.count() > 1 || isLoading());
 		for (const QString &file:files) {
-			int exists_tab_idx = already_opened_idx(file);
-			if (exists_tab_idx != -2)
+			bool modified;
+			int exists_tab_idx = already_opened_idx(file, modified);
+			if (exists_tab_idx != -2 && !modified) {
 				ui->tabWidget->setCurrentIndex(exists_tab_idx);
+			}
 			else
 				newTabFromName(file, 0, 0, multiple);
 		}
 	}
     updateShortcuts(false);
 }
-int FPwin::already_opened_idx (const QString& fileName) const
+int FPwin::already_opened_idx (const QString& fileName, bool& modified) const
 {
 	int res = -2;
 	
@@ -1277,6 +1279,7 @@ int FPwin::already_opened_idx (const QString& fileName) const
 		    thisInfo.symLinkTarget() : thisTextEdit->getFileName();
 		if (thisTarget == target) {
 			res = j;
+			modified = thisTextEdit->document()->isModified();
 			break;
 		}
 	}

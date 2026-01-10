@@ -21,6 +21,7 @@
 #include <QDir>
 #include <QLocalSocket>
 #include <QStandardPaths>
+#include <QTextBlock>
 #include <QCryptographicHash>
 #include <QThread>
 
@@ -127,20 +128,25 @@ bool FPsingleton::sendMessage (const QString& message)
     return true;
 }
 
-bool FPsingleton::cursorInfo (QString path, int& lineNum, int& posInLine, QString& realPath)
+QString FPsingleton::makeRealPath(QString pwd, QString path)
+{
+	return QDir(pwd).absoluteFilePath(QDir::cleanPath(path));
+}
+
+bool FPsingleton::cursorInfo (QString pwd, QString path, int& lineNum, int& posInLine, QString& realPath)
 {
     QString lineNumSep = ":";
     QString lineNumEndMarker = "+";
     QString lineNumPosSep = ",";
     int lineNumSepIdx = path.indexOf(lineNumSep);
-    realPath = path;
+    realPath = makeRealPath(pwd, path);
     if (lineNumSepIdx == -1)
     	return false;
     QString _realPath = path.left(lineNumSepIdx);
     QString lineNumStr = path.right(path.length() - lineNumSepIdx - 1);
     if (lineNumStr == lineNumEndMarker) {
     	lineNum = -2;
-    	realPath = _realPath;
+    	realPath = makeRealPath(pwd, _realPath);
     	return true;
     }
     int _lineNum, _posInLine;
@@ -158,18 +164,16 @@ bool FPsingleton::cursorInfo (QString path, int& lineNum, int& posInLine, QStrin
     if (!lineNumOk || _lineNum <= 0)
     	return false;
     lineNum = _lineNum + 1;
-    realPath = _realPath;
+    realPath = makeRealPath(pwd, _realPath);
     return true;
 }
 
 QStringList FPsingleton::processInfo (const QString& message,
-                                      long &desktop, int& lineNum, int& posInLine,
-                                      bool *newWindow)
+                                      long &desktop, bool *newWindow)
 {
     desktop = -1;
-    lineNum = 0;
-    posInLine = 0;
     QStringList sl = message.split ("\n\r");
+    QString pwd = sl.at(1);
     if (sl.count() < 3)
     {
         *newWindow = true;
@@ -177,7 +181,6 @@ QStringList FPsingleton::processInfo (const QString& message,
     }
     desktop = sl.at (0).toInt();
     sl.removeFirst();
-    QDir curDir (sl.at (0));
     sl.removeFirst();
     if (standalone_)
     {
@@ -198,14 +201,10 @@ QStringList FPsingleton::processInfo (const QString& message,
     {
         if (!path.isEmpty())
         {
+            int lineNum = 0, posInLine = 0;
             QString realPath;
-            bool hasCurInfo = cursorInfo(path, lineNum, posInLine, realPath);
-            if (hasCurInfo) {
-            }
-            else {
-            }
-            realPath = curDir.absoluteFilePath (realPath);
-            filesList << QDir::cleanPath (realPath);
+            cursorInfo(pwd, path, lineNum, posInLine, realPath);
+            filesList << path;
         }
     }
     return filesList;
@@ -213,12 +212,11 @@ QStringList FPsingleton::processInfo (const QString& message,
 
 void FPsingleton::firstWin (const QString& message)
 {
-    int lineNum = 0, posInLine = 0;
     long d = -1;
     bool openNewWin;
-    const QStringList filesList = processInfo (message, d, lineNum, posInLine,
-        &openNewWin);
-    newWin(filesList, lineNum, posInLine);
+    const QStringList filesList = processInfo(message, d, &openNewWin);
+    QString pwd = message.split ("\n\r").at(1);
+    newWin(pwd, filesList);
     lastFiles_ = QStringList();
 }
 
@@ -232,8 +230,7 @@ FPsingleton::check_file_exists(QString filename) {
 	return res;
 }
 
-FPwin* FPsingleton::newWin (const QStringList& filesList,
-                            int lineNum, int posInLine)
+FPwin* FPsingleton::newWin (QString pwd, const QStringList& filesList)
 {
     FPwin *fp = new FPwin (nullptr, standalone_);
     fp->show();
@@ -243,33 +240,25 @@ FPwin* FPsingleton::newWin (const QStringList& filesList,
     else if (geteuid() == 0)
         fp->showRootWarning();
 #endif
-    Wins.append(fp);
-
+	Wins.append(fp);
 	const QStringList* files = NULL;
-	int line_num = 0, pos_in_line = 0;
 	bool multiple = false;
-	
-	if (!filesList.isEmpty()) {
+	if (!filesList.isEmpty())
 		files = &filesList;
-		line_num = lineNum;
-		pos_in_line = posInLine;
-	}
-	else if (!lastFiles_.isEmpty()) {
+	else if (!lastFiles_.isEmpty())
 		files = &lastFiles_;
-		line_num = -1;
-		pos_in_line = 0;
-	}
 	else
 		goto end;
-	
 	multiple = files->count() > 1 || fp->isLoading();
 	for (int i = 0; i < files->count(); ++i){
         	QString filename = files->at(i);
-        	if (!check_file_exists(filename))
+        	int lineNum = 0, posInLine = 0;
+        	QString realPath;
+        	cursorInfo(pwd, filename, lineNum, posInLine, realPath);
+        	if (!check_file_exists(realPath))
         		continue;
-        	fp->newTabFromName(filename, line_num, pos_in_line, multiple);
+        	fp->newTabFromName(realPath, lineNum, posInLine, multiple);
         }
-
 end:
     return (fp);
 }
@@ -281,49 +270,71 @@ void FPsingleton::removeWin (FPwin *win)
 }
 
 void
+FPsingleton::switchToExistingTab(FPwin* fpw, int idx, int lineNum, int posInLine,
+    bool hasCursorInfo)
+{
+	TabPage *thisTabPage = qobject_cast<TabPage*>(fpw->ui->tabWidget->widget(idx));
+	TextEdit *textEdit = thisTabPage->textEdit();
+	fpw->ui->tabWidget->setCurrentIndex(idx);
+	if (hasCursorInfo) {
+		QTextCursor curs = textEdit->textCursor();
+		bool isLastLine = lineNum == -2 || lineNum > textEdit->document()->blockCount();
+		if (isLastLine)
+			curs.movePosition(QTextCursor::End);
+		else {
+			QTextBlock block = textEdit->document()->findBlockByNumber(lineNum - 2);
+			int pos = block.position();
+			if (posInLine < 0)
+				curs.movePosition(QTextCursor::EndOfLine, QTextCursor::MoveAnchor);
+			else
+				curs.setPosition(pos + posInLine, QTextCursor::MoveAnchor);
+		}
+		textEdit->setTextCursor(curs);
+	}
+	/*
+	 * Because we don't actually open a _new_
+	 * tab, the window, by default, will not
+	 * be focused, so we force this action.
+	 */
+	fpw->stealFocus();
+}
+
+void
 FPsingleton::handleMessage(const QString& message)
 {
-	int lineNum = 0, posInLine = 0;
 	long d = -1;
 	bool openNewWin;
 	FPwin* fpw = Wins.at(0);
-	
-	const QStringList filesList = processInfo(message, d, lineNum,
-	    posInLine, &openNewWin);
+	const QStringList filesList = processInfo(message, d, &openNewWin);
+	QString pwd = message.split ("\n\r").at(1);
 	if (openNewWin) {
-		newWin(filesList, lineNum, posInLine);
+		newWin(pwd, filesList);
 		return;
 	}
-	
         if (filesList.isEmpty())
 		fpw->newTab();
         else {
 		bool multiple (filesList.count() > 1 || fpw->isLoading());
-		
 		for (int i = 0; i < filesList.count(); ++i) {
 			QString filename = filesList.at(i);
-			if (!check_file_exists(filename))
+			int lineNum = 0, posInLine = 0;
+        		QString realPath;
+        		bool hasCursorInfo = cursorInfo(pwd, filename, lineNum, posInLine, realPath);
+			if (!check_file_exists(realPath))
 				continue;
-			
+			bool modified;
 			/*
 			 * If this file is already opened in a tab, switch
 			 * to this tab (make it active).
 			 */
-			int exists_idx = fpw->already_opened_idx(filename);
-			if (exists_idx != -2) {
-				fpw->ui->tabWidget->setCurrentIndex(exists_idx);
-				/*
-				 * Because we don't actually open a _new_
-				 * tab, the window, by default, will not
-				 * be focused, so we force this action.
-				 */
-				fpw->stealFocus();
-			}
+			int exists_idx = fpw->already_opened_idx(realPath, modified);
+			if (exists_idx != -2 && !modified)
+				switchToExistingTab(fpw, exists_idx, lineNum, posInLine, hasCursorInfo);
 			/*
 			 * Otherwise, open a new tab with this file.
 			 */
 			else
-				fpw->newTabFromName(filename, lineNum,
+				fpw->newTabFromName(realPath, lineNum,
 				    posInLine, multiple);
 		}
 	}
