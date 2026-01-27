@@ -422,7 +422,7 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
     }
     else if (event->key() == Qt::Key_Left||event->key() == Qt::Key_Right)
     {return;}
-    else if (event->key() == Qt::Key_J||event->key() == Qt::Key_Semicolon||event->key()==Qt::Key_Colon)
+    else if (event->key() == Qt::Key_H||event->key() == Qt::Key_L||event->key()==Qt::Key_Colon)
     {
     	QTextCursor cursor = textCursor();
     	if(event->modifiers()==Qt::AltModifier)
@@ -430,7 +430,7 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
     		if (cursor.hasSelection())
         	{
             	QString selTxt = cursor.selectedText();
-            	if (event->key() == Qt::Key_J)
+            	if (event->key() == Qt::Key_H)
             	{
                 	if (selTxt.isRightToLeft())
                     	cursor.setPosition (cursor.selectionEnd());
@@ -451,7 +451,7 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
         	}
         	else
         	{
-    			cursor.movePosition(event->key() == Qt::Key_J?QTextCursor::Left : QTextCursor::Right , QTextCursor::MoveAnchor);
+    			cursor.movePosition(event->key() == Qt::Key_H?QTextCursor::Left : QTextCursor::Right , QTextCursor::MoveAnchor);
       		setTextCursor(cursor);
       		event->accept();
       		return;
@@ -459,14 +459,14 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
     	}
     	else if(event->modifiers()==(Qt::AltModifier|Qt::ShiftModifier))
     	{
-    		cursor.movePosition(event->key() == Qt::Key_J?QTextCursor::Left : QTextCursor::Right,QTextCursor::KeepAnchor);
+    		cursor.movePosition(event->key() == Qt::Key_H?QTextCursor::Left : QTextCursor::Right,QTextCursor::KeepAnchor);
     		setTextCursor(cursor);
       	return;
     	}
     	else if(event->modifiers()==(Qt::AltModifier|Qt::ControlModifier))
     	{
     		cursor.setPosition( cursor.position() , QTextCursor::KeepAnchor );
-        	if( event->key() == Qt::Key_J )
+        	if( event->key() == Qt::Key_H )
         	{
         		cursor.movePosition( QTextCursor::StartOfLine , QTextCursor::KeepAnchor );
         	}
@@ -477,20 +477,20 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
     	}
     	else if(event->modifiers() == (Qt::ControlModifier) )
         {
-            cursor.movePosition(event->key() == Qt::Key_J?QTextCursor::WordLeft : QTextCursor::WordRight , QTextCursor::MoveAnchor);
+            cursor.movePosition(event->key() == Qt::Key_H?QTextCursor::WordLeft : QTextCursor::WordRight , QTextCursor::MoveAnchor);
         	setTextCursor( cursor );
         	event->accept();
       	return;
         }
       else if(event->modifiers() == (Qt::ControlModifier|Qt::ShiftModifier))
       {
-      	cursor.movePosition(event->key() == Qt::Key_J?QTextCursor::WordLeft : QTextCursor::WordRight , QTextCursor::KeepAnchor);
+      	cursor.movePosition(event->key() == Qt::Key_H?QTextCursor::WordLeft : QTextCursor::WordRight , QTextCursor::KeepAnchor);
         	setTextCursor( cursor );
         	event->accept();
       	return;
       }
     }
-    else if (event->key() == Qt::Key_L || event->key() == Qt::Key_K)
+    else if (event->key() == Qt::Key_J || event->key() == Qt::Key_K)
     {
 	if ((event->modifiers() == Qt::AltModifier))
         {
@@ -511,11 +511,11 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
                                               : QTextCursor::MoveAnchor);
             if ((event->modifiers() & Qt::MetaModifier))
             { // try to restore the cursor pixel position between blocks
-                cursor.movePosition (event->key() == Qt::Key_L
+                cursor.movePosition (event->key() == Qt::Key_J
                                          ? QTextCursor::EndOfBlock
                                          : QTextCursor::StartOfBlock,
                                      mode);
-                if (cursor.movePosition (event->key() == Qt::Key_L
+                if (cursor.movePosition (event->key() == Qt::Key_J
                                              ? QTextCursor::NextBlock
                                              : QTextCursor::PreviousBlock,
                                          mode))
@@ -528,11 +528,11 @@ void TextEdit::keyPressEvent (QKeyEvent *event)
             }
             else
             { // try to restore the cursor pixel position between lines
-                cursor.movePosition (event->key() == Qt::Key_L
+                cursor.movePosition (event->key() == Qt::Key_J
                                          ? QTextCursor::EndOfLine
                                          : QTextCursor::StartOfLine,
                                      mode);
-                if (cursor.movePosition (event->key() == Qt::Key_L
+                if (cursor.movePosition (event->key() == Qt::Key_J
                                              ? QTextCursor::NextCharacter
                                              : QTextCursor::PreviousCharacter,
                                          mode))
